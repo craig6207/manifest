@@ -21,6 +21,8 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
+    "@azure/msal-angular": "^4.0.12",
+    "@azure/msal-browser": "^4.13.2",
     "@capacitor/app": "7.0.1",
     "@capacitor/core": "7.4.0",
     "@capacitor/haptics": "7.0.1",
@@ -60,5 +62,8 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.8.0"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "overrides": {
+    "css-select": "5.1.0"
+  }
 }

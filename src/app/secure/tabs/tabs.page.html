@@ -1,0 +1,37 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home">
+      <ion-icon name="home"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="insights">
+      <ion-icon name="pie-chart"></ion-icon>
+      <ion-label>Timesheets</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button class="ion-tab-button-placeholder"> </ion-tab-button>
+
+    <ion-tab-button tab="job-search">
+      <ion-icon name="swap-horizontal"></ion-icon>
+      <ion-label>Job search</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="profile">
+      <ion-icon name="profile"></ion-icon>
+      <ion-label>Profile</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+
+  <ion-fab
+    class="ion-fab-custom"
+    slot="fixed"
+    vertical="bottom"
+    horizontal="center"
+    (click)="selectAction()"
+  >
+    <ion-fab-button>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-tabs>
