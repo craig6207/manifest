@@ -1,0 +1,7 @@
+{
+  "name": "mob-we-recruit",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
