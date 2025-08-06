@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import {
   IonHeader,
@@ -10,7 +9,6 @@ import {
   IonIcon,
   IonListHeader,
   IonList,
-  IonSkeletonText,
   IonItem,
   IonAvatar,
   IonLabel,
@@ -24,7 +22,6 @@ import {
     IonLabel,
     IonAvatar,
     IonItem,
-    IonSkeletonText,
     IonList,
     IonListHeader,
     IonIcon,

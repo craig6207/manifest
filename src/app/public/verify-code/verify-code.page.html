@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="secondary">
+      <ion-button href="/">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Verify Code</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid class="ion-text-center">
+    <ion-row>
+      <ion-col>
+        <h2 class="ion-margin-top">Enter the 6-digit code</h2>
+        <p>We sent a verification code to your email.</p>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="auto">
+        <ion-input-otp
+          [(ngModel)]="otp"
+          length="6"
+          type="number"
+          fill="solid"
+          shape="soft"
+          size="large"
+          color="primary"
+          separators="all"
+          (ionComplete)="onOtpComplete($event)"
+        >
+        </ion-input-otp>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button
+          id="open-toast"
+          expand="block"
+          [disabled]="otp.length < 6"
+          (click)="submitOtp()"
+        >
+          Verify
+        </ion-button>
+        <ion-toast
+          [isOpen]="toastOption.show"
+          position="top"
+          [color]="toastOption.color"
+          [message]="toastOption.message"
+          duration="4000"
+          (didDismiss)="setToast()"
+        ></ion-toast>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-margin-top">
+      <ion-col>
+        <ion-text color="medium">
+          Didn't get a code?
+          <ion-button
+            fill="clear"
+            size="small"
+            (click)="resendCode()"
+            [disabled]="resendCountdown > 0"
+          >
+            @if (resendCountdown > 0) { Resend in {{ resendCountdown }}s } @else
+            { Resend code }
+          </ion-button>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,104 @@
+<ion-header>
+  <ion-toolbar color="primary" class="ion-no-border">
+    <ion-buttons slot="start">
+      <ion-back-button
+        text="Back"
+        defaultHref="/"
+        aria-label="Go back to welcome page"
+      ></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-padding ion-full-height ion-flex ion-flex-center">
+    <div class="logo-container">
+      <h1 class="logo-placeholder">WeRecruit</h1>
+      <p>Login to your account.</p>
+    </div>
+
+    @if (showBiometricButton) {
+    <div class="biometric-section">
+      <ion-button
+        expand="block"
+        fill="outline"
+        (click)="loginWithBiometric()"
+        [disabled]="isBiometricLoading"
+        class="biometric-button"
+      >
+        <ion-icon name="finger-print-outline" slot="start"></ion-icon>
+        Login with {{ biometricType }} @if (isBiometricLoading) {
+        <ion-spinner name="crescent" slot="end"></ion-spinner>
+        }
+      </ion-button>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+    </div>
+    }
+
+    <form class="form-default" [formGroup]="signin_form" (submit)="signIn()">
+      <ion-list class="item-card-list" lines="none">
+        <ion-item>
+          <ion-label color="tertiary" position="stacked">Email</ion-label>
+          <ion-input
+            formControlName="email"
+            type="email"
+            autocomplete="off"
+            placeholder="Your email address"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item class="ion-margin-top-small">
+          <ion-label color="tertiary" position="stacked">Password</ion-label>
+          <ion-input
+            formControlName="password"
+            type="password"
+            placeholder="Your password"
+          ></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button
+        class="ion-margin-top"
+        type="submit"
+        expand="block"
+        color="primary"
+      >
+        <ion-icon name="log-in-outline" slot="start"></ion-icon>
+        Sign in
+      </ion-button>
+      <ion-loading
+        [isOpen]="isLoading"
+        message="Signing in..."
+        spinner="crescent"
+        translucent="true"
+        backdropDismiss="false"
+      ></ion-loading>
+
+      <ion-button
+        color="primary"
+        fill="clear"
+        expand="block"
+        class="ion-button-small ion-margin-top-medium"
+        routerLink="/password-reset"
+      >
+        Forgot password?
+      </ion-button>
+    </form>
+
+    <div class="ion-text-center ion-margin-top">
+      <ion-text color="medium">
+        <small>&copy; 2025 WeRecruit</small>
+      </ion-text>
+    </div>
+  </div>
+</ion-content>
+<ion-alert
+  [isOpen]="isAlertOpen"
+  [header]="alertHeader"
+  [message]="alertMessage"
+  [buttons]="alertButtons"
+  (didDismiss)="isAlertOpen = false"
+></ion-alert>

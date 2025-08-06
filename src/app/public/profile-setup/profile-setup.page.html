@@ -1,0 +1,183 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="secondary">
+      <ion-button href="/">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Profile Setup</ion-title>
+  </ion-toolbar>
+  <div class="progress-container ion-padding-horizontal ion-padding-vertical">
+    <div class="step-labels">
+      <span [class.active]="currentStep() === 1">1</span>
+      <span [class.active]="currentStep() === 2">2</span>
+      <span [class.active]="currentStep() === 3">3</span>
+    </div>
+    <ion-progress-bar [value]="progress()" color="primary"></ion-progress-bar>
+  </div>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (currentStep() === 1) {
+  <form [formGroup]="personalForm" (ngSubmit)="next()">
+    <ion-list>
+      <ion-item>
+        <ion-input
+          label="First name"
+          placeholder="First name"
+          formControlName="firstName"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="Surname"
+          placeholder="Surname"
+          formControlName="lastName"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="Phone number"
+          type="tel"
+          placeholder="0700 111 2222"
+          formControlName="phoneNumber"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="Sex"
+          formControlName="sex"
+          interface="popover"
+          justify="start"
+        >
+          <ion-select-option value="Male">Male</ion-select-option>
+          <ion-select-option value="Female">Female</ion-select-option>
+          <ion-select-option value="Other">Other</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" type="submit" [disabled]="personalForm.invalid">
+      Next
+    </ion-button>
+  </form>
+  } @if (currentStep() === 2) {
+  <form [formGroup]="locationForm" (ngSubmit)="next()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Location</ion-label>
+        <ion-input formControlName="location"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label
+          >Distance Radius ({{ locationForm.get('radius')?.value }}
+          miles)</ion-label
+        >
+        <ion-range
+          formControlName="radius"
+          min="5"
+          max="100"
+          step="5"
+          snaps
+        ></ion-range>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked"
+          >Pay Expectation (£{{ locationForm.get('payRate')?.value }}
+          p/h)</ion-label
+        >
+        <ion-range
+          aria-label="Pay Expectation"
+          [pin]="true"
+          [pinFormatter]="pinFormatter"
+          formControlName="payRate"
+          min="5"
+          max="100"
+          step="1"
+        ></ion-range>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="Trade categories"
+          formControlName="tradeCategories"
+          interface="popover"
+          justify="start"
+        >
+          @for (cat of tradeCategoryOptions; track cat) {
+          <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="Trade sub-categories"
+          formControlName="tradeSubcategories"
+          interface="popover"
+          justify="start"
+          multiple
+        >
+          @for (sub of subcategoryOptions; track sub) {
+          <ion-select-option [value]="sub">{{ sub }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="Certificates"
+          placeholder="Certificates"
+          formControlName="certificates"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" (click)="back()">Back</ion-button>
+    <ion-button expand="block" type="submit" [disabled]="locationForm.invalid">
+      Next
+    </ion-button>
+  </form>
+  } @if (currentStep() === 3) {
+  <form [formGroup]="bankForm" (ngSubmit)="submit()">
+    <ion-list>
+      <ion-item>
+        <ion-input
+          label="Bank Account Number"
+          placeholder="Account number"
+          formControlName="bankAccount"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="Sortcode"
+          placeholder="Sortcode"
+          formControlName="sortCode"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          label="NI number"
+          placeholder="NI number"
+          formControlName="niNumber"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" (click)="back()">Back</ion-button>
+    <ion-button expand="block" type="submit" [disabled]="bankForm.invalid">
+      Submit
+    </ion-button>
+  </form>
+  }
+</ion-content>

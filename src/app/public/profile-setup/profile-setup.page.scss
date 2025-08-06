@@ -1,0 +1,18 @@
+.progress-container {
+  text-align: center;
+}
+
+.step-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #0a1172;
+}
+
+.step-labels span {
+  flex: 1;
+  text-align: center;
+  opacity: 0.4;
+}

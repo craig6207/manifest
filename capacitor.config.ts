@@ -1,9 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'io.ionic.werecruit',
   appName: 'mob-we-recruit',
-  webDir: 'www'
+  webDir: 'www',
 };
-
 export default config;

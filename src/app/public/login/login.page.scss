@@ -1,0 +1,51 @@
+// Add these styles to your existing login.page.scss
+
+.biometric-section {
+  margin-bottom: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.biometric-button {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  margin-bottom: 1rem;
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+
+  ion-spinner {
+    --color: var(--ion-color-primary);
+  }
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--ion-color-medium);
+  }
+
+  span {
+    background: var(--ion-background-color, #fff);
+    padding: 0 1rem;
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .divider span {
+    background: var(--ion-background-color, #1e1e1e);
+  }
+}

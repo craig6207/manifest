@@ -1,0 +1,125 @@
+<ion-header>
+  <ion-toolbar color="primary" class="ion-no-border">
+    <ion-buttons slot="start">
+      <ion-back-button
+        text="Back"
+        defaultHref="/"
+        aria-label="Go back to welcome page"
+      ></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-justify-content-center ion-align-items-center">
+    <ion-row>
+      <ion-col size-md="6" size-lg="4">
+        <ion-text>
+          <h1 id="register__title">WeRecruit</h1>
+          <p>Create a free account.</p>
+        </ion-text>
+
+        <form
+          [formGroup]="signup_form"
+          (ngSubmit)="signUp()"
+          novalidate
+          class="form-default"
+        >
+          <ion-list lines="none">
+            <ion-item>
+              <ion-input
+                label="Email"
+                formControlName="email"
+                type="email"
+                placeholder="Your email address"
+              ></ion-input>
+            </ion-item>
+            @if ( signup_form.get('email')!.invalid &&
+            (signup_form.get('email')!.touched || submit_attempt) ) { @if
+            (signup_form.get('email')!.errors?.['required']) {
+            <ion-item>
+              <ion-text color="danger">
+                <small>Email is required.</small>
+              </ion-text>
+            </ion-item>
+            } @if (signup_form.get('email')!.errors?.['email']) {
+            <ion-item>
+              <ion-text color="danger">
+                <small>Please enter a valid email.</small>
+              </ion-text>
+            </ion-item>
+            } }
+
+            <ion-item class="ion-margin-top-small">
+              <ion-input
+                label="Password"
+                formControlName="password"
+                type="password"
+                placeholder="Your password"
+                ><ion-input-password-toggle
+                  slot="end"
+                ></ion-input-password-toggle
+              ></ion-input>
+            </ion-item>
+            @if ( signup_form.get('password')!.invalid &&
+            (signup_form.get('password')!.touched || submit_attempt) ) { @if
+            (signup_form.get('password')!.errors?.['strongPassword']) {
+            <ion-item>
+              <ion-text color="danger">
+                <small>
+                  Password must be at least 9 characters long and include at
+                  least one uppercase letter, one lowercase letter, and one
+                  number.
+                </small>
+              </ion-text>
+            </ion-item>
+            } }
+            <ion-item class="ion-margin-top-small">
+              <ion-input
+                label="Repeat Password"
+                formControlName="password_repeat"
+                type="password"
+                placeholder="Repeat your password"
+                ><ion-input-password-toggle
+                  slot="end"
+                ></ion-input-password-toggle
+              ></ion-input>
+            </ion-item>
+            @if ( signup_form.get('password_repeat')!.invalid &&
+            (signup_form.get('password_repeat')!.touched || submit_attempt) ) {
+            @if (signup_form.get('password_repeat')!.errors?.['required']) {
+            <ion-item>
+              <ion-text color="danger">
+                <small>Please repeat your password.</small>
+              </ion-text>
+            </ion-item>
+            }}
+          </ion-list>
+
+          <ion-button
+            id="open-loading"
+            type="submit"
+            [disabled]="signup_form.invalid"
+            expand="block"
+            >Sign up</ion-button
+          >
+          <ion-toast
+            [isOpen]="toastOption.show"
+            position="top"
+            [color]="toastOption.color"
+            [message]="toastOption.message"
+            duration="4000"
+            keyboardClose="true"
+            (didDismiss)="setToast()"
+          ></ion-toast>
+        </form>
+
+        <div class="ion-text-center ion-margin-top">
+          <ion-text color="medium">
+            <small>&copy; 2025 WeRecruit</small>
+          </ion-text>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

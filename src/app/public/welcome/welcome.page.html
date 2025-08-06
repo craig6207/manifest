@@ -12,7 +12,8 @@
       type="submit"
       expand="block"
       color="primary"
-      (click)="login()"
+      routerLink="/login"
+      routerDirection="forward"
     >
       Sign in
     </ion-button>
@@ -21,7 +22,10 @@
       class="ion-margin-top"
       type="submit"
       expand="block"
-      color="secondary"
+      fill="outline"
+      color="primary"
+      routerLink="/register"
+      routerDirection="forward"
     >
       Register
     </ion-button>
