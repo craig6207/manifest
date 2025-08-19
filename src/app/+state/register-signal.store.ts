@@ -3,11 +3,13 @@ import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 export type RegisterState = {
   email: string;
   password: string;
+  userId: number;
 };
 
 const initialState: RegisterState = {
   email: '',
   password: '',
+  userId: 0,
 };
 
 export const RegisterStore = signalStore(
@@ -16,6 +18,9 @@ export const RegisterStore = signalStore(
   withMethods((store) => ({
     setEmailPassword(email: string, password: string): void {
       patchState(store, { email, password });
+    },
+    setUserId(userId: number): void {
+      patchState(store, { userId });
     },
   }))
 );

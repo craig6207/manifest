@@ -51,5 +51,9 @@
 	<string>We need your location to suggest local jobs near you.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We need your location to suggest local jobs near you.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We use the camera to let you take a profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photos to pick a profile picture.</string>
 </dict>
 </plist>

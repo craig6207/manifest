@@ -1,0 +1,53 @@
+.week-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.week-range {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.week-range .range {
+  font-weight: 600;
+}
+.week-range .hint {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.date-btn {
+  margin-left: 4px;
+}
+.day-label .top {
+  font-weight: 600;
+}
+.day-label .date {
+  margin-left: 6px;
+  opacity: 0.7;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.footer-actions,
+.edit-actions {
+  margin-top: 16px;
+  display: grid;
+  gap: 8px;
+}
+.entries {
+  padding: 8px 12px 4px;
+}
+.entry-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: end;
+}
+.entry-row.single .remove-btn {
+  visibility: hidden;
+}

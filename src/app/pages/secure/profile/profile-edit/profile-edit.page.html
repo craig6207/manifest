@@ -1,0 +1,138 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ title() }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onCancel()" aria-label="Cancel">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onSave()" [disabled]="form.invalid || !form.dirty">
+        <ion-icon name="save-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    @if (isPersonalDetails()) {
+    <ion-list lines="full">
+      <ion-item>
+        <ion-input
+          label="First name"
+          labelPlacement="stacked"
+          formControlName="firstName"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          label="Last name"
+          labelPlacement="stacked"
+          formControlName="lastName"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="tel"
+          inputmode="tel"
+          label="Phone number"
+          labelPlacement="stacked"
+          formControlName="phoneNumber"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-select
+          label="Sex"
+          justify="start"
+          interface="popover"
+          formControlName="sex"
+        >
+          @for (opt of (selectOptions().sex ?? ['Male','Female','Other']); track
+          opt) {
+          <ion-select-option [value]="opt">{{ opt }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          label="Bank account number"
+          labelPlacement="stacked"
+          formControlName="bankAccountNumber"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          label="Sort code"
+          placeholder="12-34-56 or 123456"
+          labelPlacement="stacked"
+          formControlName="bankSortCode"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          label="NI number"
+          placeholder="QQ123456C"
+          labelPlacement="stacked"
+          formControlName="niNumber"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+    } @else {
+    <ion-list lines="full">
+      <ion-item>
+        <ion-input
+          label="Location"
+          labelPlacement="stacked"
+          formControlName="location"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Distance radius (miles)</ion-label>
+        <ion-range
+          formControlName="locationRadius"
+          [min]="5"
+          [max]="100"
+          [step]="5"
+          [snaps]="true"
+        ></ion-range>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Pay expectation (£/h)</ion-label>
+        <ion-range
+          formControlName="expectedPay"
+          [min]="5"
+          [max]="100"
+          [step]="1"
+        ></ion-range>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="Trade category"
+          justify="start"
+          interface="popover"
+          formControlName="tradeCategory"
+        >
+          @for (opt of (selectOptions().tradeCategory ?? []); track opt) {
+          <ion-select-option [value]="opt">{{ opt }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-select
+          label="Trade sub-category"
+          justify="start"
+          interface="popover"
+          formControlName="tradeSubcategory"
+        >
+          @for (opt of (selectOptions().tradeSubcategory ?? []); track opt) {
+          <ion-select-option [value]="opt">{{ opt }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    }
+  </form>
+</ion-content>

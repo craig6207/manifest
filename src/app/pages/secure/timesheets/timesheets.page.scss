@@ -1,0 +1,40 @@
+.section-title {
+  font-weight: 700;
+  margin: 8px 0;
+}
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+.kpi {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--ion-color-step-100, rgba(0, 0, 0, 0.03));
+}
+.kpi ion-icon {
+  font-size: 20px;
+}
+.kpi .value {
+  font-weight: 600;
+}
+.card-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.empty {
+  opacity: 0.7;
+  text-align: center;
+  padding: 16px 8px;
+}
+.list-note {
+  margin-top: 4px;
+}
+.chev {
+  margin-left: 8px;
+}

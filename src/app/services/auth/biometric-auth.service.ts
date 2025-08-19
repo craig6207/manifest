@@ -5,15 +5,13 @@ import {
   AndroidBiometryStrength,
 } from '@aparajita/capacitor-biometric-auth';
 import { Capacitor } from '@capacitor/core';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 @Injectable({ providedIn: 'root' })
 export class BiometricAuthService {
   private readonly BIOMETRIC_ENABLED_KEY = 'biometric_enabled';
   private readonly USER_EMAIL_KEY = 'biometric_user_email';
 
-  /**
-   * Check if biometric authentication is available on the device
-   */
   async isBiometricAvailable(): Promise<boolean> {
     if (!Capacitor.isNativePlatform()) return false;
 
@@ -26,9 +24,6 @@ export class BiometricAuthService {
     }
   }
 
-  /**
-   * Get supported biometric types
-   */
   async getBiometricTypes(): Promise<BiometryType[]> {
     try {
       const result = await BiometricAuth.checkBiometry();
@@ -39,26 +34,34 @@ export class BiometricAuthService {
     }
   }
 
-  /**
-   * Enable biometric login and store user identifier
-   */
   async enableBiometric(email: string): Promise<boolean> {
     if (!(await this.isBiometricAvailable())) return false;
 
-    localStorage.setItem(this.USER_EMAIL_KEY, email);
-    localStorage.setItem(this.BIOMETRIC_ENABLED_KEY, 'true');
-    return true;
+    try {
+      await SecureStoragePlugin.set({
+        key: this.USER_EMAIL_KEY,
+        value: email,
+      });
+
+      await SecureStoragePlugin.set({
+        key: this.BIOMETRIC_ENABLED_KEY,
+        value: 'true',
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Failed to enable biometric login:', error);
+      return false;
+    }
   }
 
-  /**
-   * Authenticate the user using biometrics
-   */
   async authenticateWithBiometric(): Promise<{
     success: boolean;
     email?: string;
     error?: string;
   }> {
-    if (!this.isBiometricEnabled()) {
+    const isEnabled = await this.isBiometricEnabled();
+    if (!isEnabled) {
       return { success: false, error: 'Biometric login not enabled' };
     }
 
@@ -74,11 +77,11 @@ export class BiometricAuthService {
         androidBiometryStrength: AndroidBiometryStrength.weak,
       });
 
-      const email = this.getStoredEmail() ?? undefined;
+      const email = await this.getStoredEmail();
 
       return {
         success: true,
-        email,
+        email: email ?? undefined,
       };
     } catch (error) {
       console.error('Biometric authentication failed:', error);
@@ -89,23 +92,39 @@ export class BiometricAuthService {
     }
   }
 
-  /**
-   * Utility methods
-   */
-  isBiometricEnabled(): boolean {
-    return localStorage.getItem(this.BIOMETRIC_ENABLED_KEY) === 'true';
+  async isBiometricEnabled(): Promise<boolean> {
+    try {
+      const result = await SecureStoragePlugin.get({
+        key: this.BIOMETRIC_ENABLED_KEY,
+      });
+      return result.value === 'true';
+    } catch {
+      return false;
+    }
   }
 
-  getStoredEmail(): string | null {
-    return localStorage.getItem(this.USER_EMAIL_KEY);
+  async getStoredEmail(): Promise<string | null> {
+    try {
+      const result = await SecureStoragePlugin.get({
+        key: this.USER_EMAIL_KEY,
+      });
+      return result.value;
+    } catch {
+      return null;
+    }
   }
 
-  disableBiometric(): void {
-    localStorage.removeItem(this.BIOMETRIC_ENABLED_KEY);
-    localStorage.removeItem(this.USER_EMAIL_KEY);
+  async disableBiometric(): Promise<void> {
+    try {
+      await SecureStoragePlugin.remove({ key: this.BIOMETRIC_ENABLED_KEY });
+    } catch {}
+
+    try {
+      await SecureStoragePlugin.remove({ key: this.USER_EMAIL_KEY });
+    } catch {}
   }
 
-  clearBiometricData(): void {
-    this.disableBiometric();
+  async clearBiometricData(): Promise<void> {
+    await this.disableBiometric();
   }
 }

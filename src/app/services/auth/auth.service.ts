@@ -3,15 +3,34 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
 import { environment } from 'src/app/environment/environment';
 import { BiometricAuthService } from './biometric-auth.service';
+import { DeviceInfoService } from '../device-info/device-info.service';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private biometricAuth = inject(BiometricAuthService);
+  private deviceInfo = inject(DeviceInfoService);
+  private refreshTimer: ReturnType<typeof setTimeout> | null = null;
+
+  async setSecureItem(key: string, value: string): Promise<void> {
+    await SecureStoragePlugin.set({ key, value });
+  }
+
+  async getSecureItem(key: string): Promise<string | null> {
+    try {
+      const result = await SecureStoragePlugin.get({ key });
+      return result.value;
+    } catch {
+      return null;
+    }
+  }
+
+  async removeSecureItem(key: string): Promise<void> {
+    await SecureStoragePlugin.remove({ key });
+  }
 
   sendOtp(email: string, password: string): Observable<any> {
-    console.log('we are here');
-    console.log(environment.apiEndpoint);
     return this.http.post<any>(`${environment.apiEndpoint}/api/auth/otc`, {
       email,
       password,
@@ -19,50 +38,69 @@ export class AuthService {
   }
 
   verifyCode(email: string, oneTimeCode: string): Observable<any> {
-    return this.http.post<any>(`${environment.apiEndpoint}/api/auth/verify`, {
-      email,
-      oneTimeCode,
+    return new Observable<any>((observer) => {
+      this.deviceInfo
+        .getDeviceMetadata()
+        .then((device) => {
+          this.http
+            .post<{ token: string; refreshToken: string }>(
+              `${environment.apiEndpoint}/api/auth/verify`,
+              {
+                email,
+                oneTimeCode,
+                deviceId: device.deviceId,
+                deviceName: device.deviceName,
+                ipAddress: device.ipAddress,
+              }
+            )
+            .subscribe({
+              next: async (response) => {
+                await this.setSecureItem('access_token', response.token);
+                await this.setSecureItem(
+                  'refresh_token',
+                  response.refreshToken
+                );
+                this.startTokenRefreshWatcher();
+                observer.next(response);
+                observer.complete();
+              },
+              error: (err) => observer.error(err),
+            });
+        })
+        .catch((error) => observer.error(error));
     });
   }
 
-  async register(email: string, password: string): Promise<string> {
-    const response = await firstValueFrom(
-      this.http.post<{ token: string }>(
-        `${environment.apiEndpoint}/api/auth/register`,
-        { email, password }
-      )
-    );
-    localStorage.setItem('access_token', response.token);
-
-    return response.token;
-  }
-
   async login(email: string, password: string): Promise<string> {
-    console.log(environment.apiEndpoint);
-    console.log('Request Origin:', window.location.origin);
     try {
+      const device = await this.deviceInfo.getDeviceMetadata();
+
       const response = await firstValueFrom(
-        this.http.post<{ token: string }>(
+        this.http.post<{ token: string; refreshToken: string }>(
           `${environment.apiEndpoint}/api/auth/login`,
-          { email, password }
+          {
+            email,
+            password,
+            deviceId: device.deviceId,
+            deviceName: device.deviceName,
+            ipAddress: device.ipAddress,
+          }
         )
       );
-      localStorage.setItem('access_token', response.token);
 
+      await this.setSecureItem('access_token', response.token);
+      await this.setSecureItem('refresh_token', response.refreshToken);
+      this.startTokenRefreshWatcher();
       await this.checkBiometricSetup(email);
 
       return response.token;
     } catch (error: any) {
-      console.log(error);
       const errorMessage =
         error?.error?.[0] ?? 'An unexpected error occurred. Please try again.';
       throw new Error(errorMessage);
     }
   }
 
-  /**
-   * Login using biometric authentication
-   */
   async loginWithBiometric(): Promise<{
     success: boolean;
     token?: string;
@@ -71,58 +109,61 @@ export class AuthService {
     try {
       const biometricResult =
         await this.biometricAuth.authenticateWithBiometric();
-
-      if (biometricResult.success && biometricResult.email) {
-        // Check if we have a valid token for this user
-        const existingToken = this.getStoredToken();
-        console.log(existingToken);
-
-        if (existingToken) {
-          return {
-            success: true,
-            token: existingToken,
-          };
-        } else {
-          // Token expired or invalid, clear biometric data
-          this.biometricAuth.clearBiometricData();
-          return {
-            success: false,
-            error: 'Session expired. Please login with email and password.',
-          };
-        }
+      if (!biometricResult.success || !biometricResult.email) {
+        return {
+          success: false,
+          error: biometricResult.error || 'Biometric authentication failed',
+        };
       }
 
+      const device = await this.deviceInfo.getDeviceMetadata();
+
+      const response = await firstValueFrom(
+        this.http.post<{ token: string; refreshToken: string }>(
+          `${environment.apiEndpoint}/api/auth/biometric-login`,
+          {
+            email: biometricResult.email,
+            deviceId: device.deviceId,
+            deviceName: device.deviceName,
+            ipAddress: device.ipAddress,
+          }
+        )
+      );
+
+      await this.setSecureItem('access_token', response.token);
+      await this.setSecureItem('refresh_token', response.refreshToken);
+      this.startTokenRefreshWatcher();
+
+      return { success: true, token: response.token };
+    } catch (err: any) {
+      const code =
+        err?.error?.errors?.[0] ??
+        err?.error?.[0] ??
+        err?.error?.message ??
+        err?.message;
+
+      if (code === 'REAUTH_REQUIRED') {
+        return { success: false, error: 'REAUTH_REQUIRED' };
+      }
+
+      this.biometricAuth.clearBiometricData();
       return {
         success: false,
-        error: biometricResult.error || 'Biometric authentication failed',
-      };
-    } catch (error) {
-      console.error('Biometric login error:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Authentication failed',
+        error:
+          typeof code === 'string' ? code : 'Biometric authentication failed',
       };
     }
   }
 
-  /**
-   * Check if biometric setup should be prompted
-   */
   private async checkBiometricSetup(email: string): Promise<void> {
     try {
-      console.log('we got here');
       const isAvailable = await this.biometricAuth.isBiometricAvailable();
-      const isEnabled = this.biometricAuth.isBiometricEnabled();
+      const isEnabled = await this.biometricAuth.isBiometricEnabled();
 
-      // Only prompt if biometric is available but not enabled
-      if (isAvailable && !isEnabled) {
-        // This will be handled by the login component
-        return;
-      }
+      if (isAvailable && !isEnabled) return;
 
-      // If biometric is enabled but for a different email, update it
       if (isEnabled) {
-        const storedEmail = this.biometricAuth.getStoredEmail();
+        const storedEmail = await this.biometricAuth.getStoredEmail();
         if (storedEmail !== email) {
           await this.biometricAuth.enableBiometric(email);
         }
@@ -132,46 +173,91 @@ export class AuthService {
     }
   }
 
-  /**
-   * Enable biometric authentication
-   */
   async enableBiometricAuth(email: string): Promise<boolean> {
     return await this.biometricAuth.enableBiometric(email);
   }
 
-  /**
-   * Validate token with backend
-   */
-  private async validateToken(token: string): Promise<boolean> {
+  async refreshAccessToken(): Promise<boolean> {
+    const refreshToken = await this.getSecureItem('refresh_token');
+    if (!refreshToken) {
+      this.logout();
+      return false;
+    }
+
     try {
-      // You might want to add a validation endpoint in your backend
-      // For now, we'll assume the token is valid if it exists
-      // Replace this with actual token validation logic
-      await firstValueFrom(
-        this.http.get(`${environment.apiEndpoint}/api/auth/validate`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+      const device = await this.deviceInfo.getDeviceMetadata();
+
+      const response = await firstValueFrom(
+        this.http.post<{ token: string; refreshToken: string }>(
+          `${environment.apiEndpoint}/api/auth/refresh`,
+          {
+            refreshToken,
+            deviceId: device.deviceId,
+            deviceName: device.deviceName,
+            ipAddress: device.ipAddress,
+          }
+        )
       );
+
+      await this.setSecureItem('access_token', response.token);
+      await this.setSecureItem('refresh_token', response.refreshToken);
+
+      this.startTokenRefreshWatcher();
       return true;
     } catch (error) {
-      console.error('Token validation failed:', error);
+      console.error('Token refresh failed:', error);
+      this.logout();
       return false;
     }
   }
 
-  /**
-   * Get stored token
-   */
-  private getStoredToken(): string | null {
-    return localStorage.getItem('access_token');
+  async startTokenRefreshWatcher(): Promise<void> {
+    const token = await this.getSecureItem('access_token');
+    if (!token) return;
+
+    const payload = this.decodeJwt(token);
+    if (!payload?.exp) return;
+
+    const expiry = payload.exp * 1000;
+    const now = Date.now();
+    const refreshBeforeMs = 60 * 1000;
+    const timeUntilRefresh = expiry - now - refreshBeforeMs;
+
+    if (timeUntilRefresh > 0) {
+      this.refreshTimer = setTimeout(() => {
+        this.refreshAccessToken();
+      }, timeUntilRefresh);
+    }
   }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('access_token');
+  stopTokenRefreshWatcher(): void {
+    if (this.refreshTimer) {
+      clearTimeout(this.refreshTimer);
+      this.refreshTimer = null;
+    }
+  }
+
+  private decodeJwt(token: string): any {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch {
+      return null;
+    }
+  }
+
+  async isLoggedIn(): Promise<boolean> {
+    const token = await this.getSecureItem('access_token');
+    return !!token;
   }
 
   logout(): void {
-    localStorage.removeItem('access_token');
+    this.removeSecureItem('access_token');
+    this.removeSecureItem('refresh_token');
+    this.stopTokenRefreshWatcher();
     this.biometricAuth.clearBiometricData();
+  }
+
+  async getAccessToken(): Promise<string | null> {
+    return this.getSecureItem('access_token');
   }
 }

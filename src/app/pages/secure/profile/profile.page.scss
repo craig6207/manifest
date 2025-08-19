@@ -1,0 +1,48 @@
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+:host {
+  --avatar-size: 180px;
+}
+
+.avatar-wrap {
+  position: relative;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+
+  ion-avatar {
+    width: 100%;
+    height: 100%;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .avatar-edit-btn {
+    --btn-size: calc(var(--avatar-size) * 0.28);
+    position: absolute;
+    right: calc(var(--btn-size) * -0.15);
+    bottom: calc(var(--btn-size) * -0.15);
+    width: var(--btn-size);
+    height: var(--btn-size);
+    border: none;
+    border-radius: 9999px;
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.full-height {
+  height: 100%;
+}

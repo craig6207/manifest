@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import {
   provideHttpClient,
   withFetch,
-  withInterceptorsFromDi,
+  withInterceptors,
 } from '@angular/common/http';
 import {
   RouteReuseStrategy,
@@ -17,12 +17,13 @@ import {
 import { environment } from './environment/environment';
 import { ENVIRONMENT } from './environment/environment.token';
 import { routes } from './app.routes';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptorsFromDi(), withFetch()),
+    provideHttpClient(withInterceptors([authInterceptor]), withFetch()),
     { provide: ENVIRONMENT, useValue: environment },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),

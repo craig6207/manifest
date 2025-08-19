@@ -1,0 +1,87 @@
+<ion-header translucent="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/secure/tabs/profile"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Job Preferences</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="openEdit()" aria-label="Edit job preferences">
+        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (jobPreferences()) {
+  <ion-list lines="full" class="ion-margin-top">
+    <ion-list-header>
+      <h2>Location &amp; Pay</h2>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-text>
+        <p>Location</p>
+        <h4>{{ jobPreferences()?.location }}</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>Distance radius</p>
+        <h4>{{ jobPreferences()?.locationRadius }} miles</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>Pay expectation</p>
+        <h4>£{{ jobPreferences()?.expectedPay }}/h</h4>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full" class="ion-margin-top">
+    <ion-list-header>
+      <h2>Trade</h2>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-text>
+        <p>Trade category</p>
+        <h4>{{ jobPreferences()?.tradeCategory }}</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>Trade sub-category</p>
+        <h4>{{ jobPreferences()?.tradeSubcategory }}</h4>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+  }
+</ion-content>
+
+<ion-modal
+  [isOpen]="isEditOpen()"
+  (didDismiss)="closeEdit()"
+  [initialBreakpoint]="1"
+  [breakpoints]="[1]"
+>
+  <ng-template>
+    <app-profile-edit
+      [title]="'Edit job preferences'"
+      [isPersonalDetails]="false"
+      [value]="jobPreferences()"
+      [selectOptions]="{
+        tradeCategory: tradeCategories(),
+        tradeSubcategory: tradeSubcategories()
+      }"
+      (cancel)="closeEdit()"
+      (save)="handleSave($event)"
+    />
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,97 @@
+<ion-header translucent="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/secure/tabs/profile"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Personal Details</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="openEdit()" aria-label="Edit personal details">
+        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (personalDetails()) {
+  <ion-list lines="full" class="ion-margin-top">
+    <ion-list-header>
+      <h2>Personal details</h2>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-text>
+        <p>First Name</p>
+        <h4>{{ personalDetails()?.firstName }}</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>Last Name</p>
+        <h4>{{ personalDetails()?.lastName }}</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>Phone Number</p>
+        <h4>{{ personalDetails()?.phoneNumber }}</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>Sex</p>
+        <h4>{{ personalDetails()?.sex }}</h4>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+  <ion-list lines="full" class="ion-margin-top">
+    <ion-list-header>
+      <h2>Bank &amp; Identity</h2>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-text>
+        <p>Bank Account</p>
+        <h4>{{ personalDetails()?.bankAccountNumber }}</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>Sort Code</p>
+        <h4>{{ personalDetails()?.bankSortCode }}</h4>
+      </ion-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-text>
+        <p>NI Number</p>
+        <h4>{{ personalDetails()?.niNumber }}</h4>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+  }
+</ion-content>
+
+<ion-modal
+  [isOpen]="isEditOpen()"
+  (didDismiss)="closeEdit()"
+  [initialBreakpoint]="1"
+  [breakpoints]="[1]"
+>
+  <ng-template>
+    <app-profile-edit
+      [title]="'Edit personal details'"
+      [isPersonalDetails]="true"
+      [value]="personalDetails()"
+      [selectOptions]="{ sex: ['Male','Female','Other'] }"
+      (cancel)="closeEdit()"
+      (save)="handleSave($event)"
+    />
+  </ng-template>
+</ion-modal>

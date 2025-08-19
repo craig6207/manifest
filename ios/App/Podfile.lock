@@ -5,7 +5,11 @@ PODS:
     - CapacitorCordova
   - CapacitorApp (7.0.1):
     - Capacitor
+  - CapacitorCamera (7.0.2):
+    - Capacitor
   - CapacitorCordova (7.4.0)
+  - CapacitorDevice (7.0.2):
+    - Capacitor
   - CapacitorGeolocation (7.1.4):
     - Capacitor
     - IONGeolocationLib (~> 1.0)
@@ -15,24 +19,35 @@ PODS:
     - Capacitor
   - CapacitorNativeBiometric (0.0.1):
     - Capacitor
+  - CapacitorPreferences (7.0.2):
+    - Capacitor
+  - CapacitorSecureStoragePlugin (0.11.0):
+    - Capacitor
+    - SwiftKeychainWrapper
   - CapacitorStatusBar (7.0.1):
     - Capacitor
   - IONGeolocationLib (1.0.0)
+  - SwiftKeychainWrapper (4.0.1)
 
 DEPENDENCIES:
   - "AparajitaCapacitorBiometricAuth (from `../../node_modules/@aparajita/capacitor-biometric-auth`)"
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
+  - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - CapacitorNativeBiometric (from `../../node_modules/capacitor-native-biometric`)
+  - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
+  - CapacitorSecureStoragePlugin (from `../../node_modules/capacitor-secure-storage-plugin`)
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
 SPEC REPOS:
   trunk:
     - IONGeolocationLib
+    - SwiftKeychainWrapper
 
 EXTERNAL SOURCES:
   AparajitaCapacitorBiometricAuth:
@@ -41,8 +56,12 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorApp:
     :path: "../../node_modules/@capacitor/app"
+  CapacitorCamera:
+    :path: "../../node_modules/@capacitor/camera"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorDevice:
+    :path: "../../node_modules/@capacitor/device"
   CapacitorGeolocation:
     :path: "../../node_modules/@capacitor/geolocation"
   CapacitorHaptics:
@@ -51,6 +70,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorNativeBiometric:
     :path: "../../node_modules/capacitor-native-biometric"
+  CapacitorPreferences:
+    :path: "../../node_modules/@capacitor/preferences"
+  CapacitorSecureStoragePlugin:
+    :path: "../../node_modules/capacitor-secure-storage-plugin"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
 
@@ -58,14 +81,19 @@ SPEC CHECKSUMS:
   AparajitaCapacitorBiometricAuth: 927af2690bc39fbebac98e58ce4e4d2d6178f335
   Capacitor: a162db7c9c90f383740a78e8935dff4958158b6b
   CapacitorApp: d63334c052278caf5d81585d80b21905c6f93f39
+  CapacitorCamera: 6e18d54c8ab30d7dc7b8cd93d96f9b4f57e9202a
   CapacitorCordova: 723e017d8a80ab2ede9959fbe37556c35ac860d5
+  CapacitorDevice: a50a45f0d075e55e2392c7a4be5404d4f69515de
   CapacitorGeolocation: 5583eb25815522c4b4cb38936ac7fea8a34996d9
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
   CapacitorNativeBiometric: b47637a8cd349bdac014424bb4ddcae9ee5d4919
+  CapacitorPreferences: b583b5deb74e564c35968189d25d32c0fd41200d
+  CapacitorSecureStoragePlugin: 8019bd11de7d5832a87c1bb320750dd6cef792d7
   CapacitorStatusBar: 275cbf2f4dfc00388f519ef80c7ec22edda342c9
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
+  SwiftKeychainWrapper: 807ba1d63c33a7d0613288512399cd1eda1e470c
 
-PODFILE CHECKSUM: 4beb0a3cde9fcbed17588fda3c766f9c8248de60
+PODFILE CHECKSUM: 3ccf0d5cd171756842a6bd805d5a7a2acbff6e6d
 
 COCOAPODS: 1.14.2

@@ -1,0 +1,213 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/secure/tabs/profile"
+        text="Back"
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cookies & Similar Technologies</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <section class="ion-padding" aria-labelledby="about">
+    <h2 id="about" class="ion-text-wrap">About this notice</h2>
+    <p>
+      This app uses <strong>cookies and similar technologies</strong> (for
+      example: local/device storage, app preferences, and identifiers) to
+      operate and keep you signed in. We do <strong>not</strong> use analytics,
+      advertising, or other non-essential technologies at this time.
+    </p>
+    <ion-note class="ion-text-wrap">
+      “WeRecruit”, “we”, “us” refers to WeRecruit. This notice explains what we
+      store on your device, why, and how you can control it.
+    </ion-note>
+  </section>
+
+  <ion-list inset="true" class="ion-padding-top">
+    <ion-item lines="full">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Who we are</h2>
+        <p class="ion-padding-top">
+          <strong>Controller:</strong> WeRecruit<br />
+          <strong>Contact:</strong>
+          <a href="mailto:privacy@werecruit.example"
+            >privacy&#64;werecruit.example</a
+          >
+        </p>
+        <ion-note class="ion-text-wrap">
+          Replace contact and registered address with your real details before
+          release.
+        </ion-note>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="what">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">What technologies we use</h2>
+        <p class="ion-padding-top">
+          At present, WeRecruit uses only
+          <strong>strictly necessary</strong> storage to operate the app:
+          authentication and session storage on your device. No third-party SDKs
+          are initialized.
+        </p>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="inventory">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Technology inventory</h2>
+
+        <!-- Strictly necessary -->
+        <h3 class="ion-padding-top ion-text-wrap">
+          Strictly necessary (no consent required)
+        </h3>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title
+              >Access Token (<code>access_token</code>)</ion-card-title
+            >
+            <ion-card-subtitle
+              >Purpose: Authorise API requests and keep you signed
+              in</ion-card-subtitle
+            >
+          </ion-card-header>
+          <ion-card-content>
+            <ul>
+              <li>
+                <strong>Provider:</strong> WeRecruit (first-party, stored on
+                device)
+              </li>
+              <li><strong>What is stored:</strong> Short-lived token string</li>
+              <li><strong>When it loads:</strong> After successful login</li>
+              <li>
+                <strong>Retention:</strong> Expires automatically per server
+                settings (short-lived)
+              </li>
+              <li>
+                <strong>Legal basis:</strong> Legitimate interest / performance
+                of contract
+              </li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title
+              >Refresh Token (<code>refresh_token</code>)</ion-card-title
+            >
+            <ion-card-subtitle
+              >Purpose: Obtain new access tokens without
+              re-login</ion-card-subtitle
+            >
+          </ion-card-header>
+          <ion-card-content>
+            <ul>
+              <li>
+                <strong>Provider:</strong> WeRecruit (first-party, stored on
+                device)
+              </li>
+              <li><strong>What is stored:</strong> Long-lived token string</li>
+              <li><strong>When it loads:</strong> After successful login</li>
+              <li>
+                <strong>Retention:</strong> Persists until expiry or logout
+                (duration set by server)
+              </li>
+              <li>
+                <strong>Legal basis:</strong> Legitimate interest / performance
+                of contract
+              </li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Non-essential placeholder -->
+        <h3 class="ion-padding-top ion-text-wrap">
+          Non-essential technologies
+        </h3>
+        <ion-note class="ion-text-wrap">
+          We currently do <strong>not</strong> use analytics, advertising, A/B
+          testing, or social SDKs. If this changes, we will request your consent
+          before enabling them and update this notice.
+        </ion-note>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="purposes">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Purposes</h2>
+        <p class="ion-padding-top">
+          <strong>Run the app and secure your account</strong> (authentication,
+          session management, fraud prevention, and security). No profiling or
+          advertising purposes are used at this time.
+        </p>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="managing">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Managing your choices</h2>
+        <p class="ion-padding-top">
+          Because we only use strictly necessary storage, there are currently no
+          consent toggles to manage. If we add non-essential technologies in the
+          future, you will see an in-app privacy settings screen to grant or
+          withdraw consent at any time.
+        </p>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="sharing">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Sharing and transfers</h2>
+        <p class="ion-padding-top">
+          We do not share device-stored tokens with third parties. Tokens are
+          transmitted securely to our backend only to authenticate you. We do
+          not transfer these identifiers to ad partners or analytics providers.
+        </p>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="retention">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Retention</h2>
+        <p class="ion-padding-top">
+          <strong>Access tokens</strong> expire automatically after a short
+          period. <strong>Refresh tokens</strong>
+          persist on your device until they expire or you log out, clear app
+          data, or uninstall the app.
+        </p>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="rights">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Your rights</h2>
+        <p class="ion-padding-top">
+          Depending on your location (e.g., UK GDPR), you may have rights to
+          access, correct, delete, or restrict your personal data, and to object
+          to certain processing. To exercise these rights, contact
+          <a href="mailto:privacy@werecruit.example"
+            >privacy&#64;werecruit.example</a
+          >. You may also complain to your local data protection authority.
+        </p>
+      </ion-text>
+    </ion-item>
+
+    <ion-item lines="full" id="changes">
+      <ion-text class="ion-text-wrap">
+        <h2 class="ion-text-wrap">Changes to this notice</h2>
+        <p class="ion-padding-top">
+          We may update this notice to reflect changes in our use of
+          technologies. We will update the date below and, where appropriate,
+          notify you in-app.
+        </p>
+        <p class="ion-padding-top">
+          <strong>Last updated:</strong> 18 August 2025
+        </p>
+      </ion-text>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { App } from '@capacitor/app';
 import { Router } from '@angular/router';
-import { inject } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AppStateService {
-  private inactivityTimeout: number = 10 * 60 * 1000;
+  private backgroundLogoutThreshold = 5 * 60 * 1000;
   private backgroundTimestamp: number | null = null;
   private timeoutId: ReturnType<typeof setTimeout> | null = null;
-
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   constructor() {
     App.addListener('appStateChange', ({ isActive }) => {
@@ -21,26 +21,39 @@ export class AppStateService {
     });
   }
 
-  private handleAppBackground() {
+  private handleAppBackground(): void {
     this.backgroundTimestamp = Date.now();
+    this.authService.stopTokenRefreshWatcher();
+
     this.timeoutId = setTimeout(() => {
-      this.router.navigateByUrl('/');
-    }, this.inactivityTimeout);
+      this.logoutAndRedirect('App inactive for too long.');
+    }, this.backgroundLogoutThreshold);
   }
 
-  private handleAppResume() {
+  private async handleAppResume(): Promise<void> {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
 
     if (this.backgroundTimestamp) {
-      const now = Date.now();
-      const elapsed = now - this.backgroundTimestamp;
-      if (elapsed > this.inactivityTimeout) {
-        this.router.navigateByUrl('/');
+      const elapsed = Date.now() - this.backgroundTimestamp;
+
+      if (elapsed > this.backgroundLogoutThreshold) {
+        this.logoutAndRedirect('App was backgrounded too long.');
+        return;
       }
     }
 
     this.backgroundTimestamp = null;
+
+    if (await this.authService.isLoggedIn()) {
+      this.authService.startTokenRefreshWatcher();
+    }
+  }
+
+  private logoutAndRedirect(reason: string): void {
+    console.log(`[AppStateService] Logging out: ${reason}`);
+    this.authService.logout();
+    this.router.navigateByUrl('/');
   }
 }

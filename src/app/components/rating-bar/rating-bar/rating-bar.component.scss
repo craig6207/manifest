@@ -1,0 +1,49 @@
+:host {
+  display: inline-block;
+}
+
+.rating-root {
+  --size: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating {
+  position: relative;
+  display: inline-block;
+  height: var(--size);
+  line-height: 1;
+}
+
+.stars {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min-content;
+  gap: 2px;
+  height: var(--size);
+}
+
+.stars ion-icon {
+  font-size: var(--size);
+}
+
+.base {
+  color: var(--ion-color-medium);
+}
+
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: var(--size);
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--ion-color-warning);
+  pointer-events: none;
+}
+
+.rating-text {
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+}
