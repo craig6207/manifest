@@ -1,13 +1,179 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> Tab 3 </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Job search</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content
+  [fullscreen]="true"
+  class="ion-padding"
+  fixed-slot-placement="before"
+>
+  <h2 class="section-title">Open jobs</h2>
+
+  @if (loading()) {
+  <ion-skeleton-text
+    animated
+    style="width: 70%; height: 22px"
+  ></ion-skeleton-text>
+  <ion-skeleton-text
+    animated
+    style="width: 95%; height: 18px; margin-top: 8px"
+  ></ion-skeleton-text>
+  <ion-skeleton-text
+    animated
+    style="width: 85%; height: 18px; margin-top: 8px"
+  ></ion-skeleton-text>
+  } @else if (error()) {
+  <ion-note color="danger">{{ error() }}</ion-note>
+  } @else {
+  <ion-list lines="full" class="job-list">
+    @for (job of jobs(); track job.id) {
+    <ion-item-sliding>
+      <ion-item detail="false" class="job-item">
+        <ion-label class="job-label">
+          <ion-text><h2 class="section-heading">{{ job.trade }}</h2></ion-text>
+
+          <ion-row>
+            <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+            <span
+              >{{ job.startDate | date:'EEE, d MMM' }} – {{ job.endDate |
+              date:'EEE, d MMM' }}</span
+            >
+          </ion-row>
+
+          <ion-row>
+            <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+            <span>{{ job.location || 'Within your preferred area' }}</span>
+          </ion-row>
+
+          <ion-row>
+            <span class="rate">£{{ job.payRate }}/hr</span>
+          </ion-row>
+        </ion-label>
+      </ion-item>
+      <ion-item-options>
+        <ion-item-option>Quick Apply</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    } @if (jobs().length === 0) {
+    <ion-item lines="none">
+      <ion-label
+        >No matching jobs yet. Do you want to extend your radius?</ion-label
+      >
+    </ion-item>
+    }
+  </ion-list>
+  }
+
+  <div slot="fixed" class="filter-fixed">
+    <ion-button
+      class="filter-btn"
+      color="primary"
+      (click)="openFilter()"
+      aria-label="Filter jobs"
+    >
+      <ion-icon slot="start" name="funnel-outline"></ion-icon>
+      Filter
+    </ion-button>
+  </div>
+
+  <ion-modal
+    [isOpen]="filterOpen()"
+    (didDismiss)="closeFilter()"
+    aria-label="Filter jobs"
+    class="filter-sheet"
+  >
+    <ng-template>
+      <ion-header class="sheet-toolbar">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button
+              fill="clear"
+              color="medium"
+              (click)="closeFilter()"
+              aria-label="Close"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button
+              fill="clear"
+              color="primary"
+              (click)="resetFilters()"
+              aria-label="Reset"
+            >
+              Reset
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <h1 class="sheet-title">Filter your search</h1>
+        <section class="filter-section">
+          <h2 class="section-heading">Filter by role</h2>
+          <ion-item lines="full">
+            <ion-label position="stacked">Trade subcategory</ion-label>
+            <ion-select
+              interface="popover"
+              [value]="subCategory()"
+              placeholder="Any"
+              (ionChange)="setSubCategory($any($event.detail.value))"
+            >
+              <ion-select-option [value]="''">Any</ion-select-option>
+              @for (sub of availableSubcategories(); track sub) {
+              <ion-select-option [value]="sub">{{ sub }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        </section>
+        <section class="filter-section">
+          <h2 class="section-heading">Filter by pay</h2>
+          <ion-item lines="none" class="range-header">
+            <ion-label>Min pay</ion-label>
+            <ion-note slot="end" class="range-value"
+              >£{{ minPay() ?? payMin }}/hr</ion-note
+            >
+          </ion-item>
+          <ion-range
+            class="pay-range"
+            [min]="payMin"
+            [max]="payMax"
+            [step]="1"
+            [pin]="true"
+            [value]="minPay() ?? payMin"
+            (ionChange)="setMinPay($any($event.detail.value))"
+          ></ion-range>
+        </section>
+
+        <section class="filter-section">
+          <h2 class="section-heading">Filter by dates</h2>
+          <ion-item lines="full">
+            <ion-label position="stacked">Start date</ion-label>
+            <ion-datetime
+              presentation="date"
+              [value]="startDateFrom() ?? undefined"
+              (ionChange)="setStartDateFrom($any($event.detail.value))"
+            ></ion-datetime>
+          </ion-item>
+        </section>
+        <div class="content-spacer" aria-hidden="true"></div>
+      </ion-content>
+      <ion-footer class="sheet-footer">
+        <ion-toolbar>
+          <ion-button
+            expand="block"
+            size="large"
+            class="apply-btn"
+            color="primary"
+            [disabled]="loading()"
+            (click)="applyFilters()"
+          >
+            Show jobs
+          </ion-button>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
 </ion-content>

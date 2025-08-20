@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { homeJobCountResolver } from 'src/app/resolvers/home.resolver';
 
 export const routes: Routes = [
   {
@@ -9,6 +10,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       {
         path: 'home',
+        resolve: { jobCount: homeJobCountResolver },
         loadComponent: () =>
           import('../home/home.page').then((m) => m.HomePage),
       },

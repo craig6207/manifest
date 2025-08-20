@@ -1,0 +1,67 @@
+.filter-fixed {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 30;
+}
+
+.filter-btn {
+  --border-radius: 14px;
+  --padding-start: 14px;
+  --padding-end: 14px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  font-weight: 600;
+}
+
+.filter-sheet {
+  --border-radius: 16px 16px 0 0;
+  --box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sheet-toolbar ion-toolbar {
+  --min-height: 48px;
+}
+
+.sheet-title {
+  margin: 8px 0 16px;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.filter-section {
+  margin-top: 16px;
+}
+.section-heading {
+  margin: 12px 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.range-header {
+  --inner-padding-end: 0;
+  --inner-padding-start: 0;
+
+  .range-value {
+    font-weight: 700;
+  }
+}
+
+.pay-range {
+  margin-top: 0;
+}
+
+.content-spacer {
+  height: calc(12px + env(safe-area-inset-bottom));
+}
+
+.sheet-footer ion-toolbar {
+  --padding-top: 8px;
+  --padding-bottom: calc(8px + env(safe-area-inset-bottom));
+}
+
+.apply-btn {
+  --border-radius: 12px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  font-weight: 700;
+}

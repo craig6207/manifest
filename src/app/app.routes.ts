@@ -66,4 +66,8 @@ export const routes: Routes = [
   },
 
   { path: '**', redirectTo: '' },
+  {
+    path: 'job-detail',
+    loadComponent: () => import('./pages/secure/job-search/job-detail/job-detail.page').then( m => m.JobDetailPage)
+  },
 ];

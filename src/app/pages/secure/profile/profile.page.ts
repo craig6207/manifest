@@ -23,7 +23,7 @@ import {
 import { addIcons } from 'ionicons';
 import { cameraOutline, imageOutline } from 'ionicons/icons';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
-import { RatingBarComponent } from 'src/app/components/rating-bar/rating-bar/rating-bar.component';
+import { RatingBarComponent } from 'src/app/components/rating-bar/rating-bar.component';
 import { ProfilePicService } from 'src/app/services/profile-pic/profile-pic.service';
 
 @Component({
@@ -73,7 +73,7 @@ export class ProfilePage {
     const p = this.store.profile()!;
     const fn = p.firstName ?? '';
     const ln = p.lastName ?? '';
-    return fn || ln ? `${fn} ${ln}`.trim() : 'Craig C Robertson';
+    return fn || ln ? `${fn} ${ln}`.trim() : '';
   });
 
   constructor() {
