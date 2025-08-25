@@ -10,7 +10,10 @@
       <ion-label>Timesheets</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button class="ion-tab-button-placeholder"></ion-tab-button>
+    <ion-tab-button id="open-action-sheet">
+      <ion-icon name="add-circle-outline"></ion-icon>
+      <ion-label>Actions</ion-label>
+    </ion-tab-button>
 
     <ion-tab-button tab="job-search">
       <ion-icon name="search"></ion-icon>
@@ -22,21 +25,6 @@
       <ion-label>Profile</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
-
-  <ion-fab
-    class="ion-fab-custom"
-    slot="fixed"
-    vertical="bottom"
-    horizontal="center"
-  >
-    <ion-fab-button
-      color="warning"
-      id="open-action-sheet"
-      aria-label="Quick actions"
-    >
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
   <ion-action-sheet
     trigger="open-action-sheet"
     header="Quick actions"

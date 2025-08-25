@@ -10,7 +10,14 @@ import {
   IonActionSheet,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add, home, calendar, search, person } from 'ionicons/icons';
+import {
+  add,
+  home,
+  calendar,
+  search,
+  person,
+  addCircleOutline,
+} from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import type { ActionSheetButton } from '@ionic/core';
 
@@ -20,8 +27,6 @@ import type { ActionSheetButton } from '@ionic/core';
   styleUrls: ['tabs.page.scss'],
   imports: [
     IonActionSheet,
-    IonFabButton,
-    IonFab,
     IonTabs,
     IonTabBar,
     IonTabButton,
@@ -53,6 +58,6 @@ export class TabsPage {
   ];
 
   constructor() {
-    addIcons({ home, calendar, search, person, add });
+    addIcons({ home, calendar, search, person, add, addCircleOutline });
   }
 }

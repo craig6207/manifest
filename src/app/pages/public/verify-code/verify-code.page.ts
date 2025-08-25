@@ -80,7 +80,6 @@ export class VerifyCodePage implements OnInit {
       .subscribe({
         next: async (response) => {
           await loading.dismiss();
-          console.log(response);
           this.registerStore.setUserId(response.userId);
           this.router.navigate(['/profile-setup']);
         },

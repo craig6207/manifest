@@ -94,10 +94,11 @@ export class BiometricAuthService {
 
   async isBiometricEnabled(): Promise<boolean> {
     try {
+      if (!Capacitor.isNativePlatform()) return false;
       const result = await SecureStoragePlugin.get({
         key: this.BIOMETRIC_ENABLED_KEY,
       });
-      return result.value === 'true';
+      return result?.value === 'true';
     } catch {
       return false;
     }

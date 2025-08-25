@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -24,6 +24,7 @@ import { addIcons } from 'ionicons';
 import { cameraOutline, imageOutline } from 'ionicons/icons';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { RatingBarComponent } from 'src/app/components/rating-bar/rating-bar.component';
+import { AuthService } from 'src/app/services/auth/auth.service';
 import { ProfilePicService } from 'src/app/services/profile-pic/profile-pic.service';
 
 @Component({
@@ -56,6 +57,8 @@ import { ProfilePicService } from 'src/app/services/profile-pic/profile-pic.serv
 export class ProfilePage {
   private readonly profilePicService = inject(ProfilePicService);
   private readonly store = inject(ProfileStore);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   isAvatarSheetOpen = signal(false);
   isUploading = signal(false);
@@ -111,5 +114,10 @@ export class ProfilePage {
       this.isUploading.set(false);
       this.isAvatarSheetOpen.set(false);
     }
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

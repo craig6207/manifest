@@ -14,54 +14,69 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  @if (jobPreferences()) {
-  <ion-list lines="full" class="ion-margin-top">
-    <ion-list-header>
+<ion-content [fullscreen]="true" class="job-prefs ion-padding">
+  @if (jobPreferences(); as jobPreferences) {
+  <section class="summary-card">
+    <div class="icon-badge">
+      <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+    </div>
+
+    <div class="summary">
+      <div class="name">Your job preferences</div>
+
+      <div class="meta">
+        <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+        <span>{{ jobPreferences.location }}</span>
+      </div>
+
+      <div class="badge-row">
+        <span class="pill"
+          >Radius: {{ jobPreferences.locationRadius }} miles</span
+        >
+        <span class="pill">Pay: £{{ jobPreferences.expectedPay }}/h</span>
+      </div>
+    </div>
+  </section>
+  <section class="section-card">
+    <div class="section-header">
       <h2>Location &amp; Pay</h2>
-    </ion-list-header>
+      <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>
+    </div>
 
-    <ion-item>
-      <ion-text>
-        <p>Location</p>
-        <h4>{{ jobPreferences()?.location }}</h4>
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-text>
-        <p>Distance radius</p>
-        <h4>{{ jobPreferences()?.locationRadius }} miles</h4>
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-text>
-        <p>Pay expectation</p>
-        <h4>£{{ jobPreferences()?.expectedPay }}/h</h4>
-      </ion-text>
-    </ion-item>
-  </ion-list>
-
-  <ion-list lines="full" class="ion-margin-top">
-    <ion-list-header>
+    <div class="kv">
+      <div class="kv-row">
+        <div class="kv-label">Location</div>
+        <div class="kv-value">{{ jobPreferences.location }}</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">Distance radius</div>
+        <div class="kv-value">{{ jobPreferences.locationRadius }} miles</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">Pay expectation</div>
+        <div class="kv-value">£{{ jobPreferences.expectedPay }}/h</div>
+      </div>
+    </div>
+  </section>
+  <section class="section-card">
+    <div class="section-header">
       <h2>Trade</h2>
-    </ion-list-header>
+      <ion-icon name="build-outline" aria-hidden="true"></ion-icon>
+    </div>
 
-    <ion-item>
-      <ion-text>
-        <p>Trade category</p>
-        <h4>{{ jobPreferences()?.tradeCategory }}</h4>
-      </ion-text>
-    </ion-item>
+    <div class="kv">
+      <div class="kv-row">
+        <div class="kv-label">Trade category</div>
+        <div class="kv-value">{{ jobPreferences.tradeCategory }}</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">Trade sub-category</div>
+        <div class="kv-value">{{ jobPreferences.tradeSubcategory }}</div>
+      </div>
+    </div>
+  </section>
 
-    <ion-item>
-      <ion-text>
-        <p>Trade sub-category</p>
-        <h4>{{ jobPreferences()?.tradeSubcategory }}</h4>
-      </ion-text>
-    </ion-item>
-  </ion-list>
+  <div class="bottom-spacer" aria-hidden="true"></div>
   }
 </ion-content>
 

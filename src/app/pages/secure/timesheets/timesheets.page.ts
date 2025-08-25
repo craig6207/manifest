@@ -229,7 +229,6 @@ export class TimesheetsPage {
   }
 
   openCurrentTimesheet(a: JobAssignment | null) {
-    console.log('here we are');
     if (!a) return;
     this.nav.navigateForward('/secure/tabs/timesheets-edit');
   }

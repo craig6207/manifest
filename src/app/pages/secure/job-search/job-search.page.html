@@ -27,41 +27,70 @@
   } @else if (error()) {
   <ion-note color="danger">{{ error() }}</ion-note>
   } @else {
-  <ion-list lines="full" class="job-list">
+  <ion-list class="job-list" lines="none">
     @for (job of jobs(); track job.id) {
-    <ion-item-sliding>
-      <ion-item detail="false" class="job-item">
+    <ion-item-sliding class="job-slide">
+      <ion-item
+        [button]="true"
+        detail="false"
+        class="job-card"
+        (click)="openJob(job)"
+        aria-label="Open job details"
+      >
         <ion-label class="job-label">
-          <ion-text><h2 class="section-heading">{{ job.trade }}</h2></ion-text>
+          <div class="card-header">
+            <div class="icon-badge">
+              <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+            </div>
 
-          <ion-row>
+            <div class="title-wrap">
+              <div class="title">{{ job.trade }}</div>
+              @if (job.tradeSubCategory.trim()) {
+              <div class="subtitle">{{ job.tradeSubCategory }}</div>
+              }
+            </div>
+
+            <div class="spacer"></div>
+
+            <div class="rate-badge">£{{ job.payRate }}/hr</div>
+          </div>
+          <div class="meta-row">
             <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
-            <span
-              >{{ job.startDate | date:'EEE, d MMM' }} – {{ job.endDate |
-              date:'EEE, d MMM' }}</span
-            >
-          </ion-row>
+            <span>
+              {{ job.startDate | date:'EEE, d MMM' }} – {{ job.endDate |
+              date:'EEE, d MMM' }}
+            </span>
+          </div>
 
-          <ion-row>
+          <div class="meta-row">
             <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
             <span>{{ job.location || 'Within your preferred area' }}</span>
-          </ion-row>
-
-          <ion-row>
-            <span class="rate">£{{ job.payRate }}/hr</span>
-          </ion-row>
+          </div>
         </ion-label>
+        <ion-icon
+          name="chevron-forward-outline"
+          class="chevron"
+          slot="end"
+          aria-hidden="true"
+        ></ion-icon>
       </ion-item>
-      <ion-item-options>
-        <ion-item-option>Quick Apply</ion-item-option>
+
+      <ion-item-options side="end">
+        <ion-item-option color="success" (click)="$event.stopPropagation()">
+          Quick Apply
+        </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
     } @if (jobs().length === 0) {
-    <ion-item lines="none">
-      <ion-label
-        >No matching jobs yet. Do you want to extend your radius?</ion-label
-      >
-    </ion-item>
+    <div class="empty-card">
+      <div class="empty-title">No matching jobs</div>
+      <div class="empty-text">
+        Try adjusting your filters to see more results.
+      </div>
+      <ion-button size="small" shape="round" (click)="openFilter()">
+        Update filters
+      </ion-button>
+    </div>
     }
   </ion-list>
   }

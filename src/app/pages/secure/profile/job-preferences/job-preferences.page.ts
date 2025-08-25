@@ -14,14 +14,16 @@ import {
   IonButton,
   IonIcon,
   IonContent,
-  IonList,
-  IonListHeader,
-  IonItem,
-  IonText,
   IonModal,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { createOutline } from 'ionicons/icons';
+import {
+  briefcaseOutline,
+  buildOutline,
+  createOutline,
+  locationOutline,
+  navigateOutline,
+} from 'ionicons/icons';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { UserProfile } from 'src/app/interfaces/user-profile';
 import { ProfileEditPage } from '../profile-edit/profile-edit.page';
@@ -40,10 +42,6 @@ import { ProfileEditPage } from '../profile-edit/profile-edit.page';
     IonButton,
     IonIcon,
     IonContent,
-    IonList,
-    IonListHeader,
-    IonItem,
-    IonText,
     IonModal,
     ProfileEditPage,
   ],
@@ -74,7 +72,13 @@ export class JobPreferencesPage {
   tradeSubcategories = signal<string[]>(this.SUBCATEGORY_OPTIONS);
 
   constructor() {
-    addIcons({ createOutline });
+    addIcons({
+      createOutline,
+      briefcaseOutline,
+      locationOutline,
+      navigateOutline,
+      buildOutline,
+    });
   }
 
   ionViewWillEnter(): void {

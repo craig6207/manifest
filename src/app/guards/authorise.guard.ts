@@ -10,9 +10,7 @@ function runAuthCheck(redirectTo: string) {
   const profileStore = inject(ProfileStore);
 
   const cached = profileStore.profile();
-  console.log('in the guard');
   if (cached) {
-    console.log('cached');
     return true;
   }
 

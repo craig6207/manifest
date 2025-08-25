@@ -1,5 +1,13 @@
 <ion-content [fullscreen]="true" class="home-content ion-padding">
-  <ion-text color="light"><h1>Welcome {{ firstName() }}</h1></ion-text>
+  <ion-img
+    class="logo"
+    src="/assets/img/WeRecruit_logo.svg"
+    alt="WeRecruit logo"
+  ></ion-img>
+
+  <ion-text color="primary" class="welcome">
+    <h1>Welcome {{ firstName() }}</h1>
+  </ion-text>
 
   <ion-card class="cta-card" button="true" (click)="goBrowse()">
     <ion-card-header>

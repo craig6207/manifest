@@ -65,3 +65,111 @@
   --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
   font-weight: 700;
 }
+
+.job-list {
+  background: transparent;
+  padding: 0;
+  margin: 8px 0 16px;
+}
+
+.job-slide {
+  margin-bottom: 12px;
+}
+
+ion-item.job-card {
+  --background: transparent;
+  --inner-padding-start: 14px;
+  --inner-padding-end: 12px;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+ion-item.job-card::part(native) {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+ion-item.job-card .chevron {
+  font-size: 18px;
+  color: var(--ion-color-medium);
+  opacity: 0.7;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--ion-color-primary) 12%, white);
+  color: var(--ion-color-primary);
+}
+
+.title-wrap .title {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.title-wrap .subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--ion-color-medium);
+}
+
+.rate-badge {
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 13px;
+  background: color-mix(in srgb, var(--ion-color-primary) 10%, white);
+  color: var(--ion-color-primary);
+  border: 1px solid
+    color-mix(in srgb, var(--ion-color-primary) 18%, transparent);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 2px;
+  color: var(--ion-color-medium);
+  font-size: 14px;
+
+  ion-icon {
+    font-size: 16px;
+    color: var(--ion-color-medium);
+  }
+}
+
+.empty-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  margin-top: 8px;
+
+  .empty-title {
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .empty-text {
+    color: var(--ion-color-medium);
+    margin-bottom: 10px;
+  }
+}

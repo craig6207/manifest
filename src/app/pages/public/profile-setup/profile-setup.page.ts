@@ -29,6 +29,8 @@ import {
   IonIcon,
   IonButtons,
   IonAlert,
+  IonFooter,
+  IonNote,
 } from '@ionic/angular/standalone';
 import { Geolocation } from '@capacitor/geolocation';
 import { addIcons } from 'ionicons';
@@ -46,6 +48,8 @@ import { RegisterStore } from 'src/app/+state/register-signal.store';
   styleUrls: ['./profile-setup.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    IonNote,
+    IonFooter,
     IonAlert,
     IonButtons,
     ReactiveFormsModule,
@@ -54,7 +58,6 @@ import { RegisterStore } from 'src/app/+state/register-signal.store';
     IonRange,
     IonSelect,
     IonSelectOption,
-    IonProgressBar,
     IonList,
     IonItem,
     IonLabel,
@@ -87,15 +90,17 @@ export class ProfileSetupPage implements OnInit {
   tradeCategoryOptions = ['Electrician', 'Plumber', 'Joiner', 'Bricklayer'];
   subcategoryOptions = ['Domestic', 'Commercial', 'Site Work'];
 
-  readonly progress = computed(() => this.currentStep() / this.totalSteps);
+  readonly progress = computed(() => {
+    const step = Math.max(1, Math.min(this.totalSteps, this.currentStep()));
+    const denom = Math.max(1, this.totalSteps - 1);
+    return (step - 1) / denom;
+  });
 
   public alertButtons = [
     {
       text: 'Cancel',
       role: 'cancel',
-      handler: () => {
-        console.log('Alert canceled');
-      },
+      handler: () => {},
     },
     {
       text: 'OK',
@@ -146,7 +151,6 @@ export class ProfileSetupPage implements OnInit {
   async getUserLocation(): Promise<void> {
     try {
       const permissionStatus = await Geolocation.requestPermissions();
-      console.log(permissionStatus);
       if (permissionStatus.location !== 'granted') {
         console.warn('Location permission not granted.');
         return;

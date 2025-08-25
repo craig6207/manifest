@@ -26,6 +26,7 @@ import {
   IonBackButton,
   IonToast,
   IonInputPasswordToggle,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { fingerPrintOutline, logInOutline } from 'ionicons/icons';
@@ -37,6 +38,7 @@ import { Capacitor } from '@capacitor/core';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   imports: [
+    IonImg,
     IonToast,
     IonBackButton,
     IonAlert,
@@ -145,7 +147,6 @@ export class LoginPage implements OnInit {
 
       await this.router.navigate(['/secure']);
     } catch (error: any) {
-      console.log(error);
       this.isLoading = false;
     }
   }
@@ -209,7 +210,7 @@ export class LoginPage implements OnInit {
   private async promptBiometricSetup(email: string): Promise<void> {
     try {
       const isAvailable = await this.biometricAuth.isBiometricAvailable();
-      const isEnabled = this.biometricAuth.isBiometricEnabled();
+      const isEnabled = await this.biometricAuth.isBiometricEnabled();
 
       if (isAvailable && !isEnabled) {
         const types = await this.biometricAuth.getBiometricTypes();

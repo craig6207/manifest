@@ -14,67 +14,79 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  @if (personalDetails()) {
-  <ion-list lines="full" class="ion-margin-top">
-    <ion-list-header>
+<ion-content [fullscreen]="true" class="profile-details ion-padding">
+  @if (personalDetails(); as personalDetails) {
+
+  <section class="summary-card">
+    <div class="icon-badge">
+      <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+    </div>
+    <div class="summary">
+      <div class="name">
+        {{ personalDetails.firstName }} {{ personalDetails.lastName }}
+      </div>
+      <div class="meta">
+        <ion-icon name="call-outline" aria-hidden="true"></ion-icon>
+        <span>{{ personalDetails.phoneNumber }}</span>
+      </div>
+      @if (personalDetails.sex) {
+      <div class="meta">
+        <ion-icon name="male-female-outline" aria-hidden="true"></ion-icon>
+        <span>{{ personalDetails.sex }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-header">
       <h2>Personal details</h2>
-    </ion-list-header>
+      <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+    </div>
 
-    <ion-item>
-      <ion-text>
-        <p>First Name</p>
-        <h4>{{ personalDetails()?.firstName }}</h4>
-      </ion-text>
-    </ion-item>
+    <div class="kv">
+      <div class="kv-row">
+        <div class="kv-label">First name</div>
+        <div class="kv-value">{{ personalDetails.firstName }}</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">Last name</div>
+        <div class="kv-value">{{ personalDetails.lastName }}</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">Phone number</div>
+        <div class="kv-value">{{ personalDetails.phoneNumber }}</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">Sex</div>
+        <div class="kv-value">{{ personalDetails.sex }}</div>
+      </div>
+    </div>
+  </section>
 
-    <ion-item>
-      <ion-text>
-        <p>Last Name</p>
-        <h4>{{ personalDetails()?.lastName }}</h4>
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-text>
-        <p>Phone Number</p>
-        <h4>{{ personalDetails()?.phoneNumber }}</h4>
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-text>
-        <p>Sex</p>
-        <h4>{{ personalDetails()?.sex }}</h4>
-      </ion-text>
-    </ion-item>
-  </ion-list>
-  <ion-list lines="full" class="ion-margin-top">
-    <ion-list-header>
+  <section class="section-card">
+    <div class="section-header">
       <h2>Bank &amp; Identity</h2>
-    </ion-list-header>
+      <ion-icon name="card-outline" aria-hidden="true"></ion-icon>
+    </div>
 
-    <ion-item>
-      <ion-text>
-        <p>Bank Account</p>
-        <h4>{{ personalDetails()?.bankAccountNumber }}</h4>
-      </ion-text>
-    </ion-item>
+    <div class="kv">
+      <div class="kv-row">
+        <div class="kv-label">Bank account</div>
+        <div class="kv-value">{{ personalDetails.bankAccountNumber }}</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">Sort code</div>
+        <div class="kv-value">{{ personalDetails.bankSortCode }}</div>
+      </div>
+      <div class="kv-row">
+        <div class="kv-label">NI number</div>
+        <div class="kv-value">{{ personalDetails.niNumber }}</div>
+      </div>
+    </div>
+  </section>
 
-    <ion-item>
-      <ion-text>
-        <p>Sort Code</p>
-        <h4>{{ personalDetails()?.bankSortCode }}</h4>
-      </ion-text>
-    </ion-item>
-
-    <ion-item>
-      <ion-text>
-        <p>NI Number</p>
-        <h4>{{ personalDetails()?.niNumber }}</h4>
-      </ion-text>
-    </ion-item>
-  </ion-list>
+  <div class="bottom-spacer" aria-hidden="true"></div>
   }
 </ion-content>
 

@@ -20,6 +20,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonRange,
+  IonNote,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { closeOutline, saveOutline } from 'ionicons/icons';
@@ -58,6 +59,7 @@ type SelectOptions = {
   selector: 'app-profile-edit',
   templateUrl: './profile-edit.page.html',
   imports: [
+    IonNote,
     ReactiveFormsModule,
     IonHeader,
     IonToolbar,

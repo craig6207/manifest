@@ -1,13 +1,109 @@
-<ion-header [translucent]="true">
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>My Jobs</ion-title>
+  </ion-toolbar>
+
   <ion-toolbar>
-    <ion-title>job-history</ion-title>
+    <ion-segment
+      [value]="segment()"
+      (ionChange)="onSegmentChange($any($event).detail.value)"
+    >
+      <ion-segment-button value="BOOKED">Booked</ion-segment-button>
+      <ion-segment-button value="OFFERED">Offered</ion-segment-button>
+      <ion-segment-button value="APPLIED">Applied</ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">job-history</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content
+      pullingText="Pull to refresh"
+    ></ion-refresher-content>
+  </ion-refresher>
+
+  @if (isLoading()) {
+  <ion-list>
+    @for (i of [1,2,3,4,5]; track i) {
+    <ion-item lines="full">
+      <ion-avatar slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 40px; height: 40px; border-radius: 9999px"
+        ></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <h3>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h3>
+        <p class="muted">
+          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+        </p>
+        <p class="muted">
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </p>
+      </ion-label>
+      <ion-badge slot="end"
+        ><ion-skeleton-text animated style="width: 64px"></ion-skeleton-text
+      ></ion-badge>
+    </ion-item>
+    }
+  </ion-list>
+  } @else { @if (filtered().length === 0) {
+  <div class="empty-wrap">
+    <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+    <h2 class="empty-title">
+      @switch (segment()) { @case ('BOOKED') { Your booked shifts will appear on
+      this page } @case ('OFFERED') { Job offers will appear on this page }
+      @case ('APPLIED') { Jobs you’ve applied for will appear on this page } }
+    </h2>
+    <ion-note>Browse jobs to get started.</ion-note>
+  </div>
+  } @else {
+  <ion-list lines="full">
+    @for (j of filtered(); track $index) {
+    <ion-item detail="true" (click)="openJob(j)">
+      <ion-avatar slot="start" aria-hidden="true">
+        <img ngSrc="/assets/img/briefcase.png" width="40" height="40" alt="" />
+      </ion-avatar>
+
+      <ion-label class="ion-text-wrap">
+        <h3 class="title">{{ j.title }}</h3>
+        <p class="muted">
+          <ion-icon name="business-outline" aria-hidden="true"></ion-icon>
+          {{ j.clientName }} · {{ j.location }}
+        </p>
+        <p class="muted">
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+          {{ formatRange(j.startDateUtc, j.endDateUtc) }} @if (j.nextShiftUtc &&
+          segment() === 'BOOKED') { ·
+          <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+          Next: {{ formatDateLocal(j.nextShiftUtc) }} }
+        </p>
+      </ion-label>
+
+      <ion-badge slot="end" [color]="badgeColor(j.status)"
+        >{{ labelFor(j.status) }}</ion-badge
+      >
+    </ion-item>
+    }
+  </ion-list>
+
+  <ion-infinite-scroll
+    (ionInfinite)="loadMore($event)"
+    [disabled]="!hasMore()"
+    threshold="200px"
+    position="bottom"
+  >
+    <ion-infinite-scroll-content
+      loadingText="Loading more…"
+    ></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+  } }
 </ion-content>
+
+<ion-footer class="ion-padding-bottom ion-padding-start ion-padding-end">
+  <ion-button expand="block" fill="outline" (click)="goBrowse()"
+    >Browse Jobs</ion-button
+  >
+</ion-footer>

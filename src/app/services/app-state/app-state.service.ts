@@ -52,7 +52,6 @@ export class AppStateService {
   }
 
   private logoutAndRedirect(reason: string): void {
-    console.log(`[AppStateService] Logging out: ${reason}`);
     this.authService.logout();
     this.router.navigateByUrl('/');
   }

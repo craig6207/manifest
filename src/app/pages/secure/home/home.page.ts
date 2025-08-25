@@ -10,6 +10,7 @@ import {
   IonCardTitle,
   IonCardContent,
   IonText,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { addIcons } from 'ionicons';
@@ -19,6 +20,7 @@ import { briefcaseOutline, arrowForwardOutline } from 'ionicons/icons';
   selector: 'app-home',
   standalone: true,
   imports: [
+    IonImg,
     IonText,
     IonContent,
     IonButton,

@@ -16,12 +16,10 @@ import {
   IonItem,
   IonButton,
   IonText,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonInput,
   IonInputPasswordToggle,
   IonToast,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
@@ -47,10 +45,8 @@ function strongPasswordValidator(control: any) {
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   imports: [
+    IonImg,
     IonToast,
-    IonCol,
-    IonRow,
-    IonGrid,
     IonText,
     IonButton,
     IonItem,

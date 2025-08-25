@@ -1,4 +1,12 @@
-import { Component, inject, DestroyRef, signal, computed } from '@angular/core';
+import {
+  Component,
+  inject,
+  DestroyRef,
+  signal,
+  computed,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { NavController } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { JobFilterOptions, JobListing } from 'src/app/interfaces/job-listing';
@@ -25,15 +33,14 @@ import {
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
-  IonRow,
-  IonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   calendarOutline,
   locationOutline,
-  chatbubblesOutline,
   funnelOutline,
+  briefcaseOutline,
+  chevronForwardOutline,
 } from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
 
@@ -42,8 +49,6 @@ import { DatePipe } from '@angular/common';
   templateUrl: './job-search.page.html',
   styleUrls: ['./job-search.page.scss'],
   imports: [
-    IonText,
-    IonRow,
     IonItemOption,
     IonItemOptions,
     IonItemSliding,
@@ -67,11 +72,13 @@ import { DatePipe } from '@angular/common';
     IonSelectOption,
     DatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JobSearchPage {
   private destroyRef = inject(DestroyRef);
   private profileStore = inject(ProfileStore);
   private jobListingsService = inject(JobListingsService);
+  private nav = inject(NavController);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -89,8 +96,9 @@ export class JobSearchPage {
     addIcons({
       calendarOutline,
       locationOutline,
-      chatbubblesOutline,
       funnelOutline,
+      briefcaseOutline,
+      chevronForwardOutline,
     });
   }
 
@@ -225,5 +233,11 @@ export class JobSearchPage {
       if (anyErr.message) return anyErr.message;
     }
     return 'Something went wrong. Please try again.';
+  }
+
+  openJob(job: JobListing): void {
+    this.nav.navigateForward(['secure/tabs/job-detail', job.id], {
+      state: { job },
+    });
   }
 }

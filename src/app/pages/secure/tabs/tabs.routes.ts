@@ -32,6 +32,13 @@ export const routes: Routes = [
           import('../job-search/job-search.page').then((m) => m.JobSearchPage),
       },
       {
+        path: 'job-detail/:id',
+        loadComponent: () =>
+          import('../job-search/job-detail/job-detail.page').then(
+            (m) => m.JobDetailPage
+          ),
+      },
+      {
         path: 'check-in-out',
         loadComponent: () =>
           import('../check-in-out/check-in-out.page').then(

@@ -4,20 +4,22 @@ import {
   IonContent,
   IonToolbar,
   IonTitle,
-  IonList,
-  IonItem,
   IonButtons,
   IonBackButton,
   IonModal,
-  IonListHeader,
   IonButton,
   IonIcon,
-  IonText,
 } from '@ionic/angular/standalone';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { UserProfile } from 'src/app/interfaces/user-profile';
 import { addIcons } from 'ionicons';
-import { createOutline } from 'ionicons/icons';
+import {
+  callOutline,
+  cardOutline,
+  createOutline,
+  maleFemaleOutline,
+  personOutline,
+} from 'ionicons/icons';
 import { ProfileEditPage } from '../profile-edit/profile-edit.page';
 
 @Component({
@@ -25,10 +27,8 @@ import { ProfileEditPage } from '../profile-edit/profile-edit.page';
   templateUrl: './personal-details.page.html',
   styleUrl: './personal-details.page.scss',
   imports: [
-    IonText,
     IonIcon,
     IonButton,
-    IonListHeader,
     IonModal,
     IonBackButton,
     IonButtons,
@@ -36,8 +36,6 @@ import { ProfileEditPage } from '../profile-edit/profile-edit.page';
     IonContent,
     IonToolbar,
     IonTitle,
-    IonList,
-    IonItem,
     ProfileEditPage,
   ],
 })
@@ -50,7 +48,13 @@ export class PersonalDetailsPage {
   isEditOpen = signal(false);
 
   constructor() {
-    addIcons({ createOutline });
+    addIcons({
+      createOutline,
+      personOutline,
+      callOutline,
+      maleFemaleOutline,
+      cardOutline,
+    });
   }
 
   ionViewWillEnter(): void {
