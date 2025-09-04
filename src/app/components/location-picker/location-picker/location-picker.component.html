@@ -1,0 +1,27 @@
+<div class="root">
+  <div class="search">
+    <ion-input
+      #searchInput
+      placeholder="Search a town or postcode"
+      inputmode="search"
+      [value]="searchQuery()"
+      (ionInput)="onSearch($any($event).detail?.value ?? '')"
+      aria-label="Search location"
+    >
+    </ion-input>
+  </div>
+
+  <div #mapEl class="map"></div>
+
+  @if (locationDenied()) {
+  <button class="use-loc" type="button" (click)="useMyLocation()">
+    <ion-icon name="locate"></ion-icon>
+    <span>Use my location</span>
+  </button>
+  }
+  <div class="bottom-controls">
+    <ion-button expand="block" (click)="openRadiusSheet()">
+      Set radius - {{ radiusMiles() }} miles
+    </ion-button>
+  </div>
+</div>

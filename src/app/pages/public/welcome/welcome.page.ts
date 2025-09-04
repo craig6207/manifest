@@ -17,4 +17,16 @@ import { RouterModule } from '@angular/router';
     RouterModule,
   ],
 })
-export class WelcomePage {}
+export class WelcomePage {
+  clearFocus() {
+    let el: Element | null = document.activeElement;
+    while (el && (el as any).shadowRoot?.activeElement) {
+      el = (el as any).shadowRoot.activeElement as Element;
+    }
+    (el as HTMLElement | null)?.blur?.();
+  }
+
+  ionViewWillLeave() {
+    this.clearFocus();
+  }
+}

@@ -24,9 +24,9 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { closeOutline, saveOutline } from 'ionicons/icons';
-import { UserProfile } from 'src/app/interfaces/user-profile';
+import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
 
-type FieldKey = Exclude<keyof UserProfile, 'userId'>;
+type FieldKey = Exclude<keyof CandidateProfile, 'userId'>;
 
 const PERSONAL_KEYS: FieldKey[] = [
   'firstName',
@@ -79,12 +79,12 @@ type SelectOptions = {
 })
 export class ProfileEditPage {
   isPersonalDetails = input(true);
-  value = input<Partial<UserProfile> | null>(null);
+  value = input<Partial<CandidateProfile> | null>(null);
   selectOptions = input<SelectOptions>({});
   title = input<string>('Edit profile');
   saveText = input<string>('Save');
 
-  save = output<Partial<UserProfile>>();
+  save = output<Partial<CandidateProfile>>();
   cancel = output<void>();
 
   private fb = new FormBuilder();
@@ -125,8 +125,8 @@ export class ProfileEditPage {
       this.form.markAllAsTouched();
       return;
     }
-    const raw = this.form.getRawValue() as Partial<UserProfile>;
-    const patch: Partial<UserProfile> = {};
+    const raw = this.form.getRawValue() as Partial<CandidateProfile>;
+    const patch: Partial<CandidateProfile> = {};
     for (const k of this.keys()) {
       patch[k] = raw[k] as never;
     }

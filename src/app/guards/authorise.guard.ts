@@ -2,11 +2,11 @@ import { inject } from '@angular/core';
 import { CanActivateFn, CanMatchFn, Router, UrlTree } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { ProfileStore } from '../+state/profile-signal.store';
-import { UserProfileService } from '../services/user-profile/user-profile.service';
+import { CandidateProfileService } from '../services/candidate-profile/candidate-profile.service';
 
 function runAuthCheck(redirectTo: string) {
   const router = inject(Router);
-  const profileService = inject(UserProfileService);
+  const profileService = inject(CandidateProfileService);
   const profileStore = inject(ProfileStore);
 
   const cached = profileStore.profile();

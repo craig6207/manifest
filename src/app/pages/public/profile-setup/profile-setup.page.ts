@@ -18,7 +18,6 @@ import {
   IonRange,
   IonSelect,
   IonSelectOption,
-  IonProgressBar,
   IonList,
   IonItem,
   IonLabel,
@@ -32,16 +31,24 @@ import {
   IonFooter,
   IonNote,
 } from '@ionic/angular/standalone';
-import { Geolocation } from '@capacitor/geolocation';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
-import { UserProfile } from 'src/app/interfaces/user-profile';
-import { UserProfileService } from 'src/app/services/user-profile/user-profile.service';
+import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
+import { CandidateProfileService } from 'src/app/services/candidate-profile/candidate-profile.service';
 import { LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { RegisterStore } from 'src/app/+state/register-signal.store';
-
+import { LocationPickerComponent } from 'src/app/components/location-picker/location-picker/location-picker.component';
+import { TradesService } from 'src/app/services/trades/trades.service';
+import { Trades, TradeSubcategories } from 'src/app/interfaces/trades';
+type LocationSelection = {
+  placeName: string;
+  lat: number;
+  lng: number;
+  radiusMiles: number;
+  radiusMeters: number;
+};
 @Component({
   selector: 'app-profile-setup',
   templateUrl: './profile-setup.page.html',
@@ -66,51 +73,41 @@ import { RegisterStore } from 'src/app/+state/register-signal.store';
     IonContent,
     IonTitle,
     IonIcon,
+    LocationPickerComponent,
   ],
 })
 export class ProfileSetupPage implements OnInit {
   constructor() {
-    addIcons({
-      close,
-    });
+    addIcons({ close });
   }
   private readonly fb = inject(FormBuilder);
-  private readonly profileService = inject(UserProfileService);
-  private loadingCtrl = inject(LoadingController);
-  private router = inject(Router);
-  private profileStore = inject(ProfileStore);
-  private registerStore = inject(RegisterStore);
+  private readonly profileService = inject(CandidateProfileService);
+  private readonly loadingCtrl = inject(LoadingController);
+  private readonly router = inject(Router);
+  private readonly profileStore = inject(ProfileStore);
+  private readonly registerStore = inject(RegisterStore);
+  private tradesService = inject(TradesService);
   currentStep = signal(1);
-  readonly totalSteps = 3;
-  toastOption = { color: '', message: '', show: false };
+  trades = signal<Trades[]>([]);
+  subcategories = signal<TradeSubcategories[]>([]);
+  loadingTrades = signal<boolean>(false);
+  loadingSubs = signal<boolean>(false);
+  readonly totalSteps = 4;
   personalForm!: FormGroup;
-  locationForm!: FormGroup;
+  payTradeForm!: FormGroup;
   bankForm!: FormGroup;
-
-  tradeCategoryOptions = ['Electrician', 'Plumber', 'Joiner', 'Bricklayer'];
-  subcategoryOptions = ['Domestic', 'Commercial', 'Site Work'];
-
+  private locationSel = signal<LocationSelection | null>(null);
+  locationSelected = computed(() => !!this.locationSel());
+  toastOption = { color: '', message: '', show: false };
   readonly progress = computed(() => {
     const step = Math.max(1, Math.min(this.totalSteps, this.currentStep()));
     const denom = Math.max(1, this.totalSteps - 1);
     return (step - 1) / denom;
   });
-
   public alertButtons = [
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      handler: () => {},
-    },
-    {
-      text: 'OK',
-      role: 'confirm',
-      handler: () => {
-        this.router.navigate(['/']);
-      },
-    },
+    { text: 'Cancel', role: 'cancel', handler: () => {} },
+    { text: 'OK', role: 'confirm', handler: () => this.router.navigate(['/']) },
   ];
-
   ngOnInit(): void {
     this.personalForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -121,15 +118,11 @@ export class ProfileSetupPage implements OnInit {
       ],
       sex: ['', Validators.required],
     });
-
-    this.locationForm = this.fb.group({
-      location: ['Edinburgh', Validators.required],
-      locationRadius: [20, Validators.required],
+    this.payTradeForm = this.fb.group({
       expectedPay: [25, Validators.required],
-      tradeCategory: ['', Validators.required],
-      tradeSubcategory: ['', Validators.required],
+      tradeId: [null, Validators.required],
+      tradeSubcategoryId: [null, Validators.required],
     });
-
     this.bankForm = this.fb.group({
       bankAccountNumber: [
         '',
@@ -144,66 +137,84 @@ export class ProfileSetupPage implements OnInit {
         ],
       ],
     });
-
-    this.getUserLocation();
+    this.loadTrades();
+    this.payTradeForm
+      .get('tradeId')!
+      .valueChanges.subscribe((id: number | null) => {
+        this.payTradeForm.get('tradeSubcategoryId')!.setValue(null);
+        this.subcategories.set([]);
+        if (id != null) this.loadSubcategories(id);
+      });
   }
-
-  async getUserLocation(): Promise<void> {
-    try {
-      const permissionStatus = await Geolocation.requestPermissions();
-      if (permissionStatus.location !== 'granted') {
-        console.warn('Location permission not granted.');
-        return;
-      }
-
-      const position = await Geolocation.getCurrentPosition();
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      console.log(`Latitude: ${lat}, Longitude: ${lng}`);
-    } catch (error) {
-      console.warn('Error getting location:', error);
-    }
+  onLocationSelected(sel: LocationSelection) {
+    this.locationSel.set(sel);
   }
-
   next(): void {
-    if (
-      (this.currentStep() === 1 && this.personalForm.invalid) ||
-      (this.currentStep() === 2 && this.locationForm.invalid)
-    ) {
-      this.markCurrentStepTouched();
+    const s = this.currentStep();
+    if (s === 1 && this.personalForm.invalid) {
+      this.personalForm.markAllAsTouched();
       return;
     }
-
-    if (this.currentStep() < this.totalSteps) {
-      this.currentStep.update((s) => s + 1);
+    if (s === 2 && !this.locationSel()) {
+      return;
     }
+    if (s === 3 && this.payTradeForm.invalid) {
+      this.payTradeForm.markAllAsTouched();
+      return;
+    }
+    if (s < this.totalSteps) this.currentStep.set(s + 1);
   }
-
   back(): void {
-    if (this.currentStep() > 1) {
-      this.currentStep.update((s) => s - 1);
-    }
+    if (this.currentStep() > 1) this.currentStep.update((v) => v - 1);
   }
-
+  private loadTrades() {
+    this.loadingTrades.set(true);
+    this.tradesService
+      .getTrades()
+      .subscribe({
+        next: (data) => this.trades.set(data),
+        error: () => this.trades.set([]),
+        complete: () => this.loadingTrades.set(false),
+      });
+  }
+  private loadSubcategories(tradeId: number) {
+    this.loadingSubs.set(true);
+    this.tradesService
+      .getTradeSubcategories(tradeId)
+      .subscribe({
+        next: (data) => this.subcategories.set(data),
+        error: () => this.subcategories.set([]),
+        complete: () => this.loadingSubs.set(false),
+      });
+  }
   async submit() {
-    if (this.bankForm.invalid) {
+    if (this.bankForm.invalid || !this.locationSel()) {
       this.bankForm.markAllAsTouched();
       return;
     }
-
-    const profileData: UserProfile = {
+    const tradeId = this.payTradeForm.value.tradeId as number;
+    const subId = this.payTradeForm.value.tradeSubcategoryId as number;
+    const tradeName = this.trades().find((t) => t.id === tradeId)?.name ?? '';
+    const subName =
+      this.subcategories().find((s) => s.id === subId)?.name ?? '';
+    const loc = this.locationSel()!;
+    const profileData: CandidateProfile = {
       userId: this.registerStore.userId(),
       ...this.personalForm.value,
-      ...this.locationForm.value,
+      locationName: loc.placeName || 'Custom',
+      locationLat: loc.lat,
+      locationLng: loc.lng,
+      locationRadiusMeters: loc.radiusMeters,
+      location: loc.placeName || 'Custom',
+      locationRadius: loc.radiusMiles,
+      expectedPay: this.payTradeForm.value.expectedPay,
+      tradeCategory: tradeName,
+      tradeSubcategory: subName,
       ...this.bankForm.value,
-    };
-
-    const loading = await this.loadingCtrl.create({
-      message: 'Loading...',
-    });
+      rating: 0,
+    } as CandidateProfile;
+    const loading = await this.loadingCtrl.create({ message: 'Loading...' });
     await loading.present();
-
     this.profileService.saveProfile(profileData).subscribe({
       next: async () => {
         await loading.dismiss();
@@ -222,13 +233,5 @@ export class ProfileSetupPage implements OnInit {
         this.router.navigate(['/secure']);
       },
     });
-  }
-
-  private markCurrentStepTouched(): void {
-    if (this.currentStep() === 1) {
-      this.personalForm.markAllAsTouched();
-    } else if (this.currentStep() === 2) {
-      this.locationForm.markAllAsTouched();
-    }
   }
 }

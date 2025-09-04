@@ -31,10 +31,13 @@ export class AuthService {
   }
 
   sendOtp(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${environment.apiEndpoint}/api/auth/otc`, {
-      email,
-      password,
-    });
+    return this.http.post<any>(
+      `${environment.apiEndpoint}/api/auth/otc/candidate`,
+      {
+        email,
+        password,
+      }
+    );
   }
 
   verifyCode(email: string, oneTimeCode: string): Observable<any> {
@@ -44,7 +47,7 @@ export class AuthService {
         .then((device) => {
           this.http
             .post<{ token: string; refreshToken: string }>(
-              `${environment.apiEndpoint}/api/auth/verify`,
+              `${environment.apiEndpoint}/api/auth/verify/candidate`,
               {
                 email,
                 oneTimeCode,

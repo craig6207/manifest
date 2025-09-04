@@ -25,7 +25,7 @@ import {
   navigateOutline,
 } from 'ionicons/icons';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
-import { UserProfile } from 'src/app/interfaces/user-profile';
+import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
 import { ProfileEditPage } from '../profile-edit/profile-edit.page';
 
 @Component({
@@ -93,10 +93,10 @@ export class JobPreferencesPage {
     this.isEditOpen.set(false);
   }
 
-  handleSave(patch: Partial<UserProfile>): void {
+  handleSave(patch: Partial<CandidateProfile>): void {
     const current = this.jobPreferences();
     if (!current) return;
-    const payload = { ...current, ...patch } as UserProfile;
+    const payload = { ...current, ...patch } as CandidateProfile;
 
     this.store.updateProfile(payload);
     this.isEditOpen.set(false);

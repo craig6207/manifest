@@ -11,7 +11,7 @@ export class JobListingsService {
   private http = inject(HttpClient);
 
   getForCandidate(
-    userProfileId: number,
+    candidateProfileId: number,
     options?: JobFilterOptions
   ): Observable<JobListing[]> {
     let params = new HttpParams()
@@ -27,7 +27,7 @@ export class JobListingsService {
       params = params.set('startDateFrom', options.startDateFrom);
 
     return this.http.get<JobListing[]>(
-      `${environment.apiEndpoint}/api/joblistings/candidate/${userProfileId}`,
+      `${environment.apiEndpoint}/api/joblistings/candidate/${candidateProfileId}`,
       { params }
     );
   }

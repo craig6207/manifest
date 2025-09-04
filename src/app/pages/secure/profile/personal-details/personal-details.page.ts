@@ -11,7 +11,7 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
-import { UserProfile } from 'src/app/interfaces/user-profile';
+import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
 import { addIcons } from 'ionicons';
 import {
   callOutline,
@@ -68,10 +68,10 @@ export class PersonalDetailsPage {
     this.isEditOpen.set(false);
   }
 
-  handleSave(patch: Partial<UserProfile>): void {
+  handleSave(patch: Partial<CandidateProfile>): void {
     const current = this.personalDetails();
     if (!current) return;
-    const payload = { ...current, ...patch } as UserProfile;
+    const payload = { ...current, ...patch } as CandidateProfile;
 
     this.store.updateProfile(payload);
     this.isEditOpen.set(false);

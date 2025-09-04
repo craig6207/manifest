@@ -1,13 +1,13 @@
 import { inject } from '@angular/core';
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { UserProfile } from 'src/app/interfaces/user-profile';
+import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
 import { pipe, switchMap, tap } from 'rxjs';
-import { UserProfileService } from '../services/user-profile/user-profile.service';
+import { CandidateProfileService } from '../services/candidate-profile/candidate-profile.service';
 import { tapResponse } from '@ngrx/operators';
 
 export type ProfileState = {
-  profile: UserProfile | null;
+  profile: CandidateProfile | null;
   loading: boolean;
   loaded: boolean;
   error: string;
@@ -23,8 +23,8 @@ const initialState: ProfileState = {
 export const ProfileStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, profileService = inject(UserProfileService)) => ({
-    setProfile(profile: UserProfile): void {
+  withMethods((store, profileService = inject(CandidateProfileService)) => ({
+    setProfile(profile: CandidateProfile): void {
       patchState(store, { profile, loaded: true, loading: false, error: '' });
     },
 
@@ -54,7 +54,7 @@ export const ProfileStore = signalStore(
       )
     ),
 
-    saveProfile: rxMethod<UserProfile>(
+    saveProfile: rxMethod<CandidateProfile>(
       pipe(
         tap(() => patchState(store, { loading: true, error: '' })),
         switchMap((payload) =>
@@ -77,7 +77,7 @@ export const ProfileStore = signalStore(
         )
       )
     ),
-    updateProfile: rxMethod<UserProfile>(
+    updateProfile: rxMethod<CandidateProfile>(
       pipe(
         tap(() => patchState(store, { loading: true, error: '' })),
         switchMap((payload) =>

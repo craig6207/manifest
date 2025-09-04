@@ -1,0 +1,22 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Trades, TradeSubcategories } from 'src/app/interfaces/trades';
+import { environment } from 'src/app/environment/environment';
+
+@Injectable({ providedIn: 'root' })
+export class TradesService {
+  private http = inject(HttpClient);
+
+  getTrades(): Observable<Trades[]> {
+    return this.http.get<Trades[]>(
+      `${environment.apiEndpoint}/api/reference/trades`
+    );
+  }
+
+  getTradeSubcategories(tradeId: number): Observable<TradeSubcategories[]> {
+    return this.http.get<TradeSubcategories[]>(
+      `${environment.apiEndpoint}/api/reference/trades/${tradeId}/subcategories`
+    );
+  }
+}

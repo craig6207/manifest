@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -71,6 +71,12 @@ export class RegisterPage implements OnInit {
   private router = inject(Router);
   private registerStore = inject(RegisterStore);
   private loadingCtrl = inject(LoadingController);
+
+  @ViewChild('emailInput', { static: false }) emailInput!: IonInput;
+
+  ionViewDidEnter() {
+    setTimeout(() => this.emailInput?.setFocus(), 0);
+  }
 
   ngOnInit() {
     this.signup_form = this.formBuilder.group({
