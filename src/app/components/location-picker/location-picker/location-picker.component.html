@@ -12,16 +12,4 @@
   </div>
 
   <div #mapEl class="map"></div>
-
-  @if (locationDenied()) {
-  <button class="use-loc" type="button" (click)="useMyLocation()">
-    <ion-icon name="locate"></ion-icon>
-    <span>Use my location</span>
-  </button>
-  }
-  <div class="bottom-controls">
-    <ion-button expand="block" (click)="openRadiusSheet()">
-      Set radius - {{ radiusMiles() }} miles
-    </ion-button>
-  </div>
 </div>

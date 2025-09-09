@@ -141,3 +141,8 @@
 .bottom-spacer {
   height: calc(16px + env(safe-area-inset-bottom));
 }
+
+ion-range {
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+}

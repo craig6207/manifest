@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnDestroy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import {
   IonHeader,
@@ -22,10 +22,14 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { cameraOutline, imageOutline } from 'ionicons/icons';
+import { firstValueFrom } from 'rxjs';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { RatingBarComponent } from 'src/app/components/rating-bar/rating-bar.component';
 import { AuthService } from 'src/app/services/auth/auth.service';
-import { ProfilePicService } from 'src/app/services/profile-pic/profile-pic.service';
+import {
+  ProfilePicService,
+  UploadImageResponse,
+} from 'src/app/services/profile-pic/profile-pic.service';
 
 @Component({
   selector: 'app-profile',
@@ -54,7 +58,7 @@ import { ProfilePicService } from 'src/app/services/profile-pic/profile-pic.serv
     RatingBarComponent,
   ],
 })
-export class ProfilePage {
+export class ProfilePage implements OnDestroy {
   private readonly profilePicService = inject(ProfilePicService);
   private readonly store = inject(ProfileStore);
   private readonly authService = inject(AuthService);
@@ -64,13 +68,14 @@ export class ProfilePage {
   isUploading = signal(false);
   toastMsg = signal('');
 
+  private currentAvatarUrl: string | null = null;
+
   avatarSrc = signal<string>(
     'https://ionicframework.com/docs/img/demos/avatar.svg'
   );
+  lastUpload = signal<UploadImageResponse | null>(null);
 
-  rating = computed(() => {
-    return this.store.profile()?.rating;
-  });
+  rating = computed(() => this.store.profile()?.rating);
 
   displayName = computed(() => {
     const p = this.store.profile()!;
@@ -81,6 +86,17 @@ export class ProfilePage {
 
   constructor() {
     addIcons({ cameraOutline, imageOutline });
+  }
+
+  ionViewWillEnter() {
+    this.loadAvatarFromServer();
+  }
+
+  ngOnDestroy(): void {
+    if (this.currentAvatarUrl) {
+      URL.revokeObjectURL(this.currentAvatarUrl);
+      this.currentAvatarUrl = null;
+    }
   }
 
   openAvatarSheet(): void {
@@ -102,11 +118,16 @@ export class ProfilePage {
     try {
       this.isUploading.set(true);
       const blob = await this.profilePicService.getPhotoFrom(source);
+      const previewUrl = URL.createObjectURL(blob);
+      this.setAvatarUrl(previewUrl);
+      const resp = await firstValueFrom(
+        this.profilePicService.uploadPhoto(null, blob)
+      );
+      this.lastUpload.set(resp);
 
-      const localUrl = URL.createObjectURL(blob);
-      this.avatarSrc.set(localUrl);
+      this.loadAvatarFromServer();
 
-      this.toastMsg.set('Profile photo updated');
+      this.toastMsg.set('Profile photo uploaded');
     } catch (err) {
       console.error('Avatar update failed', err);
       this.toastMsg.set('Could not update photo');
@@ -114,6 +135,23 @@ export class ProfilePage {
       this.isUploading.set(false);
       this.isAvatarSheetOpen.set(false);
     }
+  }
+
+  private loadAvatarFromServer(): void {
+    this.profilePicService.getMyPhotoBlob().subscribe({
+      next: (blob) => {
+        if (!blob || blob.size === 0) return;
+        const url = URL.createObjectURL(blob);
+        this.setAvatarUrl(url);
+      },
+      error: () => {},
+    });
+  }
+
+  private setAvatarUrl(url: string) {
+    if (this.currentAvatarUrl) URL.revokeObjectURL(this.currentAvatarUrl);
+    this.currentAvatarUrl = url;
+    this.avatarSrc.set(url);
   }
 
   logout() {

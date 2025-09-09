@@ -1,18 +1,20 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="secondary">
-      <ion-button id="close-profile" aria-label="Close setup">
+      <ion-button (click)="presentExitAlert()" aria-label="Close setup">
         <ion-icon slot="icon-only" name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-alert
-      trigger="close-profile"
-      header="Leave profile setup?"
-      message="You cannot access the app until you complete the profile setup. You can finish it next time you log in. Still want to leave?"
-      [buttons]="alertButtons"
-    >
-    </ion-alert>
-    <ion-title>Profile Setup</ion-title>
+    @if (currentStep() === 2) {
+    <ion-buttons slot="primary">
+      <ion-button
+        [attr.aria-label]="'Use my location'"
+        (click)="onUseMyLocationClick()"
+      >
+        <ion-icon slot="icon-only" name="locate"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    } <ion-title>Profile Setup</ion-title>
   </ion-toolbar>
   <div class="progress-container ion-padding-horizontal ion-padding-vertical">
     <div class="progress-stack">
@@ -28,7 +30,6 @@
     </div>
   </div>
 </ion-header>
-<!-- IMPORTANT: only one ion-content on the page -->
 <ion-content class="setup-content ion-padding" [scrollY]="currentStep() !== 2">
   @if (currentStep() === 1) {
   <form id="personalForm" [formGroup]="personalForm" (ngSubmit)="next()">
@@ -42,8 +43,7 @@
             placeholder="First name"
             formControlName="firstName"
             required
-          >
-          </ion-input>
+          ></ion-input>
         </ion-item>
         <ion-item>
           <ion-input
@@ -52,8 +52,7 @@
             placeholder="Surname"
             formControlName="lastName"
             required
-          >
-          </ion-input>
+          ></ion-input>
         </ion-item>
         <ion-item>
           <ion-input
@@ -63,8 +62,7 @@
             placeholder="0700 111 2222"
             formControlName="phoneNumber"
             required
-          >
-          </ion-input>
+          ></ion-input>
         </ion-item>
         <ion-item>
           <ion-select
@@ -96,56 +94,44 @@
     <section class="section-card form-card">
       <div class="section-header"><h2>Pay &amp; trade</h2></div>
       <ion-list lines="none" class="form-list">
-        <ion-item class="range-item">
-          <div class="range-header">
-            <ion-label>Pay expectation </ion-label>
-            <ion-note slot="end">
-              £{{ payTradeForm.get('expectedPay')?.value }} / h
-            </ion-note>
-          </div>
+        <ion-item lines="none" class="range-header-item">
+          <ion-label>Pay expectation</ion-label>
+          <ion-note slot="end"
+            >£{{ payTradeForm.get('expectedPay')?.value }} / h</ion-note
+          >
+        </ion-item>
+
+        <ion-item lines="none">
           <ion-range
-            aria-label="Pay Expectation"
+            [attr.aria-label]="'Pay Expectation'"
             formControlName="expectedPay"
             min="5"
             max="100"
             step="1"
-          ></ion-range>
-        </ion-item>
-        <ion-item>
-          <ion-select
-            label="Trade"
-            labelPlacement="stacked"
-            formControlName="tradeId"
-            interface="popover"
-            justify="start"
-            [disabled]="loadingTrades()"
+            ><ion-text slot="start">£0</ion-text>
+            <ion-text slot="end">£100</ion-text></ion-range
           >
-            @if (loadingTrades()) {
-            <ion-select-option [value]="null" disabled
-              >Loading…</ion-select-option
-            >
-            } @else { @for (t of trades(); track t.id) {
-            <ion-select-option [value]="t.id">{{ t.name }}</ion-select-option> }
-            }
-          </ion-select>
         </ion-item>
-        <ion-item>
-          <ion-select
-            label="Trade sub-category"
-            labelPlacement="stacked"
-            formControlName="tradeSubcategoryId"
-            interface="popover"
-            justify="start"
-            [disabled]="loadingSubs() || !subcategories().length"
-          >
-            @if (loadingSubs()) {
-            <ion-select-option [value]="null" disabled
-              >Loading…</ion-select-option
-            >
-            } @else { @for (s of subcategories(); track s.id) {
-            <ion-select-option [value]="s.id">{{ s.name }}</ion-select-option> }
+        <ion-item button detail="true" (click)="openModal('trade')">
+          <ion-label>
+            <h3>Trade</h3>
+            @if (payTradeForm.get('tradeId')?.value) {
+            <p>{{ selectedTradeName() }}</p>
             }
-          </ion-select>
+          </ion-label>
+        </ion-item>
+        <ion-item
+          button
+          detail="true"
+          (click)="openModal('subcategories')"
+          [disabled]="!subcategories().length"
+        >
+          <ion-label>
+            <h3>Trade sub-categories</h3>
+            @if (selectedSubcatNames().length) {
+            <p>{{selectedSubcatNames()}}</p>
+            }
+          </ion-label>
         </ion-item>
       </ion-list>
     </section>
@@ -161,8 +147,7 @@
             labelPlacement="stacked"
             placeholder="Account number"
             formControlName="bankAccountNumber"
-          >
-          </ion-input>
+          ></ion-input>
         </ion-item>
         <ion-item>
           <ion-input
@@ -170,8 +155,7 @@
             labelPlacement="stacked"
             placeholder="Sort code"
             formControlName="bankSortCode"
-          >
-          </ion-input>
+          ></ion-input>
         </ion-item>
         <ion-item>
           <ion-input
@@ -179,8 +163,7 @@
             labelPlacement="stacked"
             placeholder="NI number"
             formControlName="niNumber"
-          >
-          </ion-input>
+          ></ion-input>
         </ion-item>
       </ion-list>
     </section>
@@ -199,15 +182,21 @@
       >Next</ion-button
     >
     } @else if (currentStep() === 2) {
+    <ion-button
+      expand="block"
+      class="ion-margin-bottom"
+      (click)="onOpenRadiusClick()"
+    >
+      Set radius - {{ selectedRadiusMiles() }} miles
+    </ion-button>
     <div class="cta-row">
       <ion-button
         class="ghost-btn"
         fill="outline"
         color="primary"
         (click)="back()"
+        >Back</ion-button
       >
-        Back
-      </ion-button>
       <ion-button
         class="primary-btn"
         (click)="next()"
@@ -222,9 +211,8 @@
         fill="outline"
         color="primary"
         (click)="back()"
+        >Back</ion-button
       >
-        Back
-      </ion-button>
       <ion-button
         class="primary-btn"
         (click)="next()"
@@ -239,9 +227,8 @@
         fill="outline"
         color="primary"
         (click)="back()"
+        >Back</ion-button
       >
-        Back
-      </ion-button>
       <ion-button
         class="primary-btn"
         [disabled]="bankForm.invalid"

@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()" [attr.aria-label]="'Close'"
+        >Cancel</ion-button
+      >
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="light">
+  <ion-list [inset]="true">
+    @for (item of items; track $index) {
+    <ion-item button detail="false" (click)="toggle(item.id)">
+      <ion-checkbox
+        slot="start"
+        [checked]="isChecked(item.id)"
+        [attr.aria-labelledby]="'lbl-' + item.id"
+        (click)="$event.stopPropagation(); toggle(item.id)"
+      ></ion-checkbox>
+      <ion-label [id]="'lbl-' + item.id">{{ item.name }}</ion-label>
+    </ion-item>
+    }
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar class="cta-toolbar">
+    <div class="cta-row">
+      <ion-button
+        class="ghost-btn"
+        fill="outline"
+        color="primary"
+        (click)="cancel()"
+        >Cancel</ion-button
+      >
+      <ion-button class="primary-btn" [disabled]="!valid()" (click)="confirm()"
+        >Confirm</ion-button
+      >
+    </div>
+  </ion-toolbar>
+</ion-footer>

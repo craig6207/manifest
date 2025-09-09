@@ -10,12 +10,11 @@ import {
   OnInit,
   OnDestroy,
   inject,
+  effect,
 } from '@angular/core';
-import { IonInput, IonButton, IonIcon } from '@ionic/angular/standalone';
-import { ActionSheetController, Platform } from '@ionic/angular';
+import { IonInput, IonButton } from '@ionic/angular/standalone';
+import { ActionSheetController } from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
-import { addIcons } from 'ionicons';
-import { locate } from 'ionicons/icons';
 import { environment } from 'src/app/environment/environment';
 
 export type LocationSelection = {
@@ -29,16 +28,12 @@ export type LocationSelection = {
 @Component({
   selector: 'app-location-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonIcon, IonInput, IonButton],
+  imports: [IonInput],
   templateUrl: './location-picker.component.html',
   styleUrls: ['./location-picker.component.scss'],
   host: { class: 'location-picker' },
 })
 export class LocationPickerComponent implements OnInit, OnDestroy {
-  constructor() {
-    addIcons({ locate });
-  }
-
   initialLat = input<number | null>(null);
   initialLng = input<number | null>(null);
   initialPlace = input<string>('');
@@ -67,6 +62,17 @@ export class LocationPickerComponent implements OnInit, OnDestroy {
   private radiusMeters = computed(() =>
     Math.round(this.radiusMiles() * 1609.344)
   );
+
+  private radiusSync = effect(() => {
+    const c = this.circle();
+    const m = this.map();
+    const r = this.radiusMeters();
+
+    if (!c || !m) return;
+    c.setRadius(r);
+    this.fitCircle();
+    this.emitSelection();
+  });
 
   private actionSheet = inject(ActionSheetController);
 
@@ -109,6 +115,7 @@ export class LocationPickerComponent implements OnInit, OnDestroy {
       streetViewControl: false,
       gestureHandling: 'greedy',
       mapId: environment.googleMapsMapId,
+      disableDefaultUI: true,
     });
     this.map.set(map);
     this.centerLatLng.set(start);
@@ -184,7 +191,9 @@ export class LocationPickerComponent implements OnInit, OnDestroy {
       buttons: [
         ...options.map((m) => ({
           text: `${m} miles`,
-          handler: () => this.radiusMiles.set(m),
+          handler: () => {
+            this.radiusMiles.set(m);
+          },
         })),
         { text: 'Cancel', role: 'cancel' },
       ],

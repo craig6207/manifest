@@ -1,0 +1,13 @@
+.cta-toolbar {
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+.cta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.primary-btn,
+.ghost-btn {
+  width: 100%;
+}
