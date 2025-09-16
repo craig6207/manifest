@@ -1,0 +1,130 @@
+.hero {
+  padding: 16px;
+  display: grid;
+  gap: 6px;
+
+  .role {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  .client {
+    color: var(--ion-color-medium);
+    font-size: 0.95rem;
+  }
+}
+
+.pill-groups {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  @media (min-width: 420px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .group {
+    display: grid;
+    gap: 6px;
+  }
+
+  .subhead {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    color: var(--ion-color-medium);
+    text-transform: uppercase;
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.pill.neutral {
+  background: var(--ion-color-step-150, #eceff3);
+  color: var(--ion-color-medium);
+}
+
+.pill.pay {
+  --color: #fff;
+}
+
+.kv {
+  margin: 8px 12px 0;
+  border-radius: 12px;
+  background: var(--ion-color-step-100, #f6f7f9);
+  padding: 8px 12px;
+
+  .row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    column-gap: 12px;
+    padding: 10px 2px;
+    align-items: baseline;
+    border-bottom: 1px solid var(--ion-color-step-150, #eceff3);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .k {
+    color: var(--ion-color-medium);
+    font-size: 0.85rem;
+  }
+
+  .v {
+    font-size: 0.95rem;
+  }
+}
+
+.card {
+  margin: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--ion-color-step-100, #f6f7f9);
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .project {
+    white-space: pre-wrap;
+    margin: 0;
+    color: var(--ion-color-dark);
+  }
+}
+
+.btns {
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.error {
+  color: var(--ion-color-danger);
+  padding: 16px;
+}

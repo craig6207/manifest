@@ -2,7 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/app/environment/environment';
-import { JobFilterOptions, JobListing } from 'src/app/interfaces/job-listing';
+import {
+  JobFilterOptions,
+  JobListing,
+  JobListingView,
+} from 'src/app/interfaces/job-listing';
 
 @Injectable({
   providedIn: 'root',
@@ -54,5 +58,11 @@ export class JobListingsService {
         { params }
       )
       .pipe(map((r) => r.count));
+  }
+
+  getById(jobListingId: number): Observable<JobListingView> {
+    return this.http.get<JobListingView>(
+      `${environment.apiEndpoint}/api/joblistings/${jobListingId}`
+    );
   }
 }

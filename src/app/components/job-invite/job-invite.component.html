@@ -1,0 +1,106 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Job details</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (loading()) {
+  <div class="skeleton">
+    <ion-skeleton-text
+      animated
+      style="width: 60%; height: 20px"
+    ></ion-skeleton-text>
+    <ion-skeleton-text
+      animated
+      style="width: 90%; height: 16px"
+    ></ion-skeleton-text>
+    <ion-skeleton-text
+      animated
+      style="width: 80%; height: 16px"
+    ></ion-skeleton-text>
+  </div>
+  } @if (!loading() && job()) {
+  <section class="hero">
+    <h2 class="role">{{ jobTitle() }}</h2>
+    @if (clientName()) {
+    <div class="client">{{ clientName() }}</div>
+    }
+
+    <section class="pill-groups">
+      @if (hours().length) {
+      <div class="group">
+        <h3 class="subhead">Hours</h3>
+        <div class="chips">
+          @for (h of hours(); track h) {
+          <span class="pill neutral">{{ h }}</span>
+          }
+        </div>
+      </div>
+      }
+      <div class="group">
+        <h3 class="subhead">Pay</h3>
+        <div class="chips">
+          <ion-badge color="primary" class="pill pay">{{
+            payText()
+          }}</ion-badge>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <section class="kv">
+    <div class="row">
+      <div class="k">Location</div>
+      <div class="v">{{ locationText() }}</div>
+    </div>
+
+    @if (hasDates()) {
+    <div class="row">
+      <div class="k">Dates</div>
+      <div class="v">
+        @if (startDateText()) { Start:
+        {{ startDateText() | date : "mediumDate" }} } @if (endDateText()) { ·
+        End: {{ endDateText() | date : "mediumDate" }} }
+      </div>
+    </div>
+    }
+  </section>
+
+  @if (job()?.projectInfo) {
+  <section class="card">
+    <h3>Project</h3>
+    <p class="project">{{ job()?.projectInfo }}</p>
+  </section>
+  } } @if (!loading() && error()) {
+  <div class="error">{{ error() }}</div>
+  }
+</ion-content>
+
+<ion-footer class="ion-padding">
+  <div class="btns">
+    <ion-button
+      expand="block"
+      color="success"
+      [disabled]="actioning()"
+      (click)="accept()"
+    >
+      Accept
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      color="danger"
+      fill="outline"
+      [disabled]="actioning()"
+      (click)="decline()"
+    >
+      Not Interested
+    </ion-button>
+  </div>
+</ion-footer>

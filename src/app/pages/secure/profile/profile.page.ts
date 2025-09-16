@@ -19,6 +19,7 @@ import {
   IonRow,
   IonGrid,
   IonCol,
+  IonBadge,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { cameraOutline, imageOutline } from 'ionicons/icons';
@@ -36,6 +37,7 @@ import {
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
   imports: [
+    IonBadge,
     IonCol,
     IonGrid,
     IonRow,
@@ -63,6 +65,7 @@ export class ProfilePage implements OnDestroy {
   private readonly store = inject(ProfileStore);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private profileStore = inject(ProfileStore);
 
   isAvatarSheetOpen = signal(false);
   isUploading = signal(false);
@@ -82,6 +85,12 @@ export class ProfilePage implements OnDestroy {
     const fn = p.firstName ?? '';
     const ln = p.lastName ?? '';
     return fn || ln ? `${fn} ${ln}`.trim() : '';
+  });
+
+  unreadCount = computed(() => this.profileStore.unreadNotificationCount());
+  unreadBadgeText = computed(() => {
+    const n = this.unreadCount();
+    return n > 99 ? '99+' : `${n}`;
   });
 
   constructor() {

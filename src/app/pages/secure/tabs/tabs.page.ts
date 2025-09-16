@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonTabs,
   IonTabBar,
@@ -8,6 +8,7 @@ import {
   IonFab,
   IonFabButton,
   IonActionSheet,
+  IonBadge,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -20,12 +21,14 @@ import {
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import type { ActionSheetButton } from '@ionic/core';
+import { ProfileStore } from 'src/app/+state/profile-signal.store';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
   imports: [
+    IonBadge,
     IonActionSheet,
     IonTabs,
     IonTabBar,
@@ -36,6 +39,8 @@ import type { ActionSheetButton } from '@ionic/core';
 })
 export class TabsPage {
   private readonly nav = inject(NavController);
+  private profileStore = inject(ProfileStore);
+  unreadCount = computed(() => this.profileStore.unreadNotificationCount());
   public readonly actionSheetButtons: ReadonlyArray<ActionSheetButton> = [
     {
       text: 'Check in / out',

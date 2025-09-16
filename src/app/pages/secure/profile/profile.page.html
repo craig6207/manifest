@@ -72,6 +72,10 @@
       routerDirection="forward"
     >
       <ion-label>Notifications</ion-label>
+
+      @if (unreadCount() > 0) {
+      <ion-badge slot="end" color="danger"> {{ unreadBadgeText() }} </ion-badge>
+      }
     </ion-item>
     <ion-item
       button

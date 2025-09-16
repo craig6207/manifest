@@ -20,14 +20,19 @@
       <ion-label>Job search</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="profile">
+    <ion-tab-button tab="profile" class="tab-with-badge">
       <ion-icon name="person"></ion-icon>
       <ion-label>Profile</ion-label>
+      @if (unreadCount() > 0) {
+      <ion-badge color="danger">{{ unreadCount() }}</ion-badge>
+      }
     </ion-tab-button>
   </ion-tab-bar>
+
   <ion-action-sheet
     trigger="open-action-sheet"
     header="Quick actions"
     [buttons]="actionSheetButtons"
-  ></ion-action-sheet>
+  >
+  </ion-action-sheet>
 </ion-tabs>

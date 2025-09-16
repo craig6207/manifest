@@ -20,3 +20,8 @@ export type JobFilterOptions = {
   minPay?: number;
   startDateFrom?: string;
 };
+
+export interface JobListingView extends JobListing {
+  clientId?: number;
+  clientName?: string;
+}
