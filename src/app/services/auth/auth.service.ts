@@ -257,7 +257,6 @@ export class AuthService {
     this.removeSecureItem('access_token');
     this.removeSecureItem('refresh_token');
     this.stopTokenRefreshWatcher();
-    this.biometricAuth.clearBiometricData();
   }
 
   async getAccessToken(): Promise<string | null> {

@@ -102,6 +102,7 @@
       expand="block"
       size="large"
       class="apply-btn"
+      [disabled]="!jobListing() || applying()"
       (click)="applyNow()"
     >
       Apply now

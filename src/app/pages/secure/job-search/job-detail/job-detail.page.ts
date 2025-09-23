@@ -30,6 +30,9 @@ import {
 } from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
 import { JobListing } from 'src/app/interfaces/job-listing';
+import { JobPipelineService } from 'src/app/services/job-pipeline/job-pipeline.service';
+import { ProfileStore } from 'src/app/+state/profile-signal.store';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-job-detail',
@@ -53,6 +56,12 @@ import { JobListing } from 'src/app/interfaces/job-listing';
 })
 export class JobDetailPage {
   private router = inject(Router);
+  private pipeline = inject(JobPipelineService);
+  private profileStore = inject(ProfileStore);
+
+  readonly applying = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly success = signal<string | null>(null);
 
   constructor() {
     addIcons({
@@ -72,11 +81,12 @@ export class JobDetailPage {
     if (stateJob) {
       this.jobListing.set(stateJob);
     } else {
-      // TODO (optional): Fallback load by id when direct-linking/refreshing
+      // TODO (optional): fallback load-by-id if you route with :id
       // const id = Number(this.route.snapshot.paramMap.get('id'));
       // this.loadById(id);
     }
   }
+
   readonly jobListing = signal<JobListing | null>(null);
   readonly title = computed(() => this.jobListing()?.trade ?? '');
   readonly subcat = computed(() => this.jobListing()?.tradeSubCategory ?? '');
@@ -92,7 +102,39 @@ export class JobDetailPage {
   );
   readonly desc = computed(() => this.jobListing()?.projectInfo ?? '');
 
-  applyNow(): void {
-    console.log('Apply for', this.jobListing()?.id);
+  private get candidateId(): number | null {
+    const p = this.profileStore.profile();
+    return p?.candidateId ?? null;
+  }
+
+  async applyNow(): Promise<void> {
+    this.error.set(null);
+    this.success.set(null);
+
+    const jobId = this.jobListing()?.id ?? null;
+    const candId = this.candidateId;
+
+    if (!jobId || !candId) {
+      this.error.set('Missing job or candidate details.');
+      return;
+    }
+
+    const payload = {
+      jobListingId: jobId,
+      candidateId: candId,
+      action: 'accept' as const,
+    };
+
+    this.applying.set(true);
+    try {
+      await firstValueFrom(this.pipeline.respondToInvite(payload));
+      this.success.set("Thanks! We've let the client know you’re interested.");
+      setTimeout(() => this.router.navigate(['/secure/tabs/job-search']), 600);
+    } catch (e: any) {
+      console.error(e);
+      this.error.set(e?.error?.message ?? 'Could not apply for this job.');
+    } finally {
+      this.applying.set(false);
+    }
   }
 }
