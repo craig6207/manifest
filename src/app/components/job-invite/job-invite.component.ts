@@ -23,14 +23,13 @@ import { ModalController } from '@ionic/angular';
 import { JobListingsService } from 'src/app/services/job-listings/job-listings.service';
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
-import { NotificationsService } from 'src/app/services/notification/notification.service';
 import { Notification } from 'src/app/interfaces/notification';
 import { JobListingView } from 'src/app/interfaces/job-listing';
 import { JobPipelineService } from 'src/app/services/job-pipeline/job-pipeline.service';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 
 @Component({
-  selector: 'app-job-invite-modal',
+  selector: 'app-job-invite',
   standalone: true,
   imports: [
     IonIcon,
@@ -50,7 +49,7 @@ import { ProfileStore } from 'src/app/+state/profile-signal.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JobInviteComponent {
-  private modal = inject(ModalController);
+  private modalCtrl = inject(ModalController);
   private jobs = inject(JobListingsService);
   private pipeline = inject(JobPipelineService);
   private profileStore = inject(ProfileStore);
@@ -140,6 +139,6 @@ export class JobInviteComponent {
   }
 
   async dismiss(data?: any) {
-    await this.modal.dismiss(data);
+    await this.modalCtrl.dismiss(data);
   }
 }

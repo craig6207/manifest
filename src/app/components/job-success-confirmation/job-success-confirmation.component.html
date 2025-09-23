@@ -1,0 +1,134 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>You're in!</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (loading()) {
+  <div class="skeleton">
+    <ion-skeleton-text
+      animated
+      style="width: 60%; height: 20px"
+    ></ion-skeleton-text>
+    <ion-skeleton-text
+      animated
+      style="width: 85%; height: 16px"
+    ></ion-skeleton-text>
+    <ion-skeleton-text
+      animated
+      style="width: 70%; height: 16px"
+    ></ion-skeleton-text>
+  </div>
+  } @else if (error()) {
+  <div class="error">{{ error() }}</div>
+  } @else {
+  <section class="hero">
+    <div class="icon">
+      <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+    </div>
+    <h2 class="title">Success, {{ candidateName() }}!</h2>
+
+    <p class="lede">
+      You've been <strong>confirmed</strong> for this job. @if (startDateText())
+      {
+      <ng-container>
+        You'll start on
+        <strong>{{ startDateText() | date : "fullDate" }}</strong
+        >.
+      </ng-container>
+      }
+    </p>
+
+    <ion-note color="medium">
+      {{ headlineNote() }}
+    </ion-note>
+  </section>
+
+  <form [formGroup]="form" novalidate>
+    <section class="card">
+      <h3 class="card-title">Payment details</h3>
+      <ion-note color="medium" class="mb-2">{{ paymentCardLead() }}</ion-note>
+
+      <ion-list inset="true" class="form-list">
+        <ion-item lines="full">
+          <ion-label position="stacked">Sort code</ion-label>
+          <ion-input
+            placeholder="12-34-56"
+            inputmode="numeric"
+            formControlName="bankSortCode"
+            fill="outline"
+            [class.is-invalid]="
+              f.bankSortCode.invalid && f.bankSortCode.touched
+            "
+          >
+          </ion-input>
+        </ion-item>
+        @if (f.bankSortCode.invalid && f.bankSortCode.touched) {
+        <ion-note color="danger" class="hint"
+          >Enter a valid UK sort code (e.g. 12-34-56).</ion-note
+        >
+        }
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Account number</ion-label>
+          <ion-input
+            placeholder="8 digits"
+            inputmode="numeric"
+            maxlength="8"
+            formControlName="bankAccountNumber"
+            fill="outline"
+            [class.is-invalid]="
+              f.bankAccountNumber.invalid && f.bankAccountNumber.touched
+            "
+          >
+          </ion-input>
+        </ion-item>
+        @if (f.bankAccountNumber.invalid && f.bankAccountNumber.touched) {
+        <ion-note color="danger" class="hint"
+          >Enter an 8-digit account number.</ion-note
+        >
+        }
+      </ion-list>
+    </section>
+
+    <section class="card">
+      <h3 class="card-title">National Insurance</h3>
+      <ion-note color="medium" class="mb-2">{{ niCardLead() }}</ion-note>
+
+      <ion-list inset="true" class="form-list">
+        <ion-item lines="full">
+          <ion-label position="stacked">NI number</ion-label>
+          <ion-input
+            placeholder="QQ123456C"
+            formControlName="niNumber"
+            maxlength="9"
+            fill="outline"
+            [class.is-invalid]="f.niNumber.invalid && f.niNumber.touched"
+          >
+          </ion-input>
+        </ion-item>
+        @if (f.niNumber.invalid && f.niNumber.touched) {
+        <ion-note color="danger" class="hint"
+          >Enter a valid NI number (e.g. QQ123456C).</ion-note
+        >
+        }
+      </ion-list>
+    </section>
+  </form>
+  }
+  <ion-button
+    class="ion-padding"
+    expand="block"
+    color="success"
+    [disabled]="!canSubmit()"
+    (click)="confirm()"
+  >
+    Confirm & continue
+  </ion-button>
+</ion-content>

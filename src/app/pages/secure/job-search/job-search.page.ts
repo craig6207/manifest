@@ -41,6 +41,7 @@ import {
   funnelOutline,
   briefcaseOutline,
   chevronForwardOutline,
+  closeOutline,
 } from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
 
@@ -94,6 +95,7 @@ export class JobSearchPage {
 
   constructor() {
     addIcons({
+      closeOutline,
       calendarOutline,
       locationOutline,
       funnelOutline,

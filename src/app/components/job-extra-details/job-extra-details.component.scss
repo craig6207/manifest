@@ -1,0 +1,89 @@
+.hero {
+  padding: 16px;
+  display: grid;
+  gap: 6px;
+
+  .role {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  .client {
+    color: var(--ion-color-medium);
+    font-size: 0.95rem;
+  }
+}
+
+.info-list {
+  margin-top: 4px;
+
+  .title {
+    margin: 0 0 4px;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    color: var(--ion-color-medium);
+    text-transform: uppercase;
+  }
+
+  .value {
+    font-size: 0.95rem;
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+.pill.neutral {
+  background: var(--ion-color-step-150, #eceff3);
+  color: var(--ion-color-medium);
+}
+
+.card {
+  margin: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--ion-color-step-100, #f6f7f9);
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .project {
+    white-space: pre-wrap;
+    margin: 0;
+    color: var(--ion-color-dark);
+  }
+}
+
+.btns {
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.error {
+  color: var(--ion-color-danger);
+  padding: 16px;
+}

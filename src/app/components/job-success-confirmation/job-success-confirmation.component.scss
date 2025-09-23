@@ -1,0 +1,188 @@
+:host {
+  display: block;
+}
+
+ion-content {
+  --background: var(--ion-color-step-50, #f7f8fa);
+}
+
+.hero {
+  padding: 20px 16px 10px;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 10px;
+
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ion-color-success) 12%, transparent);
+    color: var(--ion-color-success);
+
+    ion-icon {
+      font-size: 32px;
+    }
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--ion-color-dark);
+  }
+
+  .lede {
+    margin: 0;
+    font-size: 0.98rem;
+    color: var(--ion-color-medium);
+  }
+
+  ion-note {
+    margin-top: 2px;
+  }
+}
+
+.card,
+.confirm-card {
+  margin: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--ion-color-step-100, #f1f3f5);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%), 0 4px 16px rgb(0 0 0 / 4%);
+
+  .card-title {
+    margin: 2px 2px 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ion-color-dark);
+  }
+
+  .mb-2 {
+    display: block;
+    margin: 0 2px 8px;
+  }
+}
+
+.form-list {
+  --ion-item-background: transparent;
+
+  ion-item {
+    --padding-start: 8px;
+    --inner-padding-end: 8px;
+    --highlight-height: 2px;
+    --highlight-color-focused: var(--ion-color-primary);
+
+    ion-label {
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+    }
+
+    ion-input {
+      margin-top: 6px;
+      --padding-start: 10px;
+      --padding-end: 10px;
+      --border-radius: 10px;
+      --background: #fff;
+      --color: var(--ion-color-dark);
+      --highlight-color-valid: var(--ion-color-primary);
+    }
+
+    ion-input.is-invalid {
+      --highlight-color-focused: var(--ion-color-danger);
+      --highlight-color-invalid: var(--ion-color-danger);
+      --border-color: var(--ion-color-danger);
+    }
+  }
+}
+
+.hint {
+  display: block;
+  margin: 6px 8px 0 8px;
+  font-size: 0.8rem;
+}
+
+.confirm-card {
+  ion-item {
+    --padding-start: 8px;
+    --inner-padding-end: 8px;
+    --background: transparent;
+    align-items: center;
+
+    ion-label {
+      font-size: 0.95rem;
+      color: var(--ion-color-dark);
+    }
+
+    ion-checkbox,
+    ion-input[type="checkbox"] {
+      margin-left: auto;
+    }
+  }
+}
+
+.skeleton {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.error {
+  margin: 16px;
+  padding: 12px;
+  color: var(--ion-color-danger);
+  background: color-mix(in srgb, var(--ion-color-danger) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ion-color-danger) 20%, transparent);
+  border-radius: 10px;
+}
+
+.btns {
+  display: grid;
+  gap: 10px;
+}
+
+ion-footer {
+  --background: var(--ion-color-step-50, #f7f8fa);
+  box-shadow: 0 -6px 20px rgb(0 0 0 / 6%);
+}
+
+@media (max-width: 380px) {
+  .card,
+  .confirm-card {
+    margin: 10px 8px;
+    padding: 10px;
+  }
+
+  .hero {
+    padding-left: 12px;
+    padding-right: 12px;
+
+    .title {
+      font-size: 1.15rem;
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  ion-content {
+    --background: var(--ion-color-step-50, #0f1114);
+  }
+
+  .card,
+  .confirm-card {
+    background: var(--ion-color-step-150, #161a20);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 6px 24px rgb(0 0 0 / 25%);
+  }
+
+  .form-list ion-item ion-input {
+    --background: var(--ion-color-step-200, #111418);
+  }
+
+  .error {
+    background: color-mix(in srgb, var(--ion-color-danger) 15%, transparent);
+    border-color: color-mix(in srgb, var(--ion-color-danger) 35%, transparent);
+  }
+}

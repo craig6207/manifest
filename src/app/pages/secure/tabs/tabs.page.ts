@@ -18,6 +18,7 @@ import {
   search,
   person,
   addCircleOutline,
+  closeOutline,
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import type { ActionSheetButton } from '@ionic/core';
@@ -63,6 +64,14 @@ export class TabsPage {
   ];
 
   constructor() {
-    addIcons({ home, calendar, search, person, add, addCircleOutline });
+    addIcons({
+      home,
+      calendar,
+      search,
+      person,
+      add,
+      addCircleOutline,
+      closeOutline,
+    });
   }
 }

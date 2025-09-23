@@ -24,4 +24,11 @@ export class NotificationsService {
       { params: { page, pageSize, unreadOnly, includeData } as any }
     );
   }
+
+  markAsRead(id: string) {
+    return this.http.post(
+      `${environment.apiEndpoint}/api/notifications/${id}/read`,
+      {}
+    );
+  }
 }

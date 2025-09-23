@@ -286,6 +286,7 @@ export class TimesheetsEditPage {
   readonly dummy = this.fb.group({});
 
   constructor() {
+    addIcons({ closeOutline });
     effect(() => {
       const startISO = toISODateMidnight(this.weekStart());
       this.loadWeek(startISO);

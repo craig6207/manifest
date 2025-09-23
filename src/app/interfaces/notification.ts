@@ -22,8 +22,16 @@ export interface NotificationListResponse {
   pageSize: number;
 }
 
-export interface InviteResponse {
+export interface CandidateResponse {
   jobListingId: number;
   candidateId: number;
   action: 'accept' | 'decline';
+}
+
+export interface CandidateConfirmApplyRequest {
+  jobListingId: number;
+  candidateId: number;
+  bankSortCode: string;
+  bankAccountNumber: string;
+  niNumber: string;
 }

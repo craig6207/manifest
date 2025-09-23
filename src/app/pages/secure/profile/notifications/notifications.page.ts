@@ -5,7 +5,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -37,6 +36,9 @@ import {
 import { NotificationsService } from 'src/app/services/notification/notification.service';
 import { Notification } from 'src/app/interfaces/notification';
 import { JobInviteComponent } from 'src/app/components/job-invite/job-invite.component';
+import { JobExtraDetailsComponent } from 'src/app/components/job-extra-details/job-extra-details.component';
+import { JobSuccessConfirmationComponent } from 'src/app/components/job-success-confirmation/job-success-confirmation.component';
+import { ProfileStore } from 'src/app/+state/profile-signal.store';
 
 @Component({
   selector: 'app-notifications',
@@ -69,6 +71,7 @@ import { JobInviteComponent } from 'src/app/components/job-invite/job-invite.com
 export class NotificationsPage {
   private notificationService = inject(NotificationsService);
   private modal = inject(ModalController);
+  private profileStore = inject(ProfileStore);
 
   items = signal<Notification[]>([]);
   loading = signal<boolean>(true);
@@ -108,7 +111,7 @@ export class NotificationsPage {
     const unreadOnly = false;
 
     this.notificationService
-      .getNotificationsList(page, pageSize, unreadOnly, false)
+      .getNotificationsList(page, pageSize, unreadOnly, true)
       .subscribe({
         next: (res) => {
           this.items.set(res.items ?? []);
@@ -135,18 +138,110 @@ export class NotificationsPage {
   }
 
   async open(notification: Notification) {
-    if (!notification.jobListingId) return;
+    if (!notification.isRead && notification.id) {
+      this.notificationService.markAsRead(notification.id).subscribe({
+        next: () => {
+          this.markReadLocally(notification.id!);
+          this.decrementUnreadCountOnce();
+        },
+        error: (e) => console.warn('Failed to mark as read', e),
+      });
+    }
 
-    const modal = await this.modal.create({
-      component: JobInviteComponent,
-      componentProps: { notification, jobListingId: notification.jobListingId },
-    });
+    const type = (notification.type ?? '').toLowerCase();
 
-    await modal.present();
-    const { data } = await modal.onDidDismiss();
+    if (type === 'job_connection_request') {
+      if (!notification.jobListingId) return;
+      const modal = await this.modal.create({
+        component: JobInviteComponent,
+        componentProps: {
+          notification,
+          jobListingId: notification.jobListingId,
+        },
+      });
+      await modal.present();
+      const { data } = await modal.onDidDismiss();
+      if (data?.action || data?.refresh) this.refresh();
+      return;
+    }
 
-    if (data?.action) {
-      this.refresh();
+    if (type === 'job_details_shared') {
+      const modal = await this.modal.create({
+        component: JobExtraDetailsComponent,
+        componentProps: {
+          notification,
+          jobListingId: notification.jobListingId ?? null,
+        },
+      });
+      await modal.present();
+      const { data } = await modal.onDidDismiss();
+      if (data?.refresh) this.refresh();
+      return;
+    }
+
+    if (type === 'client_placement_decision' || type === 'placement_response') {
+      const action = this.extractAction(notification);
+      if (action === 'accept') {
+        const jobListingId =
+          notification.jobListingId ?? this.extractJobId(notification);
+        const modal = await this.modal.create({
+          component: JobSuccessConfirmationComponent,
+          componentProps: {
+            notification,
+            jobListingId,
+            action,
+          },
+        });
+        await modal.present();
+        const { data } = await modal.onDidDismiss();
+        if (data?.refresh) this.refresh();
+      }
+      return;
+    }
+  }
+
+  private markReadLocally(id: string) {
+    const next = this.items().map((n) =>
+      n.id === id ? { ...n, isRead: true, readAt: new Date().toISOString() } : n
+    );
+    this.items.set(next);
+  }
+
+  private decrementUnreadCountOnce() {
+    this.profileStore.loadUnreadNotificationCount();
+  }
+
+  private extractAction(n: Notification): string | null {
+    const raw = n.data ?? '';
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      const p = parsed?.payload ?? {};
+      const a =
+        p?.clientPlacementDecision?.action ??
+        p?.placementResponse?.action ??
+        p?.jobConnectionResponse?.action ??
+        null;
+      return typeof a === 'string' ? a.toLowerCase().trim() : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractJobId(n: Notification): number | null {
+    const raw = n.data ?? '';
+    if (!raw) return n.jobListingId ?? null;
+    try {
+      const parsed = JSON.parse(raw);
+      const p = parsed?.payload ?? {};
+      const fromKnown =
+        p?.clientPlacementDecision?.jobListingId ??
+        p?.placementResponse?.jobListingId ??
+        p?.job?.jobListingId ??
+        null;
+      return n.jobListingId ?? fromKnown ?? null;
+    } catch {
+      return n.jobListingId ?? null;
     }
   }
 
