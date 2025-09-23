@@ -128,7 +128,7 @@ export class JobDetailPage {
     this.applying.set(true);
     try {
       await firstValueFrom(this.pipeline.respondToInvite(payload));
-      this.success.set("Thanks! We've let the client know you’re interested.");
+      this.success.set("Thanks! We've let the client know you're interested.");
       setTimeout(() => this.router.navigate(['/secure/tabs/job-search']), 600);
     } catch (e: any) {
       console.error(e);
