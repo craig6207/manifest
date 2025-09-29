@@ -152,10 +152,6 @@ export class ProfileSetupPage implements OnInit {
     this.personalForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      phoneNumber: [
-        '',
-        [Validators.required, Validators.pattern(/^\+?\d{10,}$/)],
-      ],
       sex: ['', Validators.required],
     });
 
@@ -325,6 +321,7 @@ export class ProfileSetupPage implements OnInit {
     const loc = this.locationSel()!;
     const profileData: CandidateProfile = {
       userId: this.registerStore.userId(),
+      phoneNumber: this.registerStore.phoneNumber(),
       ...this.personalForm.value,
       locationName: loc.placeName || 'Custom',
       locationLat: loc.lat,

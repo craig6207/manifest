@@ -1,13 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary" class="ion-no-border">
-    <ion-buttons slot="start">
-      <ion-back-button
-        text="Back"
-        defaultHref="/"
-        aria-label="Go back to welcome page"
-      ></ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
+  <ion-toolbar color="primary" class="ion-no-border"> </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="auth-content">
@@ -88,17 +80,27 @@
         translucent="true"
         backdropDismiss="false"
       ></ion-loading>
-
-      <ion-button
-        color="primary"
-        fill="clear"
-        expand="block"
-        class="ion-button-small ion-margin-top-medium"
-        routerLink="/password-reset"
-      >
-        Forgot password?
-      </ion-button>
     </form>
+    <ion-button
+      type="button"
+      color="primary"
+      fill="clear"
+      expand="block"
+      class="ion-button-small ion-margin-top-medium"
+      (click)="goToForgottenPassword()"
+    >
+      Forgot password?
+    </ion-button>
+    <ion-button
+      type="button"
+      color="primary"
+      fill="clear"
+      expand="block"
+      class="ion-button-small ion-margin-top-medium"
+      (click)="goToRegister()"
+    >
+      Register
+    </ion-button>
   </section>
   <ion-toast
     [isOpen]="toastOption.show"

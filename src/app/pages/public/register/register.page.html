@@ -2,7 +2,7 @@
   <ion-toolbar color="primary" class="ion-no-border">
     <ion-buttons slot="start">
       <ion-back-button
-        text="Back"
+        text="Back to login"
         defaultHref="/"
         aria-label="Go back to welcome page"
       ></ion-back-button>
@@ -27,6 +27,7 @@
       class="form-default"
     >
       <ion-list lines="none" class="form-list">
+        <!-- Email -->
         <ion-item class="field">
           <ion-input
             #emailInput
@@ -38,9 +39,9 @@
             autocapitalize="off"
             autocomplete="email"
             inputmode="email"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
-
         @if (signup_form.get('email')!.invalid &&
         (signup_form.get('email')!.touched || submit_attempt)) { @if
         (signup_form.get('email')!.errors?.['required']) {
@@ -48,6 +49,7 @@
         } @if (signup_form.get('email')!.errors?.['email']) {
         <div class="error">Please enter a valid email.</div>
         } }
+
         <ion-item class="field ion-margin-top">
           <ion-input
             label="Password"
@@ -60,7 +62,6 @@
             <ion-input-password-toggle slot="end"></ion-input-password-toggle>
           </ion-input>
         </ion-item>
-
         @if (signup_form.get('password')!.invalid &&
         (signup_form.get('password')!.touched || submit_attempt)) { @if
         (signup_form.get('password')!.errors?.['strongPassword']) {
@@ -69,11 +70,12 @@
           number.
         </div>
         } }
+
         <ion-item class="field ion-margin-top">
           <ion-input
             label="Repeat Password"
             labelPlacement="stacked"
-            formControlName="password_repeat"
+            formControlName="passwordRepeat"
             type="password"
             placeholder="Repeat your password"
             autocomplete="new-password"
@@ -81,12 +83,43 @@
             <ion-input-password-toggle slot="end"></ion-input-password-toggle>
           </ion-input>
         </ion-item>
-
-        @if (signup_form.get('password_repeat')!.invalid &&
-        (signup_form.get('password_repeat')!.touched || submit_attempt)) { @if
-        (signup_form.get('password_repeat')!.errors?.['required']) {
+        @if (signup_form.get('passwordRepeat')!.invalid &&
+        (signup_form.get('passwordRepeat')!.touched || submit_attempt)) { @if
+        (signup_form.get('passwordRepeat')!.errors?.['required']) {
         <div class="error">Please repeat your password.</div>
         } }
+
+        <ion-item class="field ion-margin-top">
+          <ion-select
+            label="Country"
+            labelPlacement="stacked"
+            formControlName="countryIso2"
+            interface="popover"
+            aria-label="Select country calling code"
+          >
+            @for (c of countries; track c.iso2) {
+            <ion-select-option [value]="c.iso2">
+              {{ c.name }} ({{ c.dialCode }})
+            </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item class="field ion-margin-top">
+          <ion-input
+            label="Mobile number"
+            labelPlacement="stacked"
+            formControlName="phoneLocal"
+            type="tel"
+            inputmode="tel"
+            placeholder="e.g. 07123 456789 (UK) or 1234567890"
+          >
+          </ion-input>
+        </ion-item>
+        @if (signup_form.get('phoneLocal')!.invalid &&
+        (signup_form.get('phoneLocal')!.touched || submit_attempt)) {
+        <div class="error">Please enter digits only (6–15).</div>
+        }
       </ion-list>
 
       <ion-button
@@ -107,7 +140,8 @@
         duration="4000"
         keyboardClose="true"
         (didDismiss)="setToast()"
-      ></ion-toast>
+      >
+      </ion-toast>
     </form>
 
     <div class="fine-print">

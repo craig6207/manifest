@@ -2,11 +2,7 @@ import { Routes } from '@angular/router';
 import { authoriseCanMatch } from './guards/authorise.guard';
 
 export const routes: Routes = [
-  {
-    path: '',
-    loadComponent: () =>
-      import('./pages/public/welcome/welcome.page').then((m) => m.WelcomePage),
-  },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'login',
     loadComponent: () =>
@@ -63,6 +59,20 @@ export const routes: Routes = [
     canMatch: [authoriseCanMatch],
     loadChildren: () =>
       import('./pages/secure/tabs/tabs.routes').then((m) => m.routes),
+  },
+  {
+    path: 'forgotten-password',
+    loadComponent: () =>
+      import('./pages/public/forgotten-password/forgotten-password.page').then(
+        (m) => m.ForgottenPasswordPage
+      ),
+  },
+  {
+    path: 'new-password',
+    loadComponent: () =>
+      import('./pages/public/new-password/new-password.page').then(
+        (m) => m.NewPasswordPage
+      ),
   },
 
   { path: '**', redirectTo: '' },

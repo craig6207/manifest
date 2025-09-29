@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
-  IonButtons,
   IonButton,
   IonContent,
   IonList,
@@ -23,7 +22,6 @@ import {
   IonSpinner,
   IonLoading,
   IonAlert,
-  IonBackButton,
   IonToast,
   IonInputPasswordToggle,
   IonImg,
@@ -40,7 +38,6 @@ import { Capacitor } from '@capacitor/core';
   imports: [
     IonImg,
     IonToast,
-    IonBackButton,
     IonAlert,
     IonLoading,
     IonIcon,
@@ -51,7 +48,6 @@ import { Capacitor } from '@capacitor/core';
     IonList,
     IonContent,
     IonButton,
-    IonButtons,
     IonToolbar,
     IonHeader,
     IonInputPasswordToggle,
@@ -268,5 +264,13 @@ export class LoginPage implements OnInit {
       message: '',
       show: false,
     };
+  }
+
+  goToRegister() {
+    this.router.navigate(['/register']);
+  }
+
+  goToForgottenPassword() {
+    this.router.navigate(['/forgotten-password']);
   }
 }

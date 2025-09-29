@@ -30,13 +30,41 @@ export class AuthService {
     await SecureStoragePlugin.remove({ key });
   }
 
-  sendOtp(email: string, password: string): Observable<any> {
+  sendOtp(
+    email: string,
+    password: string,
+    phoneNumber: string
+  ): Observable<any> {
     return this.http.post<any>(
       `${environment.apiEndpoint}/api/auth/otc/candidate`,
       {
         email,
         password,
+        phoneNumber,
       }
+    );
+  }
+
+  requestPasswordResetOtp(email: string) {
+    return this.http.post(
+      `${environment.apiEndpoint}/api/auth/otc/candidate/password`,
+      {
+        email,
+      }
+    );
+  }
+
+  verifyPasswordResetCode(email: string, code: string) {
+    return this.http.post(
+      `${environment.apiEndpoint}/api/auth/password/verify`,
+      { email, oneTimeCode: code }
+    );
+  }
+
+  completePasswordReset(email: string, code: string, newPassword: string) {
+    return this.http.post(
+      `${environment.apiEndpoint}/api/auth/password/reset`,
+      { email, oneTimeCode: code, newPassword }
     );
   }
 
@@ -149,7 +177,6 @@ export class AuthService {
         return { success: false, error: 'REAUTH_REQUIRED' };
       }
 
-      this.biometricAuth.clearBiometricData();
       return {
         success: false,
         error:
@@ -207,7 +234,25 @@ export class AuthService {
 
       this.startTokenRefreshWatcher();
       return true;
-    } catch (error) {
+    } catch (error: any) {
+      const status = error?.status;
+      const msg =
+        error?.error?.errors?.[0] ??
+        error?.error?.message ??
+        error?.message ??
+        '';
+
+      const revoked =
+        status === 401 ||
+        String(msg).toLowerCase().includes('revoked') ||
+        String(msg).toLowerCase().includes('expired');
+
+      if (revoked) {
+        try {
+          await this.biometricAuth.clearBiometricData();
+        } catch {}
+      }
+
       console.error('Token refresh failed:', error);
       this.logout();
       return false;
