@@ -8,7 +8,6 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonButtons,
   IonButton,
   IonContent,
   IonRefresher,
@@ -141,7 +140,6 @@ export class JobHistoryPage {
   onSegmentChange(val: Segment) {
     this.segment.set(val);
     if (!this.isLoading() && this.filtered().length === 0 && this.hasMore()) {
-      // you could pre-filter server-side by status here
     }
   }
 
@@ -202,7 +200,6 @@ export class JobHistoryPage {
     }
   }
 
-  // ===== Replace with real API calls (keyset pagination is ideal) =====
   private async fetchPage(cursor: string | null): Promise<Page<CandidateJobs>> {
     await new Promise((r) => setTimeout(r, 400));
     const base = cursor ? Number(cursor) : 0;

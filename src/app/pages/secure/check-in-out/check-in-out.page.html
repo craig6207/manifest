@@ -1,13 +1,91 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>check-in-out</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ titleText() }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">check-in-out</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<!-- Add a class to ion-content for styling -->
+<ion-content [fullscreen]="true" class="centered ion-padding">
+  <!-- IMPORTANT: refresher must be a direct child of ion-content -->
+  <ion-refresher slot="fixed" (ionRefresh)="pullRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Everything else stays the same below -->
+  @if (loading()) {
+  <div class="skeleton-wrap">
+    <ion-skeleton-text
+      [animated]="true"
+      style="width: 60%; height: 20px"
+    ></ion-skeleton-text>
+    <ion-skeleton-text
+      [animated]="true"
+      style="width: 40%; height: 20px; margin-top: 8px"
+    ></ion-skeleton-text>
+  </div>
+  } @if (!loading() && error()) {
+  <div class="banner error">
+    <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+    <span>{{ error() }}</span>
+  </div>
+  } @if (!loading() && !error() && !active()) {
+  <div class="empty">
+    <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+    <div>No assignment to check in today.</div>
+    <div class="hint">Pull to refresh if you were just assigned.</div>
+  </div>
+  } @if (!loading() && !error() && active()) {
+  <section class="hero">
+    <div class="meta">
+      <div class="title">Job #{{ active()!.jobListingId }}</div>
+      <div class="sub">Work date • {{ toLocalDate(active()!.workDate) }}</div>
+    </div>
+
+    <button
+      class="action-circle"
+      [class.busy]="busy()"
+      [disabled]="busy() || loading() || (!active()!.canCheckIn && !active()!.canCheckOut)"
+      (click)="active()!.canCheckIn ? onCheckInFancy(active()!) : onCheckOutFancy(active()!)"
+    >
+      <div class="ring"></div>
+      <div class="label">
+        @if (active()!.canCheckIn) {
+        <ion-icon name="log-in-outline" aria-hidden="true"></ion-icon>
+        <span>Check in</span>
+        } @else if (active()!.canCheckOut) {
+        <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+        <span>Check out</span>
+        } @else {
+        <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+        <span>All done</span>
+        }
+      </div>
+    </button>
+
+    <div class="links">
+      <ion-button
+        fill="clear"
+        routerLink="/secure/tabs/timesheets"
+        size="small"
+      >
+        View timesheets
+      </ion-button>
+    </div>
+  </section>
+  } @if (successMsg()) {
+  <div class="success-overlay" (click)="dismissSuccess()">
+    <div class="success-card">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+      <h3>{{ successMsg() }}</h3>
+      <p>Head to <strong>Timesheets</strong> to review or edit your hours.</p>
+      <ion-button
+        color="light"
+        size="small"
+        routerLink="/secure/tabs/timesheets"
+      >
+        Open timesheets
+      </ion-button>
+    </div>
+  </div>
+  }
 </ion-content>

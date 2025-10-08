@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/secure/tabs/timesheets"></ion-back-button>
+    </ion-buttons>
     <ion-title>Timesheets</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -94,14 +97,6 @@
       </ion-item>
 
       <div class="entries">
-        <div
-          class="entry-row"
-          [class.single]="entryCtrlCount(dayCtrl) === 1"
-          formArrayName="entries"
-          [formGroup]="dummy"
-          style="display: none"
-        ></div>
-
         @for (entryCtrl of entryControls(dayCtrl); let i = $index; track i) {
         <div class="entry-row">
           <ion-item>
@@ -140,7 +135,7 @@
     </ion-list>
 
     <div class="edit-actions">
-      <ion-button expand="block" (click)="submitForApproval()">
+      <ion-button expand="block" (click)="openReasonAlert()">
         <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
         Submit for approval
       </ion-button>
@@ -149,4 +144,13 @@
   }
 
   <div style="height: 24px"></div>
+  <ion-alert
+    [isOpen]="isAlertOpen()"
+    header="Submit edits"
+    subHeader="Optional reason"
+    message="Add a short reason for your timesheet changes (optional)."
+    [inputs]="alertInputs"
+    [buttons]="alertButtons"
+    (didDismiss)="isAlertOpen.set(false)"
+  ></ion-alert>
 </ion-content>

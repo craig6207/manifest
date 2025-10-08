@@ -40,7 +40,7 @@
 
   @if (hasHistory()) {
   <ion-list inset="true">
-    @for (a of history(); track a.jobId) {
+    @for (a of history(); track a.jobListingId) {
     <ion-item button detail="false" (click)="openHistoricalTimesheet(a)">
       <ion-icon
         slot="start"

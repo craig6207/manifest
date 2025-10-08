@@ -5,11 +5,10 @@ import {
   IonTabButton,
   IonIcon,
   IonLabel,
-  IonFab,
-  IonFabButton,
-  IonActionSheet,
   IonBadge,
 } from '@ionic/angular/standalone';
+import { NavController, ActionSheetController } from '@ionic/angular';
+import type { ActionSheetButton } from '@ionic/core';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -20,48 +19,22 @@ import {
   addCircleOutline,
   closeOutline,
 } from 'ionicons/icons';
-import { NavController } from '@ionic/angular';
-import type { ActionSheetButton } from '@ionic/core';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
+import { TimesheetStore } from 'src/app/+state/timesheet-signal.store';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
-  imports: [
-    IonBadge,
-    IonActionSheet,
-    IonTabs,
-    IonTabBar,
-    IonTabButton,
-    IonIcon,
-    IonLabel,
-  ],
+  imports: [IonBadge, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
 })
 export class TabsPage {
   private readonly nav = inject(NavController);
-  private profileStore = inject(ProfileStore);
+  private readonly actionSheet = inject(ActionSheetController);
+  private readonly profileStore = inject(ProfileStore);
+  private readonly timesheetStore = inject(TimesheetStore);
+
   unreadCount = computed(() => this.profileStore.unreadNotificationCount());
-  public readonly actionSheetButtons: ReadonlyArray<ActionSheetButton> = [
-    {
-      text: 'Check in / out',
-      handler: () => this.nav.navigateForward('secure/tabs/check-in-out'),
-    },
-    {
-      text: 'Job history',
-      handler: () => this.nav.navigateForward('secure/tabs/job-history'),
-    },
-    {
-      text: 'Certificate management',
-      handler: () =>
-        this.nav.navigateForward('secure/tabs/certificate-management'),
-    },
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      icon: 'close-outline',
-    },
-  ];
 
   constructor() {
     addIcons({
@@ -73,5 +46,36 @@ export class TabsPage {
       addCircleOutline,
       closeOutline,
     });
+    this.timesheetStore.loadToday();
+  }
+
+  async openActions() {
+    this.timesheetStore.refresh();
+
+    const canAct = this.timesheetStore.hasActionAvailable();
+
+    const buttons: ActionSheetButton[] = [
+      {
+        text: 'Check in / out',
+        disabled: !canAct,
+        handler: () => this.nav.navigateForward('secure/tabs/check-in-out'),
+      },
+      {
+        text: 'Job history',
+        handler: () => this.nav.navigateForward('secure/tabs/job-history'),
+      },
+      {
+        text: 'Certificate management',
+        handler: () =>
+          this.nav.navigateForward('secure/tabs/certificate-management'),
+      },
+      { text: 'Cancel', role: 'cancel', icon: 'close-outline' },
+    ];
+
+    const sheet = await this.actionSheet.create({
+      header: 'Quick actions',
+      buttons,
+    });
+    await sheet.present();
   }
 }

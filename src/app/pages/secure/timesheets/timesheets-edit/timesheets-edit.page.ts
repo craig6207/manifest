@@ -25,6 +25,9 @@ import {
   IonDatetimeButton,
   IonModal,
   IonInput,
+  IonButtons,
+  IonBackButton,
+  IonAlert,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -44,6 +47,14 @@ import {
   FormGroup,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
+import { TimesheetService } from 'src/app/services/timesheet/timesheet.service';
+import {
+  TimesheetWeek as TimesheetWeekDto,
+  TimesheetDay as TimesheetDayDto,
+  TimesheetAdjustmentCreateRequest,
+} from 'src/app/interfaces/timesheets';
+import { ActivatedRoute } from '@angular/router';
 
 addIcons({
   chevronBackOutline,
@@ -62,61 +73,15 @@ interface TimesheetEntry {
   checkIn: string;
   checkOut: string | null;
 }
-interface TimesheetDay {
+interface TimesheetDayVM {
   dateISO: string;
   entries: TimesheetEntry[];
 }
-interface TimesheetWeek {
+interface TimesheetWeekVM {
   weekStartISO: string;
   weekEndISO: string;
   status: WeekStatus;
-  days: TimesheetDay[];
-}
-
-class TimesheetService {
-  async getWeek(weekStartISO: string): Promise<TimesheetWeek> {
-    // TODO: replace with REST call
-    const start = new Date(weekStartISO);
-    const days = [...Array(7)].map((_, i) => {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      d.setHours(0, 0, 0, 0);
-      return d;
-    });
-
-    const today = new Date();
-    const isSameWeek =
-      start.getFullYear() === startOfWeek(today).getFullYear() &&
-      start.getTime() === startOfWeek(today).getTime();
-
-    const sample: TimesheetDay[] = days.map((d, i) => {
-      const dateISO = d.toISOString();
-      if (isSameWeek && i === 0) {
-        // Monday: 07:30 - 16:00
-        const ci = setTime(d, 7, 30).toISOString();
-        const co = setTime(d, 16, 0).toISOString();
-        return { dateISO, entries: [{ checkIn: ci, checkOut: co }] };
-      }
-      if (isSameWeek && i === 1) {
-        // Tuesday: checked in only
-        const ci = setTime(d, 7, 30).toISOString();
-        return { dateISO, entries: [{ checkIn: ci, checkOut: null }] };
-      }
-      return { dateISO, entries: [] };
-    });
-
-    return {
-      weekStartISO,
-      weekEndISO: addDays(start, 6).toISOString(),
-      status: 'Open',
-      days: sample,
-    };
-  }
-
-  async submit(payload: TimesheetWeek): Promise<void> {
-    // TODO: POST submit endpoint
-    await delay(400);
-  }
+  days: TimesheetDayVM[];
 }
 
 function startOfWeek(d: Date): Date {
@@ -129,7 +94,8 @@ function startOfWeek(d: Date): Date {
 }
 function endOfWeek(d: Date): Date {
   const s = startOfWeek(d);
-  const e = addDays(s, 6);
+  const e = new Date(s);
+  e.setDate(s.getDate() + 6);
   e.setHours(23, 59, 59, 999);
   return e;
 }
@@ -138,15 +104,20 @@ function addDays(d: Date, days: number): Date {
   c.setDate(c.getDate() + days);
   return c;
 }
-function setTime(baseDate: Date, hours: number, minutes: number): Date {
-  const d = new Date(baseDate);
-  d.setHours(hours, minutes, 0, 0);
-  return d;
-}
 function toISODateMidnight(d: Date): string {
   const c = new Date(d);
   c.setHours(0, 0, 0, 0);
   return c.toISOString();
+}
+function toDateOnlyString(d: Date): string {
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, '0');
+  const dd = d.getDate().toString().padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
+function dateOnlyToLocalDate(yyyyMMdd: string): Date {
+  const [y, m, d] = yyyyMMdd.split('-').map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
 }
 function formatDayLabel(d: Date): {
   weekdayShort: string;
@@ -169,7 +140,7 @@ function parseHHMMToISO(
   hhmmStr: string | null
 ): string | null {
   if (!hhmmStr) return null;
-  const [h, m] = hhmmStr.split(':').map((n) => Number(n));
+  const [h, m] = hhmmStr.split(':').map(Number);
   const d = new Date(dateISO);
   d.setHours(h, m, 0, 0);
   return d.toISOString();
@@ -179,17 +150,26 @@ function hoursBetween(ci: Date, co: Date | null): number {
   const ms = co.getTime() - ci.getTime();
   return Math.max(0, ms / (1000 * 60 * 60));
 }
-function delay(ms: number) {
-  return new Promise((res) => setTimeout(res, ms));
-}
-
 function applyLunchDeduction(hours: number): number {
   return hours > 0 ? Math.max(0, hours - 0.5) : 0;
+}
+function isDateOnly(s: string | null | undefined): s is string {
+  return !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
+}
+
+function formatHoursToHHmm(hours: number): string {
+  const totalMinutes = Math.round(hours * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${h}:${m.toString().padStart(2, '0')}`;
 }
 
 @Component({
   selector: 'app-timesheets-edit',
   imports: [
+    IonAlert,
+    IonBackButton,
+    IonButtons,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -217,18 +197,23 @@ function applyLunchDeduction(hours: number): number {
 })
 export class TimesheetsEditPage {
   private readonly fb = inject(FormBuilder);
-  private readonly svc = new TimesheetService();
+  private readonly svc = inject(TimesheetService);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly jobListingId = signal<number | null>(null);
 
   readonly loading = signal(true);
   readonly editing = signal(false);
   readonly selectedDate = signal(new Date());
-  readonly week = signal<TimesheetWeek | null>(null);
+  readonly week = signal<TimesheetWeekVM | null>(null);
+  readonly baselineWeek = signal<TimesheetWeekVM | null>(null);
+  readonly isAlertOpen = signal(false);
 
   readonly weekStart = computed(() => startOfWeek(this.selectedDate()));
   readonly weekEnd = computed(() => endOfWeek(this.selectedDate()));
   readonly selectedDateISO = computed(() => this.selectedDate().toISOString());
   readonly weekStatus = computed<WeekStatus>(
-    () => this.week()?.status ?? 'Open'
+    () => (this.week()?.status ?? 'Open') as WeekStatus
   );
   readonly canEditWeek = computed(() => this.weekStatus() !== 'Approved');
 
@@ -265,7 +250,7 @@ export class TimesheetsEditPage {
       }, 0);
 
       const total = applyLunchDeduction(rawTotal);
-      const totalHoursLabel = total > 0 ? `${total.toFixed(2)} h` : '';
+      const totalHoursLabel = total > 0 ? formatHoursToHHmm(total) : '';
 
       return {
         dateISO: d.dateISO,
@@ -282,45 +267,92 @@ export class TimesheetsEditPage {
     weekEndISO: new FormControl<string>(''),
     days: this.fb.array<FormGroup>([]),
   });
-
-  readonly dummy = this.fb.group({});
+  readonly alertInputs = [
+    {
+      type: 'textarea' as const,
+      name: 'reason',
+      placeholder: 'Reason (optional)',
+      attributes: { maxlength: 512, rows: 4 },
+    },
+  ];
+  readonly alertButtons = [
+    {
+      text: 'Cancel',
+      role: 'cancel',
+      handler: () => {
+        // no-op
+      },
+    },
+    {
+      text: 'Submit',
+      handler: (value: { reason?: string }) => {
+        const reason = (value?.reason ?? '').trim() || null;
+        this.confirmSubmitWithReason(reason);
+        return true;
+      },
+    },
+  ];
 
   constructor() {
     addIcons({ closeOutline });
+
+    this.route.queryParamMap.subscribe((qp) => {
+      const dateParam = qp.get('date');
+      if (isDateOnly(dateParam)) {
+        this.selectedDate.set(dateOnlyToLocalDate(dateParam));
+      } else {
+        this.selectedDate.set(new Date());
+      }
+
+      const jl = Number(qp.get('jobListingId'));
+      this.jobListingId.set(Number.isFinite(jl) ? jl : null);
+    });
+
     effect(() => {
       const startISO = toISODateMidnight(this.weekStart());
-      this.loadWeek(startISO);
+      const jl = this.jobListingId();
+      this.loadWeek(startISO, jl);
     });
+  }
+
+  openReasonAlert() {
+    this.isAlertOpen.set(true);
   }
 
   dayControls() {
     return (this.form.get('days') as FormArray<FormGroup>).controls;
   }
-
   entryControls(dayCtrl: FormGroup) {
     return (dayCtrl.get('entries') as FormArray<FormGroup>).controls;
   }
-
   entryCtrlCount(dayCtrl: FormGroup) {
     return (dayCtrl.get('entries') as FormArray<FormGroup>).length;
   }
 
-  private buildForm(w: TimesheetWeek) {
+  private buildForm(w: TimesheetWeekVM) {
     this.form.reset();
+
     const dayGroups = w.days.map((day) => {
       const date = new Date(day.dateISO);
       const { weekdayShort, displayDate } = formatDayLabel(date);
 
-      const entriesFA = this.fb.array<FormGroup>(
-        (day.entries.length > 0
+      const entries =
+        day.entries.length > 0
           ? day.entries
-          : [{ checkIn: date.toISOString(), checkOut: null }]
-        ).map((e) => {
-          const ci = new Date(e.checkIn);
+          : [
+              {
+                checkIn: null as unknown as string,
+                checkOut: null as string | null,
+              },
+            ];
+
+      const entriesFA = this.fb.array<FormGroup>(
+        entries.map((e) => {
+          const ci = e.checkIn ? new Date(e.checkIn) : null;
           const co = e.checkOut ? new Date(e.checkOut) : null;
           return this.fb.group({
-            inLocal: new FormControl<string>(hhmm(ci) ?? ''),
-            outLocal: new FormControl<string>(hhmm(co) ?? ''),
+            inLocal: new FormControl<string>(ci ? hhmm(ci) ?? '' : ''),
+            outLocal: new FormControl<string>(co ? hhmm(co) ?? '' : ''),
           });
         })
       );
@@ -341,12 +373,36 @@ export class TimesheetsEditPage {
     this.form.setControl('days', this.fb.array<FormGroup>(dayGroups));
   }
 
-  private async loadWeek(weekStartISO: string) {
+  private async loadWeek(weekStartISO: string, jobListingId: number | null) {
     this.loading.set(true);
     try {
-      const w = await this.svc.getWeek(weekStartISO);
-      this.week.set(w);
-      this.buildForm(w);
+      const dateOnly = toDateOnlyString(new Date(weekStartISO));
+      const dto: TimesheetWeekDto = await firstValueFrom(
+        this.svc.getWeek(dateOnly, jobListingId ?? undefined)
+      );
+
+      const mapped: TimesheetWeekVM = {
+        weekStartISO: dateOnlyToLocalDate(dto.weekStart).toISOString(),
+        weekEndISO: dateOnlyToLocalDate(dto.weekEnd).toISOString(),
+        status: (dto.weekStatus ?? 'Open') as WeekStatus,
+        days: dto.days.map((d: TimesheetDayDto) => {
+          const baseDateISO = dateOnlyToLocalDate(d.workDate).toISOString();
+          const entries: TimesheetEntry[] =
+            d.checkInUtc || d.checkOutUtc
+              ? [
+                  {
+                    checkIn: d.checkInUtc ?? baseDateISO,
+                    checkOut: d.checkOutUtc,
+                  },
+                ]
+              : [];
+          return { dateISO: baseDateISO, entries };
+        }),
+      };
+
+      this.week.set(mapped);
+      this.baselineWeek.set(mapped);
+      this.buildForm(mapped);
     } finally {
       this.loading.set(false);
       this.editing.set(false);
@@ -365,7 +421,9 @@ export class TimesheetsEditPage {
   }
   onRefresh(ev: CustomEvent) {
     const startISO = toISODateMidnight(this.weekStart());
-    this.loadWeek(startISO).then(() => (ev.detail as any).complete());
+    this.loadWeek(startISO, this.jobListingId()).then(() =>
+      (ev.detail as any).complete()
+    );
   }
 
   weekRangeLabel = computed(() => {
@@ -395,12 +453,10 @@ export class TimesheetsEditPage {
       })
     );
   }
-
   removeEntry(dayCtrl: FormGroup, idx: number) {
     const fa = dayCtrl.get('entries') as FormArray<FormGroup>;
     if (fa.length > 1) fa.removeAt(idx);
   }
-
   onTimeChange(
     entryCtrl: FormGroup,
     key: 'inLocal' | 'outLocal',
@@ -409,39 +465,96 @@ export class TimesheetsEditPage {
     (entryCtrl.get(key) as FormControl<string>).setValue(value ?? '');
   }
 
-  private formToPayload(): TimesheetWeek {
-    const weekStartISO = this.form.get('weekStartISO')!.value as string;
-    const weekEndISO = this.form.get('weekEndISO')!.value as string;
+  async confirmSubmitWithReason(reason: string | null) {
+    const jl = this.jobListingId();
+    if (!Number.isFinite(jl)) return;
 
-    const daysFA = this.form.get('days') as FormArray<FormGroup>;
-    const days: TimesheetDay[] = daysFA.controls.map((dayCtrl) => {
-      const dateISO = dayCtrl.get('dateISO')!.value as string;
-      const entriesFA = dayCtrl.get('entries') as FormArray<FormGroup>;
-      const entries: TimesheetEntry[] = entriesFA.controls
-        .map((ec) => {
-          const inLocal = ec.get('inLocal')!.value as string;
-          const outLocal = (ec.get('outLocal')!.value as string) || null;
-          return {
-            checkIn: parseHHMMToISO(dateISO, inLocal)!,
-            checkOut: parseHHMMToISO(dateISO, outLocal),
-          };
-        })
-        .filter((e) => !!e.checkIn);
-      return { dateISO, entries };
-    });
+    const anchorDate = toDateOnlyString(this.weekStart());
+    const edits = this.buildWeekEdits(jl!, reason); // pass reason to all edits
 
-    return {
-      weekStartISO,
-      weekEndISO,
-      status: this.weekStatus(),
-      days,
-    };
+    if (edits.length === 0) {
+      this.editing.set(false);
+      this.isAlertOpen.set(false);
+      return;
+    }
+
+    this.loading.set(true);
+    try {
+      await firstValueFrom(this.svc.submitWeekEdits(anchorDate, edits));
+      await this.loadWeek(toISODateMidnight(this.weekStart()), jl!);
+      this.editing.set(false);
+    } finally {
+      this.loading.set(false);
+      this.isAlertOpen.set(false);
+    }
   }
 
-  async submitForApproval() {
-    const payload = this.formToPayload();
-    await this.svc.submit(payload);
-    this.week.set({ ...payload, status: 'Submitted' });
-    this.editing.set(false);
+  private reduceDayToProposedUtc(dayCtrl: FormGroup): {
+    inUtc: string | null;
+    outUtc: string | null;
+  } {
+    const dateISO = dayCtrl.get('dateISO')!.value as string;
+    const entriesFA = dayCtrl.get('entries') as FormArray<FormGroup>;
+
+    let earliestIn: string | null = null;
+    let latestOut: string | null = null;
+
+    for (const ec of entriesFA.controls) {
+      const inLocal = (ec.get('inLocal')!.value as string) || '';
+      const outLocal = (ec.get('outLocal')!.value as string) || '';
+
+      const inUtc = inLocal ? parseHHMMToISO(dateISO, inLocal) : null;
+      const outUtc = outLocal ? parseHHMMToISO(dateISO, outLocal) : null;
+
+      if (inUtc && (!earliestIn || new Date(inUtc) < new Date(earliestIn))) {
+        earliestIn = inUtc;
+      }
+      if (outUtc && (!latestOut || new Date(outUtc) > new Date(latestOut))) {
+        latestOut = outUtc;
+      }
+    }
+
+    if (
+      earliestIn &&
+      latestOut &&
+      new Date(latestOut) <= new Date(earliestIn)
+    ) {
+      latestOut = null;
+    }
+
+    return { inUtc: earliestIn, outUtc: latestOut };
+  }
+
+  private buildWeekEdits(
+    jobListingId: number,
+    reason: string | null = null
+  ): TimesheetAdjustmentCreateRequest[] {
+    const base = this.baselineWeek();
+    if (!base) return [];
+
+    const daysFA = this.form.get('days') as FormArray<FormGroup>;
+    const edits: TimesheetAdjustmentCreateRequest[] = [];
+
+    for (const dayCtrl of daysFA.controls) {
+      const dateISO = dayCtrl.get('dateISO')!.value as string;
+      const { inUtc, outUtc } = this.reduceDayToProposedUtc(dayCtrl);
+
+      const baseDay = base.days.find((d) => d.dateISO === dateISO);
+      const baseIn = baseDay?.entries[0]?.checkIn ?? null;
+      const baseOut = baseDay?.entries[0]?.checkOut ?? null;
+
+      const changed = inUtc !== baseIn || outUtc !== baseOut;
+      if (!changed && !(inUtc || outUtc)) continue;
+
+      edits.push({
+        jobListingId,
+        workDate: toDateOnlyString(new Date(dateISO)),
+        proposedCheckInUtc: inUtc,
+        proposedCheckOutUtc: outUtc,
+        reason,
+      });
+    }
+
+    return edits;
   }
 }
