@@ -80,12 +80,7 @@
   }
 </ion-content>
 
-<ion-modal
-  [isOpen]="isEditOpen()"
-  (didDismiss)="closeEdit()"
-  [initialBreakpoint]="1"
-  [breakpoints]="[1]"
->
+<ion-modal [isOpen]="isEditOpen()" (didDismiss)="closeEdit()">
   <ng-template>
     <app-profile-edit
       [title]="'Edit job preferences'"

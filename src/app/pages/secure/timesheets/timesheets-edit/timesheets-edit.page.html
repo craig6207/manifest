@@ -14,6 +14,74 @@
     ></ion-refresher-content>
   </ion-refresher>
 
+  @if (loading()) {
+  <div class="week-bar">
+    <ion-button fill="clear" disabled>
+      <ion-skeleton-text
+        animated
+        style="width: 20px; height: 20px"
+      ></ion-skeleton-text>
+    </ion-button>
+
+    <div class="week-range">
+      <div class="range">
+        <ion-skeleton-text
+          animated
+          style="width: 160px; height: 18px"
+        ></ion-skeleton-text>
+      </div>
+      <ion-note class="hint">
+        <ion-skeleton-text
+          animated
+          style="width: 140px; height: 12px"
+        ></ion-skeleton-text>
+      </ion-note>
+    </div>
+
+    <ion-button fill="clear" disabled>
+      <ion-skeleton-text
+        animated
+        style="width: 20px; height: 20px"
+      ></ion-skeleton-text>
+    </ion-button>
+
+    <ion-button fill="clear" class="date-btn" disabled>
+      <ion-skeleton-text
+        animated
+        style="width: 80px; height: 18px"
+      ></ion-skeleton-text>
+    </ion-button>
+  </div>
+
+  <ion-list inset="true" style="margin-top: 12px">
+    @for (i of [1,2,3,4,5,6,7]; track i) {
+    <ion-item lines="full">
+      <ion-label class="day-label">
+        <div class="top">
+          <ion-skeleton-text
+            animated
+            style="width: 90px; height: 16px"
+          ></ion-skeleton-text>
+        </div>
+        <div class="chips" style="margin-top: 8px">
+          <ion-chip>
+            <ion-skeleton-text
+              animated
+              style="width: 120px; height: 14px"
+            ></ion-skeleton-text>
+          </ion-chip>
+        </div>
+      </ion-label>
+      <ion-badge color="primary">
+        <ion-skeleton-text
+          animated
+          style="width: 48px; height: 14px"
+        ></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
+    }
+  </ion-list>
+  } @else {
   <div class="week-bar">
     <ion-button fill="clear" (click)="goPrevWeek()">
       <ion-icon name="chevron-back-outline"></ion-icon>
@@ -46,7 +114,7 @@
     </ion-modal>
   </div>
 
-  @if (!loading() && !editing()) {
+  @if (!editing()) {
   <ion-list inset="true">
     @for (d of days(); track d.dateISO) {
     <ion-item lines="full">
@@ -83,7 +151,7 @@
     </ion-button>
     }
   </div>
-  } @if (!loading() && editing()) {
+  } @else {
   <form [formGroup]="form">
     <ion-list inset="true">
       @for (dayCtrl of dayControls(); track dayCtrl.get('dateISO')?.value) {
@@ -106,7 +174,8 @@
               [value]="entryCtrl.get('inLocal')?.value"
               (ionInput)="onTimeChange(entryCtrl, 'inLocal', $any($event.target).value)"
               inputmode="numeric"
-            ></ion-input>
+            >
+            </ion-input>
           </ion-item>
 
           <ion-item>
@@ -116,7 +185,8 @@
               [value]="entryCtrl.get('outLocal')?.value"
               (ionInput)="onTimeChange(entryCtrl, 'outLocal', $any($event.target).value)"
               inputmode="numeric"
-            ></ion-input>
+            >
+            </ion-input>
           </ion-item>
 
           <ion-button
@@ -141,9 +211,10 @@
       </ion-button>
     </div>
   </form>
-  }
+  } }
 
   <div style="height: 24px"></div>
+
   <ion-alert
     [isOpen]="isAlertOpen()"
     header="Submit edits"
@@ -152,5 +223,6 @@
     [inputs]="alertInputs"
     [buttons]="alertButtons"
     (didDismiss)="isAlertOpen.set(false)"
-  ></ion-alert>
+  >
+  </ion-alert>
 </ion-content>

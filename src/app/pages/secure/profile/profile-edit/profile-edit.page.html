@@ -1,13 +1,19 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>{{ title() }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="onCancel()" aria-label="Cancel">
+    <ion-buttons slot="start">
+      <ion-button
+        (click)="onCancel()"
+        aria-label="Cancel"
+        [disabled]="loading()"
+      >
         <ion-icon name="close-outline" slot="icon-only"></ion-icon>
       </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
       <ion-button
         (click)="onSave()"
-        [disabled]="form.invalid || !form.dirty"
+        [disabled]="loading() || form.invalid || !form.dirty"
         aria-label="Save"
       >
         <ion-icon name="save-outline" slot="icon-only"></ion-icon>
@@ -17,6 +23,61 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="edit-content ion-padding">
+  @if (loading()) {
+  <section class="section-card form-card">
+    <div class="section-header">
+      <ion-skeleton-text
+        animated
+        style="width: 180px; height: 20px"
+      ></ion-skeleton-text>
+    </div>
+    <ion-list lines="none" class="form-list">
+      @for (i of [1,2,3,4]; track i) {
+      <ion-item>
+        <ion-label position="stacked">
+          <ion-skeleton-text
+            animated
+            style="width: 120px; height: 14px"
+          ></ion-skeleton-text>
+        </ion-label>
+        <div style="width: 100%; margin-top: 6px">
+          <ion-skeleton-text
+            animated
+            style="width: 100%; height: 36px; border-radius: 8px"
+          ></ion-skeleton-text>
+        </div>
+      </ion-item>
+      }
+    </ion-list>
+  </section>
+
+  <section class="section-card form-card">
+    <div class="section-header">
+      <ion-skeleton-text
+        animated
+        style="width: 160px; height: 20px"
+      ></ion-skeleton-text>
+    </div>
+    <ion-list lines="none" class="form-list">
+      @for (i of [1,2,3]; track i) {
+      <ion-item>
+        <ion-label position="stacked">
+          <ion-skeleton-text
+            animated
+            style="width: 120px; height: 14px"
+          ></ion-skeleton-text>
+        </ion-label>
+        <div style="width: 100%; margin-top: 6px">
+          <ion-skeleton-text
+            animated
+            style="width: 100%; height: 36px; border-radius: 8px"
+          ></ion-skeleton-text>
+        </div>
+      </ion-item>
+      }
+    </ion-list>
+  </section>
+  } @if (!loading()) {
   <form [formGroup]="form" (ngSubmit)="onSave()">
     @if (isPersonalDetails()) {
     <section class="section-card form-card">
@@ -30,7 +91,8 @@
             label="First name"
             labelPlacement="stacked"
             formControlName="firstName"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
         @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
         <div class="error">First name is required (max 50 chars).</div>
@@ -41,7 +103,8 @@
             label="Last name"
             labelPlacement="stacked"
             formControlName="lastName"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
         @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
         <div class="error">Last name is required (max 50 chars).</div>
@@ -55,7 +118,8 @@
             labelPlacement="stacked"
             placeholder="0700 111 2222"
             formControlName="phoneNumber"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
         @if (form.get('phoneNumber')?.invalid &&
         form.get('phoneNumber')?.touched) {
@@ -94,7 +158,8 @@
             labelPlacement="stacked"
             placeholder="8–10 digits"
             formControlName="bankAccountNumber"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
         @if (form.get('bankAccountNumber')?.invalid &&
         form.get('bankAccountNumber')?.touched) {
@@ -107,7 +172,8 @@
             labelPlacement="stacked"
             placeholder="12-34-56 or 123456"
             formControlName="bankSortCode"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
         @if (form.get('bankSortCode')?.invalid &&
         form.get('bankSortCode')?.touched) {
@@ -122,7 +188,8 @@
             labelPlacement="stacked"
             placeholder="QQ123456C"
             formControlName="niNumber"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
         @if (form.get('niNumber')?.invalid && form.get('niNumber')?.touched) {
         <div class="error">Enter a valid UK NI number (e.g. QQ123456C).</div>
@@ -142,7 +209,8 @@
             labelPlacement="stacked"
             placeholder="e.g. EH8 7PB"
             formControlName="location"
-          ></ion-input>
+          >
+          </ion-input>
         </ion-item>
         @if (form.get('location')?.invalid && form.get('location')?.touched) {
         <div class="error">Location is required (max 100 chars).</div>
@@ -161,7 +229,8 @@
             [max]="100"
             [step]="5"
             [snaps]="true"
-          ></ion-range>
+          >
+          </ion-range>
         </ion-item>
         @if (form.get('locationRadius')?.invalid &&
         form.get('locationRadius')?.touched) {
@@ -180,7 +249,8 @@
             [min]="5"
             [max]="100"
             [step]="1"
-          ></ion-range>
+          >
+          </ion-range>
         </ion-item>
         @if (form.get('expectedPay')?.invalid &&
         form.get('expectedPay')?.touched) {
@@ -236,4 +306,5 @@
 
     <div class="bottom-spacer" aria-hidden="true"></div>
   </form>
+  }
 </ion-content>

@@ -40,4 +40,11 @@ export const profileRoutes: Routes = [
     loadComponent: () =>
       import('./cookies/cookies.page').then((m) => m.CookiesPage),
   },
+  {
+    path: 'certificate-management',
+    loadComponent: () =>
+      import('./certificate-management/certificate-management.page').then(
+        (m) => m.CertificateManagementPage
+      ),
+  },
 ];

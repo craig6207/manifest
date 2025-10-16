@@ -125,6 +125,27 @@
         </ion-item>
       </ion-list>
     </section>
+    <section class="section-card form-card">
+      <ion-list lines="none" class="form-list">
+        <ion-item
+          button
+          detail="true"
+          (click)="openModal('certificates')"
+          [disabled]="!tradeSelected()"
+          [attr.aria-disabled]="!tradeSelected()"
+        >
+          <ion-label>
+            <h3>Certificates (optional)</h3>
+
+            @if (!tradeSelected()) {
+            <p>Select a trade first</p>
+            } @else if (payTradeForm.get('certificates')?.value?.length) {
+            <p>{{ payTradeForm.get('certificates')?.value.length }} selected</p>
+            }
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </section>
   </form>
   } @if (currentStep() === 4) {
   <form id="bankForm" [formGroup]="bankForm" (ngSubmit)="submit()">

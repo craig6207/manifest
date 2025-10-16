@@ -53,13 +53,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'certificate-management',
-        loadComponent: () =>
-          import('../certificate-management/certificate-management.page').then(
-            (m) => m.CertificateManagementPage
-          ),
-      },
-      {
         path: 'profile',
         loadChildren: () =>
           import('../profile/profile.routes').then((m) => m.profileRoutes),

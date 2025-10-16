@@ -48,6 +48,8 @@ import { LocationPickerComponent } from 'src/app/components/location-picker/loca
 import { TradesService } from 'src/app/services/trades/trades.service';
 import { Trades, TradeSubcategories } from 'src/app/interfaces/trades';
 import { TradePickerComponent } from 'src/app/components/trade-picker/trade-picker.component';
+import { CertificateProfileSetupComponent } from 'src/app/components/certificate-profile-setup/certificate-profile-setup.component';
+import { CertDefinition } from 'src/app/interfaces/certificate';
 
 type LocationSelection = {
   placeName: string;
@@ -124,6 +126,8 @@ export class ProfileSetupPage implements OnInit {
     const denom = Math.max(1, this.totalSteps - 1);
     return (step - 1) / denom;
   });
+  tradeIdSig = signal<number | null>(null);
+  tradeSelected = computed(() => this.tradeIdSig() != null);
 
   selectedTradeName(): string {
     const id = this.payTradeForm?.get('tradeId')?.value as number | null;
@@ -159,6 +163,9 @@ export class ProfileSetupPage implements OnInit {
       expectedPay: [25, Validators.required],
       tradeId: [null, Validators.required],
       tradeSubcategoryIds: this.fb.control<number[]>([], { nonNullable: true }),
+      certificates: this.fb.control<CertDefinition[]>([], {
+        nonNullable: true,
+      }),
     });
 
     this.bankForm = this.fb.group({
@@ -178,14 +185,23 @@ export class ProfileSetupPage implements OnInit {
 
     this.loadTrades();
 
+    this.tradeIdSig.set(this.payTradeForm.get('tradeId')!.value);
+
     this.payTradeForm
       .get('tradeId')!
       .valueChanges.subscribe((id: number | null) => {
+        this.tradeIdSig.set(id);
+        if (id == null) {
+          this.payTradeForm
+            .get('certificates')!
+            .setValue([], { emitEvent: false });
+        }
         this.payTradeForm
           .get('tradeSubcategoryIds')!
           .setValue([], { emitEvent: false });
         this.subcategories.set([]);
         if (id != null) this.loadSubcategories(id);
+
         this.cdr.markForCheck();
       });
   }
@@ -242,7 +258,35 @@ export class ProfileSetupPage implements OnInit {
     });
   }
 
-  async openModal(mode: 'trade' | 'subcategories') {
+  async openModal(mode: 'trade' | 'subcategories' | 'certificates') {
+    if (mode === 'certificates') {
+      const tradeId = this.payTradeForm.get('tradeId')!.value as number | null;
+      if (!tradeId) return;
+
+      const preSelected: CertDefinition[] =
+        this.payTradeForm.get('certificates')!.value;
+
+      const modal = await this.modalController.create({
+        component: CertificateProfileSetupComponent,
+        componentProps: {
+          initialCertificates: preSelected,
+          tradeId,
+          tradeName: this.selectedTradeName(),
+        },
+      });
+
+      await modal.present();
+      const { data, role } = await modal.onWillDismiss();
+
+      if (role === 'confirm' && data?.certificates) {
+        this.payTradeForm
+          .get('certificates')!
+          .setValue(data.certificates as CertDefinition[]);
+        this.cdr.markForCheck();
+      }
+      return;
+    }
+
     const items =
       mode === 'trade'
         ? this.trades().map((t) => ({ id: t.id, name: t.name }))

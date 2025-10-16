@@ -20,6 +20,7 @@ import {
   IonGrid,
   IonCol,
   IonBadge,
+  IonSkeletonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { cameraOutline, imageOutline } from 'ionicons/icons';
@@ -35,7 +36,7 @@ import {
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
-  styleUrl: './profile.page.scss',
+  styleUrls: ['./profile.page.scss'],
   imports: [
     IonBadge,
     IonCol,
@@ -56,6 +57,7 @@ import {
     IonActionSheet,
     IonLoading,
     IonToast,
+    IonSkeletonText,
     RouterModule,
     RatingBarComponent,
   ],
@@ -71,22 +73,23 @@ export class ProfilePage implements OnDestroy {
   isUploading = signal(false);
   toastMsg = signal('');
 
-  private currentAvatarUrl: string | null = null;
+  private avatarFetchDone = signal(false);
+  loadingPage = computed(() => !this.avatarFetchDone());
 
+  private currentAvatarUrl: string | null = null;
   avatarSrc = signal<string>(
     'https://ionicframework.com/docs/img/demos/avatar.svg'
   );
   lastUpload = signal<UploadImageResponse | null>(null);
 
   rating = computed(() => this.store.profile()?.rating);
-
   displayName = computed(() => {
-    const p = this.store.profile()!;
-    const fn = p.firstName ?? '';
-    const ln = p.lastName ?? '';
-    return fn || ln ? `${fn} ${ln}`.trim() : '';
+    const p = this.store.profile();
+    const fn = (p?.firstName ?? '').trim();
+    const ln = (p?.lastName ?? '').trim();
+    const name = `${fn} ${ln}`.trim();
+    return name || 'Your profile';
   });
-
   unreadCount = computed(() => this.profileStore.unreadNotificationCount());
   unreadBadgeText = computed(() => {
     const n = this.unreadCount();
@@ -98,13 +101,28 @@ export class ProfilePage implements OnDestroy {
   }
 
   ionViewWillEnter() {
-    this.loadAvatarFromServer();
+    this.loadAvatarBlocking();
   }
 
   ngOnDestroy(): void {
     if (this.currentAvatarUrl) {
       URL.revokeObjectURL(this.currentAvatarUrl);
       this.currentAvatarUrl = null;
+    }
+  }
+
+  private async loadAvatarBlocking(): Promise<void> {
+    this.avatarFetchDone.set(false);
+    try {
+      const blob = await firstValueFrom(
+        this.profilePicService.getMyPhotoBlob()
+      );
+      if (blob && blob.size > 0) {
+        const url = URL.createObjectURL(blob);
+        this.setAvatarUrl(url);
+      }
+    } finally {
+      this.avatarFetchDone.set(true);
     }
   }
 
@@ -126,16 +144,17 @@ export class ProfilePage implements OnDestroy {
   private async pickAndUpload(source: 'camera' | 'photos') {
     try {
       this.isUploading.set(true);
+
       const blob = await this.profilePicService.getPhotoFrom(source);
       const previewUrl = URL.createObjectURL(blob);
       this.setAvatarUrl(previewUrl);
+
       const resp = await firstValueFrom(
         this.profilePicService.uploadPhoto(null, blob)
       );
       this.lastUpload.set(resp);
 
-      this.loadAvatarFromServer();
-
+      await this.loadAvatarBlocking();
       this.toastMsg.set('Profile photo uploaded');
     } catch (err) {
       console.error('Avatar update failed', err);
@@ -144,17 +163,6 @@ export class ProfilePage implements OnDestroy {
       this.isUploading.set(false);
       this.isAvatarSheetOpen.set(false);
     }
-  }
-
-  private loadAvatarFromServer(): void {
-    this.profilePicService.getMyPhotoBlob().subscribe({
-      next: (blob) => {
-        if (!blob || blob.size === 0) return;
-        const url = URL.createObjectURL(blob);
-        this.setAvatarUrl(url);
-      },
-      error: () => {},
-    });
   }
 
   private setAvatarUrl(url: string) {

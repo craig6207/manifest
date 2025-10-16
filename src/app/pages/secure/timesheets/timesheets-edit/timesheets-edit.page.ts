@@ -28,6 +28,7 @@ import {
   IonButtons,
   IonBackButton,
   IonAlert,
+  IonSkeletonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -167,6 +168,7 @@ function formatHoursToHHmm(hours: number): string {
 @Component({
   selector: 'app-timesheets-edit',
   imports: [
+    IonSkeletonText,
     IonAlert,
     IonBackButton,
     IonButtons,

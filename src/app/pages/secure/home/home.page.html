@@ -1,9 +1,50 @@
 <ion-content [fullscreen]="true" class="home-content ion-padding">
-  <ion-img
-    class="logo"
-    src="/assets/img/WeRecruit_logo.svg"
-    alt="WeRecruit logo"
-  ></ion-img>
+  @if (isLoading()) {
+  <div class="skeleton-wrap">
+    <ion-img
+      class="logo"
+      src="/assets/img/WeRecruit_logo.svg"
+      alt="WeRecruit logo"
+    ></ion-img>
+
+    <ion-text color="primary" class="welcome">
+      <h1>
+        <ion-skeleton-text
+          animated
+          style="width: 220px; height: 32px"
+        ></ion-skeleton-text>
+      </h1>
+    </ion-text>
+
+    <ion-card class="cta-card">
+      <ion-card-header>
+        <ion-icon
+          name="briefcase-outline"
+          class="cta-icon"
+          aria-hidden="true"
+        ></ion-icon>
+        <ion-card-title class="cta-title">
+          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content class="cta-content">
+        <ion-skeleton-text
+          animated
+          style="width: 60%; height: 16px"
+        ></ion-skeleton-text>
+        <div class="cta-actions" style="margin-top: 12px">
+          <ion-button color="primary" size="default" disabled>
+            <ion-skeleton-text
+              animated
+              style="width: 180px; height: 16px"
+            ></ion-skeleton-text>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  } @else {
+  <img src="/assets/img/WeRecruit_logo.svg" alt="WeRecruit logo" class="logo" />
 
   <ion-text color="primary" class="welcome">
     <h1>Welcome {{ firstName() }}</h1>
@@ -35,4 +76,5 @@
       </div>
     </ion-card-content>
   </ion-card>
+  }
 </ion-content>

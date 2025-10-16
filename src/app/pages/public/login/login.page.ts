@@ -141,7 +141,9 @@ export class LoginPage implements OnInit {
 
       await this.promptBiometricSetup(this.signin_form.value.email);
 
-      await this.router.navigate(['/secure']);
+      await this.router.navigateByUrl('/secure/tabs/home', {
+        replaceUrl: true,
+      });
     } catch (error: any) {
       this.isLoading = false;
     }
@@ -153,7 +155,9 @@ export class LoginPage implements OnInit {
       const result = await this.authService.loginWithBiometric();
 
       if (result.success) {
-        await this.router.navigate(['/secure']);
+        await this.router.navigateByUrl('/secure/tabs/home', {
+          replaceUrl: true,
+        });
         return;
       }
       if (result.error === 'REAUTH_REQUIRED') {
@@ -161,7 +165,7 @@ export class LoginPage implements OnInit {
 
         this.alertHeader = 'For your security, please sign in again';
         this.alertMessage = `<div class="ion-text-left">
-          <p>It’s been <strong>over 30 days</strong> since you last used the app, so your session has expired.</p>
+          <p>It's been <strong>over 30 days</strong> since you last used the app, so your session has expired.</p>
           <p>To keep your account safe, we need you to sign in with your email and password.</p>
           <ul>
             <li>Tap <em>Use email & password</em> to continue.</li>

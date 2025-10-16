@@ -1,0 +1,176 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title> Certificates </ion-title>
+    <ion-buttons slot="end">
+      <ion-button aria-label="Close">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading()) {
+  <div class="loading-row" role="status" aria-live="polite">
+    <ion-spinner></ion-spinner>
+    <ion-note>Loading certificates…</ion-note>
+  </div>
+  } @else if (loadError()) {
+  <ion-note color="danger" class="block-note">{{ loadError() }}</ion-note>
+  } @else if (!hasData()) {
+  <ion-note class="block-note">No certificates found for this trade.</ion-note>
+  } @else {
+
+  <section class="hero-card" aria-label="Certificate uploader introduction">
+    <div class="hero-icon">
+      <ion-icon name="document-outline" aria-hidden="true"></ion-icon>
+    </div>
+    <div class="hero-text">
+      <h2 class="hero-title">Add your certifications</h2>
+      <p class="hero-subtitle">
+        Verified cards and certificates help clients trust your profile and get
+        you placed faster. @if (tradeName) {
+        <strong>Selected trade: {{ tradeName }}</strong> }
+      </p>
+      <ul class="hero-checklist">
+        <li><span class="dot"></span> Upload a clear photo or PDF</li>
+        <li>
+          <span class="dot"></span> Make sure the name & expiry are visible
+        </li>
+        <li><span class="dot"></span> Add “Other” if it’s not listed</li>
+      </ul>
+      <div class="format-row" aria-label="Supported file types">
+        <ion-chip>PDF</ion-chip><ion-chip>PNG</ion-chip><ion-chip>JPG</ion-chip
+        ><ion-chip>HEIC</ion-chip>
+      </div>
+    </div>
+  </section>
+
+  <ion-list>
+    <ion-item>
+      <ion-select
+        label="Select Certificate"
+        placeholder="Choose certificate"
+        [value]="selectedId()"
+        (ionChange)="onSelectionChange($event.detail.value)"
+      >
+        @for (c of options(); track c.id) {
+        <ion-select-option [value]="c.id">{{ c.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+  <section class="big-upload">
+    @if (warn()) {
+    <ion-note color="warning" class="block-note">{{ warn() }}</ion-note>
+    }
+
+    <button
+      class="dropzone"
+      type="button"
+      [disabled]="!canUploadForCurrent()"
+      (click)="openUploadSheet(nativeFileInput)"
+      aria-label="Upload certificate file"
+    >
+      <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+      <div class="dz-text">
+        <div class="dz-title">
+          @if (hasReachedMax()) { Uploads limited to 5 } @else { Upload
+          certificate }
+        </div>
+        <div class="dz-sub">
+          @if (selectedId() === null) { Select a certificate above to continue }
+          @else if (selectedId() === -1 && !otherName().trim()) { Enter the
+          “Other” certificate name to continue } @else if
+          (hasUploadForCurrent()) { You’ve already added a file for this
+          certificate } @else if (hasReachedMax()) { Remove one to add another
+          (max 5) } @else { Choose from library, take a photo, or pick a file }
+        </div>
+      </div>
+    </button>
+
+    <input
+      #nativeFileInput
+      type="file"
+      accept="image/*,application/pdf"
+      hidden
+      (change)="onNativeFileChosen($event)"
+    />
+  </section>
+
+  @if (selectedId() === -1) {
+  <ion-list class="stacked-list">
+    <ion-item lines="none" class="other-name">
+      <ion-label position="stacked">Enter certificate name</ion-label>
+      <ion-input
+        [value]="otherName()"
+        (ionInput)="setOtherName($event.detail.value ?? '')"
+        [disabled]="hasUploadForCurrent()"
+        placeholder="e.g. City & Guilds Level 3 – custom"
+        maxlength="80"
+        inputmode="text"
+      ></ion-input>
+      <ion-note class="hint">
+        @if (hasUploadForCurrent()) { Name locked after upload. } @else {
+        Required for “Other”. }
+      </ion-note>
+    </ion-item>
+  </ion-list>
+  }
+
+  <!-- Preview of ALL uploads (persists when switching certs) -->
+  @if (allUploads().length > 0) {
+  <section class="preview-section">
+    <div class="preview-header">
+      <div class="ph-left">
+        <strong>{{ allUploads().length }}</strong>
+        file{{ allUploads().length === 1 ? "" : "s" }} selected
+        <span class="muted"> (max {{ 5 }})</span>
+      </div>
+    </div>
+
+    <div class="preview-grid">
+      @for (u of allUploads(); track u.item.url) {
+      <figure class="preview-card">
+        @if (u.item.mime.startsWith('image/')) {
+        <img [src]="u.item.url" alt="Selected image" />
+        } @else {
+        <div class="pdf-icon" aria-label="PDF file">
+          <ion-icon name="document-outline"></ion-icon>
+        </div>
+        }
+        <figcaption class="preview-caption">
+          <div class="cap-name">{{ u.item.name }}</div>
+          <div class="cap-cert">{{ u.label }}</div>
+        </figcaption>
+        <button
+          class="remove-btn"
+          type="button"
+          (click)="removeUploadByKey(u.key)"
+          aria-label="Remove file"
+        >
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </figure>
+      }
+    </div>
+  </section>
+  } }
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar class="cta-toolbar">
+    <div class="cta-row">
+      <ion-button class="ghost-btn" fill="outline" color="primary">
+        Cancel
+      </ion-button>
+
+      <ion-button
+        class="primary-btn"
+        [disabled]="!canSubmit()"
+        (click)="confirmSelection()"
+      >
+        Confirm
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   signal,
 } from '@angular/core';
 import {
@@ -40,6 +41,8 @@ import {
   Page,
   Segment,
 } from 'src/app/interfaces/candidate-jobs';
+import { firstValueFrom } from 'rxjs';
+import { JobActivityService } from 'src/app/services/job-activity/job-activity.service';
 
 @Component({
   selector: 'app-job-history',
@@ -71,9 +74,10 @@ import {
   host: { class: 'job-history-page' },
 })
 export class JobHistoryPage {
+  private jobHistoryService = inject(JobActivityService);
+
   segment = signal<Segment>('BOOKED');
   isLoading = signal(true);
-
   data = signal<CandidateJobs[]>([]);
   nextCursor = signal<string | null>(null);
   hasMore = signal(true);
@@ -137,12 +141,6 @@ export class JobHistoryPage {
     );
   }
 
-  onSegmentChange(val: Segment) {
-    this.segment.set(val);
-    if (!this.isLoading() && this.filtered().length === 0 && this.hasMore()) {
-    }
-  }
-
   openJob(candidateJob: CandidateJobs) {
     console.log('open job', candidateJob);
   }
@@ -201,74 +199,18 @@ export class JobHistoryPage {
   }
 
   private async fetchPage(cursor: string | null): Promise<Page<CandidateJobs>> {
-    await new Promise((r) => setTimeout(r, 400));
-    const base = cursor ? Number(cursor) : 0;
-    const batch = this.mockData().slice(base, base + 3);
-    const next = base + 3 < this.mockData().length ? String(base + 3) : null;
-    return { items: batch, nextCursor: next };
+    const pageNum = cursor ? Number(cursor) : 1;
+    return await firstValueFrom(
+      this.jobHistoryService.getMyJobs({
+        segment: this.segment(),
+        page: pageNum,
+        pageSize: 20,
+      })
+    );
   }
-  private mockData(): CandidateJobs[] {
-    const now = new Date();
-    const tmr = new Date(now.getTime() + 24 * 3600e3);
-    return [
-      {
-        id: '1',
-        jobId: 'J-1001',
-        title: 'Electrician (Day Shift)',
-        clientName: 'Acme Construction',
-        location: 'Edinburgh',
-        startDateUtc: now.toISOString(),
-        nextShiftUtc: tmr.toISOString(),
-        hourlyRate: 22,
-        status: 'IN_WORK',
-      },
-      {
-        id: '2',
-        jobId: 'J-1002',
-        title: 'Joiner',
-        clientName: 'Lothian Works',
-        location: 'Musselburgh',
-        startDateUtc: tmr.toISOString(),
-        status: 'OFFERED',
-        offeredAtUtc: now.toISOString(),
-      },
-      {
-        id: '3',
-        jobId: 'J-1003',
-        title: 'General Labourer',
-        clientName: 'Urban Build',
-        location: 'Leith',
-        startDateUtc: tmr.toISOString(),
-        status: 'APPLIED',
-        appliedAtUtc: now.toISOString(),
-      },
-      {
-        id: '4',
-        jobId: 'J-1004',
-        title: 'Painter',
-        clientName: 'Capital Decor',
-        location: 'Edinburgh',
-        startDateUtc: tmr.toISOString(),
-        status: 'APPLIED',
-      },
-      {
-        id: '5',
-        jobId: 'J-1005',
-        title: 'Electrician (Night Shift)',
-        clientName: 'North Build',
-        location: 'Fife',
-        startDateUtc: tmr.toISOString(),
-        status: 'OFFERED',
-      },
-      {
-        id: '6',
-        jobId: 'J-1006',
-        title: 'Labourer',
-        clientName: 'East Coast',
-        location: 'Haddington',
-        startDateUtc: tmr.toISOString(),
-        status: 'IN_WORK',
-      },
-    ];
+
+  onSegmentChange(val: Segment) {
+    this.segment.set(val);
+    if (!this.isLoading()) this.reload();
   }
 }

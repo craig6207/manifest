@@ -1,4 +1,11 @@
-import { Component, effect, input, output, computed } from '@angular/core';
+import {
+  Component,
+  effect,
+  input,
+  output,
+  computed,
+  inject,
+} from '@angular/core';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -21,6 +28,7 @@ import {
   IonSelectOption,
   IonRange,
   IonNote,
+  IonSkeletonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { closeOutline, saveOutline } from 'ionicons/icons';
@@ -59,6 +67,7 @@ type SelectOptions = {
   selector: 'app-profile-edit',
   templateUrl: './profile-edit.page.html',
   imports: [
+    IonSkeletonText,
     IonNote,
     ReactiveFormsModule,
     IonHeader,
@@ -83,15 +92,20 @@ export class ProfileEditPage {
   selectOptions = input<SelectOptions>({});
   title = input<string>('Edit profile');
   saveText = input<string>('Save');
+  loading = input<boolean>(false);
 
   save = output<Partial<CandidateProfile>>();
   cancel = output<void>();
 
-  private fb = new FormBuilder();
+  private readonly fb = inject(FormBuilder);
   form: FormGroup = this.fb.group({});
 
   private keys = computed<FieldKey[]>(() =>
     this.isPersonalDetails() ? PERSONAL_KEYS : PREF_KEYS
+  );
+
+  readonly disableSave = computed(
+    () => this.loading() || this.form.invalid || !this.form.dirty
   );
 
   constructor() {
@@ -112,7 +126,10 @@ export class ProfileEditPage {
 
     effect(() => {
       const v = this.value();
-      if (v) this.form.patchValue(v, { emitEvent: false });
+      if (v && this.form) {
+        this.form.patchValue(v, { emitEvent: false });
+        this.form.markAsPristine();
+      }
     });
   }
 
@@ -121,10 +138,12 @@ export class ProfileEditPage {
   }
 
   onSave(): void {
+    if (this.loading()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
+
     const raw = this.form.getRawValue() as Partial<CandidateProfile>;
     const patch: Partial<CandidateProfile> = {};
     for (const k of this.keys()) {
@@ -135,26 +154,32 @@ export class ProfileEditPage {
 
   private validatorsFor(key: FieldKey) {
     const req = [Validators.required];
+
     switch (key) {
       case 'firstName':
       case 'lastName':
         return [...req, Validators.maxLength(50)];
+
       case 'phoneNumber':
         return [...req, Validators.maxLength(20)];
+
       case 'location':
         return [...req, Validators.maxLength(100)];
       case 'bankAccountNumber':
-        return [...req, Validators.minLength(6), Validators.maxLength(10)];
+        return [...req, Validators.minLength(8), Validators.maxLength(10)];
+
       case 'bankSortCode':
         return [...req, Validators.pattern(UK_SORTCODE)];
       case 'niNumber':
         return [...req, Validators.pattern(UK_NI)];
+
       case 'locationRadius':
       case 'expectedPay':
       case 'sex':
       case 'tradeCategory':
       case 'tradeSubcategory':
         return req;
+
       default:
         return [];
     }

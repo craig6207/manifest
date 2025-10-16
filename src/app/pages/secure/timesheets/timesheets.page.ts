@@ -1,4 +1,11 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -16,6 +23,7 @@ import {
   IonItem,
   IonRefresher,
   IonRefresherContent,
+  IonSkeletonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -87,9 +95,11 @@ function dateRangeLabel(
     IonItem,
     IonRefresher,
     IonRefresherContent,
+    IonSkeletonText,
   ],
   templateUrl: './timesheets.page.html',
   styleUrls: ['timesheets.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimesheetsPage {
   private readonly nav = inject(NavController);

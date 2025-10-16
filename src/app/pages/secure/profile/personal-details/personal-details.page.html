@@ -7,7 +7,11 @@
     <ion-title>Personal Details</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button (click)="openEdit()" aria-label="Edit personal details">
+      <ion-button
+        (click)="openEdit()"
+        aria-label="Edit personal details"
+        [disabled]="loading() || !personalDetails()"
+      >
         <ion-icon name="create-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -15,7 +19,104 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="profile-details ion-padding">
-  @if (personalDetails(); as personalDetails) {
+  @if (loading() || !personalDetails()) {
+  <section class="summary-card">
+    <div class="icon-badge">
+      <ion-skeleton-text
+        animated
+        style="width: 40px; height: 40px; border-radius: 9999px"
+      ></ion-skeleton-text>
+    </div>
+    <div class="summary">
+      <div class="name">
+        <ion-skeleton-text
+          animated
+          style="width: 60%; height: 18px"
+        ></ion-skeleton-text>
+      </div>
+      <div class="meta">
+        <ion-skeleton-text
+          animated
+          style="width: 40%; height: 14px"
+        ></ion-skeleton-text>
+      </div>
+      <div class="meta">
+        <ion-skeleton-text
+          animated
+          style="width: 30%; height: 14px"
+        ></ion-skeleton-text>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-header">
+      <h2>
+        <ion-skeleton-text
+          animated
+          style="width: 160px; height: 20px"
+        ></ion-skeleton-text>
+      </h2>
+      <ion-skeleton-text
+        animated
+        style="width: 24px; height: 24px; border-radius: 6px"
+      ></ion-skeleton-text>
+    </div>
+    <div class="kv">
+      @for (i of [1,2,3,4]; track i) {
+      <div class="kv-row">
+        <div class="kv-label">
+          <ion-skeleton-text
+            animated
+            style="width: 110px; height: 14px"
+          ></ion-skeleton-text>
+        </div>
+        <div class="kv-value">
+          <ion-skeleton-text
+            animated
+            style="width: 50%; height: 14px"
+          ></ion-skeleton-text>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="section-card">
+    <div class="section-header">
+      <h2>
+        <ion-skeleton-text
+          animated
+          style="width: 140px; height: 20px"
+        ></ion-skeleton-text>
+      </h2>
+      <ion-skeleton-text
+        animated
+        style="width: 24px; height: 24px; border-radius: 6px"
+      ></ion-skeleton-text>
+    </div>
+    <div class="kv">
+      @for (i of [1,2,3]; track i) {
+      <div class="kv-row">
+        <div class="kv-label">
+          <ion-skeleton-text
+            animated
+            style="width: 110px; height: 14px"
+          ></ion-skeleton-text>
+        </div>
+        <div class="kv-value">
+          <ion-skeleton-text
+            animated
+            style="width: 40%; height: 14px"
+          ></ion-skeleton-text>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <div class="bottom-spacer" aria-hidden="true"></div>
+  } @if (!loading() && personalDetails(); as personalDetails) {
 
   <section class="summary-card">
     <div class="icon-badge">
@@ -90,17 +191,13 @@
   }
 </ion-content>
 
-<ion-modal
-  [isOpen]="isEditOpen()"
-  (didDismiss)="closeEdit()"
-  [initialBreakpoint]="1"
-  [breakpoints]="[1]"
->
+<ion-modal [isOpen]="isEditOpen()" (didDismiss)="closeEdit()">
   <ng-template>
     <app-profile-edit
       [title]="'Edit personal details'"
       [isPersonalDetails]="true"
       [value]="personalDetails()"
+      [loading]="loading()"
       [selectOptions]="{ sex: ['Male','Female','Other'] }"
       (cancel)="closeEdit()"
       (save)="handleSave($event)"

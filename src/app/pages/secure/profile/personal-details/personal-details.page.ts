@@ -9,6 +9,7 @@ import {
   IonModal,
   IonButton,
   IonIcon,
+  IonSkeletonText,
 } from '@ionic/angular/standalone';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
@@ -27,6 +28,7 @@ import { ProfileEditPage } from '../profile-edit/profile-edit.page';
   templateUrl: './personal-details.page.html',
   styleUrl: './personal-details.page.scss',
   imports: [
+    IonSkeletonText,
     IonIcon,
     IonButton,
     IonModal,

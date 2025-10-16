@@ -8,21 +8,34 @@ import { environment } from 'src/app/environment/environment';
 export class JobActivityService {
   private readonly http = inject(HttpClient);
 
-  getMyActivities(
-    options: { cursor?: string | null; pageSize?: number } = {}
-  ): Observable<Page<CandidateJobs>> {
-    let params = new HttpParams();
-    if (options.cursor) params = params.set('cursor', options.cursor);
-    if (options.pageSize)
-      params = params.set('pageSize', String(options.pageSize));
+  getMyJobs(options: {
+    segment: 'BOOKED' | 'OFFERED' | 'APPLIED';
+    page?: number;
+    pageSize?: number;
+  }): Observable<Page<CandidateJobs>> {
+    const page = options.page ?? 1;
+    const pageSize = options.pageSize ?? 20;
+
+    let params = new HttpParams()
+      .set('segment', options.segment)
+      .set('page', page)
+      .set('pageSize', pageSize);
 
     return this.http
-      .get<any>(`${environment.apiEndpoint}/api/me/job-activities`, { params })
+      .get<{
+        items: any[];
+        total: number;
+        page: number;
+        pageSize: number;
+      }>(`${environment.apiEndpoint}/api/job-history/mine`, { params })
       .pipe(
-        map((res) => ({
-          items: (res.items ?? []).map(this.mapServerToCandidateJobs),
-          nextCursor: res.nextCursor ?? null,
-        }))
+        map((res) => {
+          const hasMore = res.page * res.pageSize < res.total;
+          return {
+            items: (res.items ?? []).map(this.mapServerToCandidateJobs),
+            nextCursor: hasMore ? String(res.page + 1) : null,
+          } as Page<CandidateJobs>;
+        })
       );
   }
 

@@ -64,11 +64,6 @@ export class TabsPage {
         text: 'Job history',
         handler: () => this.nav.navigateForward('secure/tabs/job-history'),
       },
-      {
-        text: 'Certificate management',
-        handler: () =>
-          this.nav.navigateForward('secure/tabs/certificate-management'),
-      },
       { text: 'Cancel', role: 'cancel', icon: 'close-outline' },
     ];
 
