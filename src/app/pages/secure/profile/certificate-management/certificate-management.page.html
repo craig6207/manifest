@@ -1,13 +1,141 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>certificate-management</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Manage Certificates</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/secure/tabs/profile"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">certificate-management</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <section class="uploader-card">
+    <div class="uploader-row">
+      <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+      <div class="uploader-body">
+        <div class="title">Add a certification</div>
+        <div class="subtitle">
+          @if (tradeNameForDisplay()) {
+          <strong>{{ tradeNameForDisplay() }}</strong> } Choose a certificate
+          and upload a clear photo or PDF.
+        </div>
+
+        @if (hasCatalog()) {
+        <ion-item class="compact-item" lines="none">
+          <ion-label>Select certificate</ion-label>
+          <ion-select
+            interface="popover"
+            [value]="selectedId()"
+            (ionChange)="onSelectChange($event.detail.value)"
+            placeholder="Choose"
+          >
+            @for (c of options(); track c.id) {
+            <ion-select-option [value]="c.id">{{ c.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        } @if (!hasCatalog() || selectedId() === -1) {
+        <ion-item class="compact-item" lines="none">
+          <ion-label position="stacked">Other certificate name</ion-label>
+          <ion-input
+            [value]="otherName()"
+            (ionInput)="setOtherName($event.detail.value)"
+            placeholder="e.g. City &amp; Guilds Level 3"
+            maxlength="80"
+            inputmode="text"
+          ></ion-input>
+        </ion-item>
+        } @if (uploadWarn()) {
+        <ion-note color="danger" class="block-note">
+          {{ uploadWarn() }}
+        </ion-note>
+        }
+      </div>
+
+      <div class="uploader-cta">
+        <button
+          class="upload-btn"
+          type="button"
+          [disabled]="uploading() || !canPickFile()"
+          (click)="openPickSheet(nativeFileInput)"
+        >
+          Upload
+        </button>
+        <input
+          #nativeFileInput
+          type="file"
+          hidden
+          accept="image/*,application/pdf"
+          (change)="onNativeFileChosen($event)"
+        />
+      </div>
+    </div>
+  </section>
+
+  @if (loading()) {
+  <div class="loading-row" role="status" aria-live="polite">
+    <ion-spinner></ion-spinner>
+    <ion-note>Loading…</ion-note>
+  </div>
+  } @else if (error()) {
+  <ion-note color="danger" class="block-note">{{ error() }}</ion-note>
+  } @else if (!hasAny()) {
+  <ion-note class="block-note">
+    No certificates yet. Add your first one above.
+  </ion-note>
+  } @else {
+
+  <ion-list lines="full">
+    @for (it of items(); track it.id) {
+    <ion-item-sliding>
+      <ion-item-options side="start">
+        <ion-item-option color="primary" (click)="open(it)">
+          <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item detail="false">
+        <ion-avatar slot="start" class="thumb">
+          <div class="pdf-thumb">
+            <ion-icon name="document-outline"></ion-icon>
+          </div>
+        </ion-avatar>
+
+        <ion-label class="label-col">
+          <div class="title-row">
+            <span class="name">{{ it.displayName }}</span>
+          </div>
+          <div class="meta">
+            <span>Uploaded: {{ it.createdAtUtc | date:'mediumDate' }}</span>
+            @if (it.expiresOn) {
+            <span>Expires: {{ it.expiresOn }}</span>
+            }
+          </div>
+        </ion-label>
+
+        <ion-button
+          fill="clear"
+          slot="end"
+          (click)="open(it)"
+          aria-label="Open"
+        >
+          <ion-icon name="download-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option
+          color="danger"
+          (click)="delete(it, $any($event.target).closest('ion-item-sliding'))"
+        >
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    }
+  </ion-list>
+
+  }
 </ion-content>

@@ -26,4 +26,13 @@ export class TradesService {
       `${environment.apiEndpoint}/api/reference/trades/${tradeId}/certificates`
     );
   }
+
+  getTradeCertificatesByName(
+    tradeName: string
+  ): Observable<TradeCertificateRef[]> {
+    const encoded = encodeURIComponent(tradeName.trim());
+    return this.http.get<TradeCertificateRef[]>(
+      `${environment.apiEndpoint}/api/reference/trades/by-name/${encoded}/certificates`
+    );
+  }
 }

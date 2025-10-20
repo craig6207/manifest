@@ -34,3 +34,45 @@ export interface TradeCertificateRef {
   name: string;
   slug: string;
 }
+
+export interface CreateCertPayload {
+  certificateId?: number;
+  otherName?: string;
+  issuer?: string | null;
+  issuedOn?: Date | null;
+  expiresOn?: Date | null;
+  notes?: string | null;
+  file: File;
+}
+
+export interface CreateCertResult {
+  certificateId: number;
+  fileId: number;
+  blobName: string;
+  contentType: string;
+  size: number;
+  storedAs: string;
+}
+
+export interface CandidateCertificateFileView {
+  fileId: number;
+  contentType: string;
+  sizeBytes: number;
+  uploadedAtUtc: string;
+  isPrimary: boolean;
+  downloadUrl: string;
+}
+
+export interface CandidateCertificateView {
+  id: number;
+  certificateId?: number | null;
+  otherName?: string | null;
+  displayName: string;
+  issuer?: string | null;
+  issuedOn?: string | null;
+  expiresOn?: string | null;
+  notes?: string | null;
+  status: string;
+  createdAtUtc: string;
+  file?: CandidateCertificateFileView | null;
+}
