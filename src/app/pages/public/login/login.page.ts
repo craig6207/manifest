@@ -98,17 +98,11 @@ export class LoginPage implements OnInit {
   }
 
   private async checkBiometricAvailability(): Promise<void> {
-    try {
-      const isAvailable = await this.biometricAuth.isBiometricAvailable();
-
-      if (isAvailable) {
-        const types = await this.biometricAuth.getBiometricTypes();
-        this.biometricType = this.getBiometricDisplayName(types);
-        this.showBiometricButton =
-          await this.biometricAuth.isBiometricEnabled();
-      }
-    } catch (error) {
-      console.error('Error checking biometric availability:', error);
+    const isAvailable = await this.biometricAuth.isBiometricAvailable();
+    if (isAvailable) {
+      const types = await this.biometricAuth.getBiometricTypes();
+      this.biometricType = this.getBiometricDisplayName(types);
+      this.showBiometricButton = await this.biometricAuth.isBiometricEnabled();
     }
   }
 
@@ -206,31 +200,27 @@ export class LoginPage implements OnInit {
   }
 
   private async promptBiometricSetup(email: string): Promise<void> {
-    try {
-      const isAvailable = await this.biometricAuth.isBiometricAvailable();
-      const isEnabled = await this.biometricAuth.isBiometricEnabled();
+    const isAvailable = await this.biometricAuth.isBiometricAvailable();
+    const isEnabled = await this.biometricAuth.isBiometricEnabled();
 
-      if (isAvailable && !isEnabled) {
-        const types = await this.biometricAuth.getBiometricTypes();
-        const biometricName = this.getBiometricDisplayName(types);
-        const userWantsToEnable = await this.showBiometricSetupAlert(
-          biometricName
-        );
+    if (isAvailable && !isEnabled) {
+      const types = await this.biometricAuth.getBiometricTypes();
+      const biometricName = this.getBiometricDisplayName(types);
+      const userWantsToEnable = await this.showBiometricSetupAlert(
+        biometricName
+      );
 
-        if (userWantsToEnable) {
-          const success = await this.authService.enableBiometricAuth(email);
-          if (success) {
-            this.toastOption = {
-              color: 'success',
-              message: `${biometricName} has been enabled for future logins`,
-              show: true,
-            };
-            this.showBiometricButton = true;
-          }
+      if (userWantsToEnable) {
+        const success = await this.authService.enableBiometricAuth(email);
+        if (success) {
+          this.toastOption = {
+            color: 'success',
+            message: `${biometricName} has been enabled for future logins`,
+            show: true,
+          };
+          this.showBiometricButton = true;
         }
       }
-    } catch (error) {
-      console.error('Error setting up biometric:', error);
     }
   }
 

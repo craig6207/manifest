@@ -134,7 +134,6 @@ export class ProfilePage implements OnDestroy {
       this.lastUpload.set(resp);
       this.toastMsg.set('Profile photo uploaded');
     } catch (err) {
-      console.error('Avatar update failed', err);
       this.toastMsg.set('Could not update photo');
     } finally {
       this.isUploading.set(false);

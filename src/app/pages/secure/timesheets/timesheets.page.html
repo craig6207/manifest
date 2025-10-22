@@ -1,3 +1,9 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Timesheets</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
     <ion-refresher-content
@@ -77,9 +83,7 @@
     }
   </ion-list>
   } @else {
-  <ion-text color="light">
-    <h2 class="section-title">Current job</h2>
-  </ion-text>
+  <h2 class="section-title">Current job</h2>
 
   @if (hasCurrent()) {
   <ion-card button (click)="openCurrentTimesheet(current())">
@@ -104,9 +108,7 @@
   <div class="empty">No active jobs right now.</div>
   }
 
-  <ion-text color="light">
-    <h2 class="section-title">Past jobs</h2>
-  </ion-text>
+  <h2 class="section-title">Past jobs</h2>
 
   @if (hasHistory()) {
   <ion-list inset="true">

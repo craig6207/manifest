@@ -101,7 +101,6 @@ export class JobInviteComponent {
         this.loading.set(false);
       },
       error: (e) => {
-        console.error(e);
         this.error.set('Failed to load job details.');
         this.loading.set(false);
       },
@@ -131,7 +130,6 @@ export class JobInviteComponent {
       .subscribe({
         next: () => this.dismiss({ action }),
         error: (e) => {
-          console.error(e);
           this.actioning.set(false);
           this.error.set('Failed to submit response.');
         },

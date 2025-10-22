@@ -40,7 +40,6 @@ export class TimesheetService {
 
   getWeek(dateOnlyISO: string, jobListingId?: number | null) {
     let params = new HttpParams().set('date', dateOnlyISO);
-    // CHANGED: ensure value is a string for HttpParams
     if (jobListingId != null)
       params = params.set('jobListingId', String(jobListingId));
     return this.http.get<TimesheetWeek>(

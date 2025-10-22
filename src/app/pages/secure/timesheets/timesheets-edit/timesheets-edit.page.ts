@@ -54,19 +54,9 @@ import {
   TimesheetWeek as TimesheetWeekDto,
   TimesheetDay as TimesheetDayDto,
   TimesheetAdjustmentCreateRequest,
+  JobAssignmentSummary,
 } from 'src/app/interfaces/timesheets';
 import { ActivatedRoute } from '@angular/router';
-
-addIcons({
-  chevronBackOutline,
-  chevronForwardOutline,
-  timeOutline,
-  createOutline,
-  closeOutline,
-  saveOutline,
-  checkmarkDoneOutline,
-  addOutline,
-});
 
 type WeekStatus = 'Open' | 'Submitted' | 'Approved';
 
@@ -88,7 +78,7 @@ interface TimesheetWeekVM {
 function startOfWeek(d: Date): Date {
   const copy = new Date(d);
   const day = copy.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
+  const diff = day === 0 ? -6 : 1 - day; // Monday start
   copy.setDate(copy.getDate() + diff);
   copy.setHours(0, 0, 0, 0);
   return copy;
@@ -118,7 +108,15 @@ function toDateOnlyString(d: Date): string {
 }
 function dateOnlyToLocalDate(yyyyMMdd: string): Date {
   const [y, m, d] = yyyyMMdd.split('-').map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0);
+  return new Date(
+    (y as number) || 0,
+    ((m as number) ?? 1) - 1,
+    (d as number) || 1,
+    0,
+    0,
+    0,
+    0
+  );
 }
 function formatDayLabel(d: Date): {
   weekdayShort: string;
@@ -157,7 +155,6 @@ function applyLunchDeduction(hours: number): number {
 function isDateOnly(s: string | null | undefined): s is string {
   return !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
 }
-
 function formatHoursToHHmm(hours: number): string {
   const totalMinutes = Math.round(hours * 60);
   const h = Math.floor(totalMinutes / 60);
@@ -201,19 +198,21 @@ export class TimesheetsEditPage {
   private readonly fb = inject(FormBuilder);
   private readonly svc = inject(TimesheetService);
   private readonly route = inject(ActivatedRoute);
-
   readonly jobListingId = signal<number | null>(null);
-
   readonly loading = signal(true);
   readonly editing = signal(false);
   readonly selectedDate = signal(new Date());
   readonly week = signal<TimesheetWeekVM | null>(null);
   readonly baselineWeek = signal<TimesheetWeekVM | null>(null);
   readonly isAlertOpen = signal(false);
+  readonly minDateISO = signal<string | null>(null);
+  readonly maxDateISO = signal<string | null>(null);
 
   readonly weekStart = computed(() => startOfWeek(this.selectedDate()));
   readonly weekEnd = computed(() => endOfWeek(this.selectedDate()));
-  readonly selectedDateISO = computed(() => this.selectedDate().toISOString());
+  readonly selectedDateISO = computed(() =>
+    toDateOnlyString(this.selectedDate())
+  );
   readonly weekStatus = computed<WeekStatus>(
     () => (this.week()?.status ?? 'Open') as WeekStatus
   );
@@ -269,6 +268,7 @@ export class TimesheetsEditPage {
     weekEndISO: new FormControl<string>(''),
     days: this.fb.array<FormGroup>([]),
   });
+
   readonly alertInputs = [
     {
       type: 'textarea' as const,
@@ -278,13 +278,7 @@ export class TimesheetsEditPage {
     },
   ];
   readonly alertButtons = [
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      handler: () => {
-        // no-op
-      },
-    },
+    { text: 'Cancel', role: 'cancel', handler: () => {} },
     {
       text: 'Submit',
       handler: (value: { reason?: string }) => {
@@ -296,18 +290,31 @@ export class TimesheetsEditPage {
   ];
 
   constructor() {
-    addIcons({ closeOutline });
+    addIcons({
+      chevronBackOutline,
+      chevronForwardOutline,
+      timeOutline,
+      createOutline,
+      closeOutline,
+      saveOutline,
+      checkmarkDoneOutline,
+      addOutline,
+    });
 
     this.route.queryParamMap.subscribe((qp) => {
       const dateParam = qp.get('date');
       if (isDateOnly(dateParam)) {
-        this.selectedDate.set(dateOnlyToLocalDate(dateParam));
+        this.selectedDate.set(dateOnlyToLocalDate(dateParam!));
       } else {
-        this.selectedDate.set(new Date());
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        this.selectedDate.set(today);
       }
 
       const jl = Number(qp.get('jobListingId'));
       this.jobListingId.set(Number.isFinite(jl) ? jl : null);
+
+      this.initBounds();
     });
 
     effect(() => {
@@ -315,6 +322,88 @@ export class TimesheetsEditPage {
       const jl = this.jobListingId();
       this.loadWeek(startISO, jl);
     });
+  }
+
+  private async initBounds(): Promise<void> {
+    const jl = this.jobListingId();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let minDate: Date | null = null;
+    let maxDate: Date | null = null;
+
+    try {
+      const [current, history] = await Promise.all([
+        firstValueFrom(this.svc.getCurrentJob()),
+        firstValueFrom(this.svc.getHistoryJobs()),
+      ]);
+
+      const currentMatch =
+        current && jl != null && current.jobListingId === jl
+          ? (current as JobAssignmentSummary)
+          : null;
+      const historyMatch =
+        jl != null && Array.isArray(history)
+          ? (history as JobAssignmentSummary[]).find(
+              (h) => h.jobListingId === jl
+            )
+          : undefined;
+
+      if (currentMatch) {
+        const start = dateOnlyToLocalDate(currentMatch.startDate);
+        const endMaybe = currentMatch.endDate
+          ? dateOnlyToLocalDate(currentMatch.endDate)
+          : null;
+        const cap = endMaybe && endMaybe < today ? endMaybe : today;
+
+        minDate = start;
+        maxDate = cap;
+      } else if (historyMatch) {
+        const start = dateOnlyToLocalDate(historyMatch.startDate);
+        const end = historyMatch.endDate
+          ? dateOnlyToLocalDate(historyMatch.endDate)
+          : today;
+        minDate = start;
+        maxDate = end;
+      } else if (current) {
+        const start = dateOnlyToLocalDate(current.startDate);
+        const endMaybe = current.endDate
+          ? dateOnlyToLocalDate(current.endDate)
+          : null;
+        const cap = endMaybe && endMaybe < today ? endMaybe : today;
+
+        minDate = start;
+        maxDate = cap;
+      } else {
+        minDate = new Date(today);
+        maxDate = new Date(today);
+      }
+    } catch {
+      minDate = new Date(today);
+      maxDate = new Date(today);
+    }
+    this.minDateISO.set(toDateOnlyString(minDate!));
+    this.maxDateISO.set(toDateOnlyString(maxDate!));
+
+    this.selectedDate.set(this.clampToBounds(this.selectedDate()));
+  }
+
+  private clampToBounds(d: Date): Date {
+    const minStr = this.minDateISO();
+    const maxStr = this.maxDateISO();
+
+    const localMidnight = new Date(d);
+    localMidnight.setHours(0, 0, 0, 0);
+
+    if (minStr) {
+      const min = dateOnlyToLocalDate(minStr);
+      if (localMidnight < min) return min;
+    }
+    if (maxStr) {
+      const max = dateOnlyToLocalDate(maxStr);
+      if (localMidnight > max) return max;
+    }
+    return localMidnight;
   }
 
   openReasonAlert() {
@@ -412,15 +501,20 @@ export class TimesheetsEditPage {
   }
 
   goPrevWeek() {
-    this.selectedDate.set(addDays(this.weekStart(), -1));
+    const prev = addDays(this.weekStart(), -1);
+    this.selectedDate.set(this.clampToBounds(prev));
   }
   goNextWeek() {
-    this.selectedDate.set(addDays(this.weekEnd(), 1));
+    const next = addDays(this.weekEnd(), 1);
+    this.selectedDate.set(this.clampToBounds(next));
   }
   onDatePicked(ev: CustomEvent) {
     const value = (ev.detail as unknown as { value: string }).value;
-    if (value) this.selectedDate.set(new Date(value));
+    if (!value) return;
+    const picked = dateOnlyToLocalDate(value.substring(0, 10));
+    this.selectedDate.set(this.clampToBounds(picked));
   }
+
   onRefresh(ev: CustomEvent) {
     const startISO = toISODateMidnight(this.weekStart());
     this.loadWeek(startISO, this.jobListingId()).then(() =>
@@ -472,7 +566,7 @@ export class TimesheetsEditPage {
     if (!Number.isFinite(jl)) return;
 
     const anchorDate = toDateOnlyString(this.weekStart());
-    const edits = this.buildWeekEdits(jl!, reason); // pass reason to all edits
+    const edits = this.buildWeekEdits(jl!, reason);
 
     if (edits.length === 0) {
       this.editing.set(false);
@@ -508,12 +602,10 @@ export class TimesheetsEditPage {
       const inUtc = inLocal ? parseHHMMToISO(dateISO, inLocal) : null;
       const outUtc = outLocal ? parseHHMMToISO(dateISO, outLocal) : null;
 
-      if (inUtc && (!earliestIn || new Date(inUtc) < new Date(earliestIn))) {
+      if (inUtc && (!earliestIn || new Date(inUtc) < new Date(earliestIn)))
         earliestIn = inUtc;
-      }
-      if (outUtc && (!latestOut || new Date(outUtc) > new Date(latestOut))) {
+      if (outUtc && (!latestOut || new Date(outUtc) > new Date(latestOut)))
         latestOut = outUtc;
-      }
     }
 
     if (

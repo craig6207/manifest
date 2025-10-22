@@ -131,7 +131,6 @@ export class JobDetailPage {
       this.success.set("Thanks! We've let the client know you're interested.");
       setTimeout(() => this.router.navigate(['/secure/tabs/job-search']), 600);
     } catch (e: any) {
-      console.error(e);
       this.error.set(e?.error?.message ?? 'Could not apply for this job.');
     } finally {
       this.applying.set(false);

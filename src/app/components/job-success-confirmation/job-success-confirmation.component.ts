@@ -263,7 +263,6 @@ export class JobSuccessConfirmationComponent implements OnInit {
         });
       },
       error: (err: HttpErrorResponse) => {
-        console.error(err);
         this.error.set(
           'Sorry, we could not confirm right now. Please try again.'
         );

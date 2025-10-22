@@ -119,7 +119,6 @@ export class NotificationsPage {
           this.loading.set(false);
         },
         error: (err) => {
-          console.error(err);
           this.error.set('Failed to load notifications.');
           this.loading.set(false);
         },
@@ -144,7 +143,6 @@ export class NotificationsPage {
           this.markReadLocally(notification.id!);
           this.decrementUnreadCountOnce();
         },
-        error: (e) => console.warn('Failed to mark as read', e),
       });
     }
 

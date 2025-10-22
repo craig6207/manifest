@@ -186,20 +186,16 @@ export class AuthService {
   }
 
   private async checkBiometricSetup(email: string): Promise<void> {
-    try {
-      const isAvailable = await this.biometricAuth.isBiometricAvailable();
-      const isEnabled = await this.biometricAuth.isBiometricEnabled();
+    const isAvailable = await this.biometricAuth.isBiometricAvailable();
+    const isEnabled = await this.biometricAuth.isBiometricEnabled();
 
-      if (isAvailable && !isEnabled) return;
+    if (isAvailable && !isEnabled) return;
 
-      if (isEnabled) {
-        const storedEmail = await this.biometricAuth.getStoredEmail();
-        if (storedEmail !== email) {
-          await this.biometricAuth.enableBiometric(email);
-        }
+    if (isEnabled) {
+      const storedEmail = await this.biometricAuth.getStoredEmail();
+      if (storedEmail !== email) {
+        await this.biometricAuth.enableBiometric(email);
       }
-    } catch (error) {
-      console.error('Error checking biometric setup:', error);
     }
   }
 
@@ -248,12 +244,8 @@ export class AuthService {
         String(msg).toLowerCase().includes('expired');
 
       if (revoked) {
-        try {
-          await this.biometricAuth.clearBiometricData();
-        } catch {}
+        await this.biometricAuth.clearBiometricData();
       }
-
-      console.error('Token refresh failed:', error);
       this.logout();
       return false;
     }

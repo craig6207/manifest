@@ -277,7 +277,6 @@ export class CertificateManagementPage implements OnInit {
       });
       await FileViewer.openDocumentFromLocalPath({ path: uri });
     } catch (err) {
-      console.error('Open file failed', err);
       this.error.set('Could not open the file. Please try again.');
     }
   }

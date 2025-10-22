@@ -3,7 +3,7 @@
   <div class="skeleton-wrap">
     <ion-img
       class="logo"
-      src="/assets/img/Recruut_logo_contrast.svg"
+      src="/assets/img/Recruut_logo.svg"
       alt="WeRecruit logo"
     ></ion-img>
 
@@ -44,13 +44,9 @@
     </ion-card>
   </div>
   } @else {
-  <img
-    src="/assets/img/Recruut_logo_contrast.svg"
-    alt="WeRecruit logo"
-    class="logo"
-  />
+  <img src="/assets/img/Recruut_logo.svg" alt="WeRecruit logo" class="logo" />
 
-  <ion-text color="light" class="welcome">
+  <ion-text class="welcome">
     <h1>Welcome {{ firstName() }}</h1>
   </ion-text>
 
@@ -62,7 +58,8 @@
         aria-hidden="true"
       ></ion-icon>
       <ion-card-title class="cta-title">
-        There are {{ jobCount() }} jobs waiting for you
+        There {{jobCount() > 1 ? 'are': 'is'}} {{ jobCount() }} job{{jobCount()
+        > 1 ? 's': ''}} waiting for you
       </ion-card-title>
     </ion-card-header>
 
@@ -74,7 +71,7 @@
           size="default"
           (click)="$event.stopPropagation(); goBrowse()"
         >
-          Browse jobs ({{ jobCount() }})
+          Browse job{{jobCount() > 1 ? 's': ''}} ({{ jobCount() }})
           <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
         </ion-button>
       </div>

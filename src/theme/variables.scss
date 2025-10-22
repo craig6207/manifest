@@ -62,18 +62,5 @@
   --ion-color-dark-shade: #0a123a;
   --ion-color-dark-tint: #232c53;
 
-  --ion-background-color: #f4f8ff;
-
-  --app-background-gradient: linear-gradient(135deg, #0819b8 0%, #26d3f5 100%);
-}
-
-html,
-body,
-ion-app {
-  background: var(--app-background-gradient);
-  background-attachment: fixed;
-}
-
-ion-content {
-  --background: var(--app-background-gradient);
+  --ion-background-color: var(--ion-color-light);
 }

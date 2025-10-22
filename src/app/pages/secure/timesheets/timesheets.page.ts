@@ -25,6 +25,7 @@ import {
   IonRefresherContent,
   IonSkeletonText,
   IonText,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -80,7 +81,7 @@ function dateRangeLabel(
 @Component({
   selector: 'app-timesheets',
   imports: [
-    IonText,
+    IonImg,
     IonHeader,
     IonToolbar,
     IonTitle,

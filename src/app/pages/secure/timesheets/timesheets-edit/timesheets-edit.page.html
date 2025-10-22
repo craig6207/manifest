@@ -107,6 +107,8 @@
           id="weekDatePicker"
           presentation="date"
           [value]="selectedDateISO()"
+          [min]="minDateISO()"
+          [max]="maxDateISO()"
           (ionChange)="onDatePicked($event)"
         >
         </ion-datetime>

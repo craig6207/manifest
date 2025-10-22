@@ -131,7 +131,6 @@ export class JobExtraDetailsComponent {
           this.loading.set(false);
         },
         error: (e) => {
-          console.error(e);
           this.error.set('Could not load site details.');
           this.loading.set(false);
         },
@@ -186,7 +185,6 @@ export class JobExtraDetailsComponent {
       .subscribe({
         next: () => this.modalCtrl.dismiss({ action, refresh: true }),
         error: (e) => {
-          console.error(e);
           this.actioning.set(false);
           this.error.set('Failed to submit your decision. Please try again.');
         },

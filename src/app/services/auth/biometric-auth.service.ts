@@ -19,7 +19,6 @@ export class BiometricAuthService {
       const result = await BiometricAuth.checkBiometry();
       return result.isAvailable;
     } catch (error) {
-      console.error('Biometric availability check failed:', error);
       return false;
     }
   }
@@ -29,7 +28,6 @@ export class BiometricAuthService {
       const result = await BiometricAuth.checkBiometry();
       return result.biometryTypes ?? [];
     } catch (error) {
-      console.error('Biometric type check failed:', error);
       return [];
     }
   }
@@ -50,7 +48,6 @@ export class BiometricAuthService {
 
       return true;
     } catch (error) {
-      console.error('Failed to enable biometric login:', error);
       return false;
     }
   }
@@ -84,7 +81,6 @@ export class BiometricAuthService {
         email: email ?? undefined,
       };
     } catch (error) {
-      console.error('Biometric authentication failed:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
