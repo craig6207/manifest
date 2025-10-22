@@ -97,7 +97,7 @@
         </ion-item-option>
       </ion-item-options>
 
-      <ion-item detail="false">
+      <ion-item button detail="false" (click)="open(it)">
         <ion-avatar slot="start" class="thumb">
           <div class="pdf-thumb">
             <ion-icon name="document-outline"></ion-icon>
@@ -119,7 +119,7 @@
         <ion-button
           fill="clear"
           slot="end"
-          (click)="open(it)"
+          (click)="$event.stopPropagation(); open(it)"
           aria-label="Open"
         >
           <ion-icon name="download-outline" slot="icon-only"></ion-icon>

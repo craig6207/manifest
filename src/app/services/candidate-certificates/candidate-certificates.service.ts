@@ -107,4 +107,10 @@ export class CandidateCertificatesService {
       `${this.api}/api/candidatecertificates/me/${certificateId}`
     );
   }
+
+  deleteFile(fileId: number) {
+    return this.http.delete<void>(
+      `${this.api}/api/candidatecertificates/me/file/${fileId}`
+    );
+  }
 }

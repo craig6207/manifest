@@ -12,6 +12,12 @@ PODS:
   - CapacitorCordova (7.4.0)
   - CapacitorDevice (7.0.2):
     - Capacitor
+  - CapacitorFilesystem (7.1.4):
+    - Capacitor
+    - IONFilesystemLib (~> 1.0.1)
+  - CapacitorFileViewer (1.0.5):
+    - Capacitor
+    - IONFileViewerLib (~> 1.0.3)
   - CapacitorGeolocation (7.1.4):
     - Capacitor
     - IONGeolocationLib (~> 1.0)
@@ -28,6 +34,8 @@ PODS:
     - SwiftKeychainWrapper
   - CapacitorStatusBar (7.0.1):
     - Capacitor
+  - IONFilesystemLib (1.0.1)
+  - IONFileViewerLib (1.0.3)
   - IONGeolocationLib (1.0.0)
   - SwiftKeychainWrapper (4.0.1)
 
@@ -39,6 +47,8 @@ DEPENDENCIES:
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
+  - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
+  - "CapacitorFileViewer (from `../../node_modules/@capacitor/file-viewer`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
@@ -49,6 +59,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - IONFilesystemLib
+    - IONFileViewerLib
     - IONGeolocationLib
     - SwiftKeychainWrapper
 
@@ -67,6 +79,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorDevice:
     :path: "../../node_modules/@capacitor/device"
+  CapacitorFilesystem:
+    :path: "../../node_modules/@capacitor/filesystem"
+  CapacitorFileViewer:
+    :path: "../../node_modules/@capacitor/file-viewer"
   CapacitorGeolocation:
     :path: "../../node_modules/@capacitor/geolocation"
   CapacitorHaptics:
@@ -90,6 +106,8 @@ SPEC CHECKSUMS:
   CapacitorCamera: 6e18d54c8ab30d7dc7b8cd93d96f9b4f57e9202a
   CapacitorCordova: 723e017d8a80ab2ede9959fbe37556c35ac860d5
   CapacitorDevice: a50a45f0d075e55e2392c7a4be5404d4f69515de
+  CapacitorFilesystem: ac0a386949ed6c295a3dffa129ecd26b881ae5be
+  CapacitorFileViewer: f2dad52ce1c61ab1e05f5e3886c2b1396e18dd5f
   CapacitorGeolocation: 5583eb25815522c4b4cb38936ac7fea8a34996d9
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
@@ -97,9 +115,11 @@ SPEC CHECKSUMS:
   CapacitorPreferences: b583b5deb74e564c35968189d25d32c0fd41200d
   CapacitorSecureStoragePlugin: 8019bd11de7d5832a87c1bb320750dd6cef792d7
   CapacitorStatusBar: 275cbf2f4dfc00388f519ef80c7ec22edda342c9
+  IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
+  IONFileViewerLib: 574758ebcaa4b1543669b1c9708f1970e1172b29
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   SwiftKeychainWrapper: 807ba1d63c33a7d0613288512399cd1eda1e470c
 
-PODFILE CHECKSUM: 681712c849c6c9b8a3dafe3998eb424286d0abb1
+PODFILE CHECKSUM: 01ba2c11c6473e5ad35efc86471d11596fb4dae0
 
 COCOAPODS: 1.14.2

@@ -62,7 +62,9 @@ import {
   CameraSource,
   PermissionStatus,
 } from '@capacitor/camera';
-import { Browser } from '@capacitor/browser';
+import { FileViewer } from '@capacitor/file-viewer';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+
 import { DatePipe } from '@angular/common';
 import { TradesService } from 'src/app/services/trades/trades.service';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
@@ -97,7 +99,6 @@ const OTHER_ID = -1;
     IonAvatar,
     IonRefresher,
     IonRefresherContent,
-    IonChip,
     IonSelect,
     IonSelectOption,
     IonInput,
@@ -124,14 +125,12 @@ export class CertificateManagementPage implements OnInit {
       cloudUploadOutline,
     });
 
-    // React to trade category changes and fetch catalog
     effect(() => {
       const tradeCat = this.tradeCategory();
       this.loadCatalogByTradeCategory(tradeCat);
     });
   }
 
-  // UI state
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly items = signal<CandidateCertificateView[]>([]);
@@ -141,16 +140,13 @@ export class CertificateManagementPage implements OnInit {
   readonly selectedId = signal<number | null>(null);
   readonly otherName = signal<string>('');
 
-  // Profile-derived signals
   readonly profile = computed<CandidateProfile | null>(() =>
     this.profileStore.profile()
   );
-
   readonly tradeCategory = computed<string>(() => {
     const p = this.profile();
     return (p?.tradeCategory ?? '').trim();
   });
-
   readonly tradeNameForDisplay = computed<string>(() => {
     const p = this.profile();
     if (!p) return '';
@@ -159,16 +155,12 @@ export class CertificateManagementPage implements OnInit {
     if (cat && sub) return `${cat} – ${sub}`;
     return cat || sub || '';
   });
-
-  // Derived UI
   readonly hasAny = computed(() => this.items().length > 0);
   readonly hasCatalog = computed(() => this.catalog().length > 0);
-
   readonly options = computed<TradeCertificateRef[]>(() => [
     ...this.catalog(),
     { id: OTHER_ID, name: 'Other (not listed)' } as TradeCertificateRef,
   ]);
-
   readonly canPickFile = computed(() => {
     const id = this.selectedId();
     if (id === null) return false;
@@ -201,7 +193,6 @@ export class CertificateManagementPage implements OnInit {
         }));
         this.catalog.set(normalized);
 
-        // Default to first catalog option if there is one; otherwise default to OTHER
         if (this.selectedId() === null) {
           if (normalized.length > 0) this.selectedId.set(normalized[0].id);
           else this.selectedId.set(OTHER_ID);
@@ -233,35 +224,83 @@ export class CertificateManagementPage implements OnInit {
     }
   }
 
-  // OPEN / VIEW (uses Capacitor Browser on device, window.open on web)
-  async open(item: CandidateCertificateView): Promise<void> {
-    const fid = item.file?.fileId;
-    if (!fid) return;
+  private extFromMime(mime: string | null | undefined): string {
+    const m = (mime || '').toLowerCase();
+    if (m.includes('pdf')) return 'pdf';
+    if (m.includes('png')) return 'png';
+    if (m.includes('jpeg')) return 'jpg';
+    if (m.includes('jpg')) return 'jpg';
+    if (m.includes('heic')) return 'heic';
+    if (m.includes('webp')) return 'webp';
+    return 'bin';
+  }
 
-    const url = this.certsSvc.getMyFileUrl(fid);
+  private async blobToBase64(blob: Blob): Promise<string> {
+    const arrayBuffer = await blob.arrayBuffer();
+    let binary = '';
+    const bytes = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < bytes.byteLength; i++)
+      binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  }
+
+  async open(item: CandidateCertificateView): Promise<void> {
+    const fileMeta = item.file;
+    if (!fileMeta?.fileId) return;
 
     try {
-      if (this.platform.is('capacitor')) {
-        await Browser.open({
-          url,
-          presentationStyle: 'fullscreen',
-        });
-      } else {
-        window.open(url, '_blank', 'noopener');
+      if (!this.platform.is('capacitor')) {
+        window.open(
+          this.certsSvc.getMyFileUrl(fileMeta.fileId),
+          '_blank',
+          'noopener'
+        );
+        return;
       }
-    } catch {
-      // Fallback
-      window.open(url, '_blank', 'noopener');
+
+      const blob = await firstValueFrom(
+        this.certsSvc.downloadCertificate(fileMeta.fileId)
+      );
+      const ext = this.extFromMime(fileMeta.contentType);
+      const fileName = `certificate_${fileMeta.fileId}_${Date.now()}.${ext}`;
+      const relPath = `certs/${fileName}`;
+      const base64 = await this.blobToBase64(blob);
+      await Filesystem.writeFile({
+        path: relPath,
+        data: base64,
+        directory: Directory.Cache,
+        recursive: true,
+      });
+      const { uri } = await Filesystem.getUri({
+        path: relPath,
+        directory: Directory.Cache,
+      });
+      await FileViewer.openDocumentFromLocalPath({ path: uri });
+    } catch (err) {
+      console.error('Open file failed', err);
+      this.error.set('Could not open the file. Please try again.');
     }
   }
 
-  async delete(item: CandidateCertificateView, sliding: IonItemSliding) {
-    await sliding.closeOpened();
+  async delete(
+    item: CandidateCertificateView,
+    sliding?: IonItemSliding | null
+  ) {
     try {
-      await firstValueFrom(this.certsSvc.deleteCertificate(item.id));
-      this.items.set(this.items().filter((i) => i.id !== item.id));
+      await sliding?.closeOpened?.();
+    } catch {}
+
+    const fileId = item.file?.fileId;
+    if (!fileId) {
+      this.error.set('No file attached to delete.');
+      return;
+    }
+
+    try {
+      await firstValueFrom(this.certsSvc.deleteFile(fileId));
+      await this.refresh();
     } catch {
-      this.error.set('Could not delete certificate. Please try again.');
+      this.error.set('Could not delete certificate file. Please try again.');
     }
   }
 

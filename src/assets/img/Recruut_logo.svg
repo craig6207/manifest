@@ -1,0 +1,55 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="717.9999999999999 468 527.0000000000003 153" width="529" height="153">
+	<defs>
+		<linearGradient id="g1" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-167.32,0,0,-168.95,1175.62,554.79)">
+			<stop offset="0" stop-color="#26d3f5"/>
+			<stop offset=".12" stop-color="#23c6f0"/>
+			<stop offset=".33" stop-color="#1ea4e5"/>
+			<stop offset=".61" stop-color="#156dd3"/>
+			<stop offset=".96" stop-color="#0922bb"/>
+			<stop offset="1" stop-color="#0819b8"/>
+		</linearGradient>
+		<linearGradient id="g2" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-167.32,0,0,-168.95,1175.62,554.79)">
+			<stop offset="0" stop-color="#26d3f5"/>
+			<stop offset=".12" stop-color="#23c6f0"/>
+			<stop offset=".33" stop-color="#1ea4e5"/>
+			<stop offset=".61" stop-color="#156dd3"/>
+			<stop offset=".96" stop-color="#0922bb"/>
+			<stop offset="1" stop-color="#0819b8"/>
+		</linearGradient>
+		<linearGradient id="g3" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-167.32,0,0,-168.272,1175.62,503.4)">
+			<stop offset="0" stop-color="#26d3f5"/>
+			<stop offset=".12" stop-color="#23c6f0"/>
+			<stop offset=".33" stop-color="#1ea4e5"/>
+			<stop offset=".61" stop-color="#156dd3"/>
+			<stop offset=".96" stop-color="#0922bb"/>
+			<stop offset="1" stop-color="#0819b8"/>
+		</linearGradient>
+		<linearGradient id="g4" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(-167.32,0,0,-168.272,1175.62,503.4)">
+			<stop offset="0" stop-color="#26d3f5"/>
+			<stop offset=".12" stop-color="#23c6f0"/>
+			<stop offset=".33" stop-color="#1ea4e5"/>
+			<stop offset=".61" stop-color="#156dd3"/>
+			<stop offset=".96" stop-color="#0922bb"/>
+			<stop offset="1" stop-color="#0819b8"/>
+		</linearGradient>
+	</defs>
+	<style>
+		.s0 { fill: #0819b8 } 
+		.s1 { fill: url(#g1) } 
+		.s2 { fill: url(#g2) } 
+		.s3 { fill: url(#g3) } 
+		.s4 { fill: url(#g4) } 
+	</style>
+	<g>
+		<path class="s0" d="m742.96 586.26v-87.89h33.82c19.85 0 35.13 9.27 35.13 27.95 0 12.01-7.05 21.29-18.28 24.29 5.62 3.14 8.88 9.14 13.45 18.28l8.49 17.37h-20.63l-7.83-15.67c-4.05-8.1-7.84-12.41-17.76-12.41h-7.44l-0.13 28.08h-18.8zm19.07-70.25l-0.13 25.2h14.89c9.01 0 15.54-4.7 15.54-12.93 0-8.23-6.66-12.27-15.28-12.27z"/>
+		<path class="s0" d="m819.74 553.35c0-18.67 13.58-34.08 33.56-34.08 19.98 0 32.39 15.15 32.39 32.78v5.48h-48.06c1.31 8.62 7.96 14.37 17.24 14.37 7.05 0 12.93-3.4 15.93-9.4l14.23 7.18c-5.62 11.62-16.32 18.28-30.04 18.28-20.11 0-35.26-13.97-35.26-34.61zm47.54-6.13c-0.78-6.66-6.27-11.75-14.1-11.75-7.83 0-13.45 5.22-14.75 11.75 0 0 28.86 0 28.85 0z"/>
+		<path class="s0" d="m896 553.87c0-18.8 15.28-34.21 34.74-34.08 12.41 0.13 23.9 5.75 29.77 18.28l-15.28 8.36c-2.87-5.62-8.1-9.14-14.49-9.14-9.27 0-16.19 7.44-16.19 16.58 0 9.14 6.92 16.59 16.19 16.59 6.4 0 11.62-3.53 14.49-9.14l15.28 8.36c-5.88 12.54-17.37 18.15-29.77 18.28-19.46 0.13-34.74-15.41-34.74-34.09z"/>
+		<path class="s0" d="m971.61 586.26v-37.09c0-16.58 9.4-29.25 28.6-29.25 4.18 0 8.75 0.78 12.01 2.22v18.02c-3.13-1.83-6.92-2.74-10.32-2.74-7.31 0-11.75 4.7-11.75 12.41v36.43z"/>
+		<path class="s1" d="m1069.02 551.52v-29.9h18.54v32.12c0 18.94-11.23 34.21-32.91 34.21-21.68 0-32.78-15.28-32.78-34.21v-32.12h18.54v30.04c0 9.92 4.7 18.41 14.23 18.41 9.53 0 14.36-8.49 14.36-18.54z"/>
+		<path class="s2" d="m1142.8 551.52v-29.9h18.54v32.12c0 18.94-11.23 34.21-32.91 34.21-21.68 0-32.78-15.28-32.78-34.21v-32.12h18.54v30.04c0 9.92 4.7 18.41 14.23 18.41 9.53 0 14.36-8.49 14.36-18.54z"/>
+		<path class="s3" d="m1104.91 491.91c-6.26 0-11.49 5.23-11.49 11.49 0 6.26 5.23 11.49 11.49 11.49 6.26 0 11.36-5.08 11.36-11.49 0-6.41-5.08-11.49-11.36-11.49z"/>
+		<path class="s4" d="m1078.23 491.91c-6.26 0-11.49 5.23-11.49 11.49 0 6.26 5.23 11.49 11.49 11.49 6.26 0 11.36-5.08 11.36-11.49 0-6.41-5.08-11.49-11.36-11.49z"/>
+		<path class="s0" d="m1181.64 560.67v-23.38h-11.88v-15.67h11.88v-16.45h18.54v16.45h22.85v15.67h-22.85v22.85c0 7.18 4.31 11.36 11.1 11.36 3.79 0 8.62-1.17 11.75-3.13v16.58c-3.27 2.09-8.88 3.13-13.45 3.13-18.67 0-27.95-11.23-27.95-27.42z"/>
+		<path id="Shape 1" fill-rule="evenodd" class="s0" d="m63-68"/>
+	</g>
+</svg>

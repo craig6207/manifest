@@ -32,11 +32,15 @@ import {
   ProfilePicService,
   UploadImageResponse,
 } from 'src/app/services/profile-pic/profile-pic.service';
+import { ChangeDetectionStrategy } from '@angular/core';
+
+const DEFAULT_AVATAR = 'https://ionicframework.com/docs/img/demos/avatar.svg';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonBadge,
     IonCol,
@@ -67,20 +71,13 @@ export class ProfilePage implements OnDestroy {
   private readonly store = inject(ProfileStore);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private profileStore = inject(ProfileStore);
 
   isAvatarSheetOpen = signal(false);
   isUploading = signal(false);
   toastMsg = signal('');
 
-  private avatarFetchDone = signal(false);
-  loadingPage = computed(() => !this.avatarFetchDone());
-
-  private currentAvatarUrl: string | null = null;
-  avatarSrc = signal<string>(
-    'https://ionicframework.com/docs/img/demos/avatar.svg'
-  );
-  lastUpload = signal<UploadImageResponse | null>(null);
+  loadingPage = computed(() => !this.store.avatarLoaded());
+  avatarSrc = computed(() => this.store.avatarDataUrl() ?? DEFAULT_AVATAR);
 
   rating = computed(() => this.store.profile()?.rating);
   displayName = computed(() => {
@@ -90,40 +87,25 @@ export class ProfilePage implements OnDestroy {
     const name = `${fn} ${ln}`.trim();
     return name || 'Your profile';
   });
-  unreadCount = computed(() => this.profileStore.unreadNotificationCount());
+
+  unreadCount = computed(() => this.store.unreadNotificationCount());
   unreadBadgeText = computed(() => {
     const n = this.unreadCount();
     return n > 99 ? '99+' : `${n}`;
   });
 
+  lastUpload = signal<UploadImageResponse | null>(null);
+
   constructor() {
     addIcons({ cameraOutline, imageOutline });
   }
 
-  ionViewWillEnter() {
-    this.loadAvatarBlocking();
+  async ionViewWillEnter() {
+    await this.store.ensureAvatarLoaded();
   }
 
   ngOnDestroy(): void {
-    if (this.currentAvatarUrl) {
-      URL.revokeObjectURL(this.currentAvatarUrl);
-      this.currentAvatarUrl = null;
-    }
-  }
-
-  private async loadAvatarBlocking(): Promise<void> {
-    this.avatarFetchDone.set(false);
-    try {
-      const blob = await firstValueFrom(
-        this.profilePicService.getMyPhotoBlob()
-      );
-      if (blob && blob.size > 0) {
-        const url = URL.createObjectURL(blob);
-        this.setAvatarUrl(url);
-      }
-    } finally {
-      this.avatarFetchDone.set(true);
-    }
+    // Nothing to revoke now; we’re using data URLs (no object URLs).
   }
 
   openAvatarSheet(): void {
@@ -144,17 +126,12 @@ export class ProfilePage implements OnDestroy {
   private async pickAndUpload(source: 'camera' | 'photos') {
     try {
       this.isUploading.set(true);
-
       const blob = await this.profilePicService.getPhotoFrom(source);
-      const previewUrl = URL.createObjectURL(blob);
-      this.setAvatarUrl(previewUrl);
-
+      await this.store.setAvatarFromBlob(blob);
       const resp = await firstValueFrom(
         this.profilePicService.uploadPhoto(null, blob)
       );
       this.lastUpload.set(resp);
-
-      await this.loadAvatarBlocking();
       this.toastMsg.set('Profile photo uploaded');
     } catch (err) {
       console.error('Avatar update failed', err);
@@ -165,14 +142,9 @@ export class ProfilePage implements OnDestroy {
     }
   }
 
-  private setAvatarUrl(url: string) {
-    if (this.currentAvatarUrl) URL.revokeObjectURL(this.currentAvatarUrl);
-    this.currentAvatarUrl = url;
-    this.avatarSrc.set(url);
-  }
-
   logout() {
     this.authService.logout();
+    this.store.clearAvatarCache();
     this.router.navigate(['/']);
   }
 }

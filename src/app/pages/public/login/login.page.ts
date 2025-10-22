@@ -137,10 +137,8 @@ export class LoginPage implements OnInit {
         this.signin_form.value.password
       );
 
-      this.isLoading = false;
-
       await this.promptBiometricSetup(this.signin_form.value.email);
-
+      this.isLoading = false;
       await this.router.navigateByUrl('/secure/tabs/home', {
         replaceUrl: true,
       });
@@ -237,6 +235,7 @@ export class LoginPage implements OnInit {
   }
 
   private showBiometricSetupAlert(biometricName: string): Promise<boolean> {
+    this.isLoading = false;
     return new Promise((resolve) => {
       this.alertHeader = 'Enable Biometric Login';
       this.alertMessage = `Would you like to use ${biometricName} for faster login in the future?`;

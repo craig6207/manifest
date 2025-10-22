@@ -4,8 +4,12 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
 import { pipe, switchMap, tap } from 'rxjs';
 import { CandidateProfileService } from '../services/candidate-profile/candidate-profile.service';
-import { tapResponse } from '@ngrx/operators';
 import { NotificationsService } from '../services/notification/notification.service';
+import { tapResponse } from '@ngrx/operators';
+import { Preferences } from '@capacitor/preferences';
+import { ProfilePicService } from '../services/profile-pic/profile-pic.service';
+
+const AVATAR_PREFS_KEY = 'profile.avatarDataUrl';
 
 export type ProfileState = {
   profile: CandidateProfile | null;
@@ -13,6 +17,8 @@ export type ProfileState = {
   loaded: boolean;
   error: string;
   unreadNotificationCount: number;
+  avatarDataUrl: string | null;
+  avatarLoaded: boolean;
 };
 
 const initialState: ProfileState = {
@@ -21,7 +27,18 @@ const initialState: ProfileState = {
   loaded: false,
   error: '',
   unreadNotificationCount: 0,
+  avatarDataUrl: null,
+  avatarLoaded: false,
 };
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Failed to read avatar blob'));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(blob);
+  });
+}
 
 export const ProfileStore = signalStore(
   { providedIn: 'root' },
@@ -30,7 +47,8 @@ export const ProfileStore = signalStore(
     (
       store,
       profileService = inject(CandidateProfileService),
-      notificationsService = inject(NotificationsService)
+      notificationsService = inject(NotificationsService),
+      profilePicService = inject(ProfilePicService)
     ) => ({
       setProfile(profile: CandidateProfile): void {
         patchState(store, { profile, loaded: true, loading: false, error: '' });
@@ -106,6 +124,7 @@ export const ProfileStore = signalStore(
           )
         )
       ),
+
       updateProfile: rxMethod<CandidateProfile>(
         pipe(
           tap(() => patchState(store, { loading: true, error: '' })),
@@ -129,6 +148,68 @@ export const ProfileStore = signalStore(
           )
         )
       ),
+
+      async persistAvatarToPrefs(dataUrl: string | null): Promise<void> {
+        if (dataUrl) {
+          await Preferences.set({ key: AVATAR_PREFS_KEY, value: dataUrl });
+        } else {
+          await Preferences.remove({ key: AVATAR_PREFS_KEY });
+        }
+      },
+
+      async setAvatarDataUrl(dataUrl: string | null): Promise<void> {
+        patchState(store, { avatarDataUrl: dataUrl, avatarLoaded: true });
+        await this.persistAvatarToPrefs(dataUrl);
+      },
+
+      async loadAvatarFromCacheOnce(): Promise<boolean> {
+        try {
+          const { value } = await Preferences.get({ key: AVATAR_PREFS_KEY });
+          if (value) {
+            patchState(store, { avatarDataUrl: value, avatarLoaded: true });
+            return true;
+          }
+        } finally {
+          return false;
+        }
+      },
+
+      async fetchAvatarFromApiOnce(): Promise<void> {
+        try {
+          const blob = await profilePicService.getMyPhotoBlob().toPromise();
+          if (blob && blob.size > 0) {
+            const dataUrl = await blobToDataUrl(blob);
+            patchState(store, { avatarDataUrl: dataUrl, avatarLoaded: true });
+            await this.persistAvatarToPrefs(dataUrl);
+          } else {
+            patchState(store, { avatarLoaded: true });
+          }
+        } catch {
+          patchState(store, { avatarLoaded: true });
+        }
+      },
+
+      async ensureAvatarLoaded(): Promise<void> {
+        const alreadyLoaded = (store as any).avatarLoaded?.();
+        const existingData = (store as any).avatarDataUrl?.();
+
+        if (alreadyLoaded && existingData) return;
+
+        const hadCache = await this.loadAvatarFromCacheOnce();
+        if (hadCache) return;
+
+        await this.fetchAvatarFromApiOnce();
+      },
+
+      async setAvatarFromBlob(blob: Blob): Promise<void> {
+        const dataUrl = await blobToDataUrl(blob);
+        await this.setAvatarDataUrl(dataUrl);
+      },
+
+      async clearAvatarCache(): Promise<void> {
+        patchState(store, { avatarDataUrl: null, avatarLoaded: false });
+        await Preferences.remove({ key: AVATAR_PREFS_KEY });
+      },
     })
   )
 );
