@@ -1,47 +1,34 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from 'src/app/services/auth/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   IonButton,
-  IonHeader,
-  IonRow,
-  IonText,
   IonContent,
-  IonGrid,
-  IonToolbar,
-  IonCol,
-  IonTitle,
-  IonInputOtp,
-  IonButtons,
   IonIcon,
+  IonInputOtp,
   IonToast,
 } from '@ionic/angular/standalone';
-import { LoadingController } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
-import { RegisterStore } from 'src/app/+state/register-signal.store';
-import { HttpErrorResponse } from '@angular/common/http';
+import { LoadingController, NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { RegisterStore } from 'src/app/+state/register-signal.store';
 
 type VerifyMode = 'register' | 'reset';
 
 @Component({
   selector: 'app-verify-code',
+  standalone: true,
   imports: [
-    IonToast,
-    IonButtons,
-    IonTitle,
-    IonCol,
-    IonToolbar,
-    IonGrid,
+    CommonModule,
+    FormsModule,
     IonContent,
-    IonRow,
-    IonHeader,
     IonButton,
-    IonText,
     IonInputOtp,
     IonIcon,
-    FormsModule,
+    IonToast,
   ],
   templateUrl: './verify-code.page.html',
   styleUrls: ['./verify-code.page.scss'],
@@ -55,25 +42,22 @@ export class VerifyCodePage implements OnInit {
   toastOption = { color: '', message: '', show: false };
   resendCountdown = 0;
 
-  // mode = 'register' by default
   mode: VerifyMode = 'register';
-  // only used in reset mode; for register we read from the store
   resetEmail: string | null = null;
 
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private registerStore = inject(RegisterStore);
-  private loadingCtrl = inject(LoadingController);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly registerStore = inject(RegisterStore);
+  private readonly loadingCtrl = inject(LoadingController);
+  private readonly navCtrl = inject(NavController);
 
   ngOnInit() {
-    // Read query params: mode=reset&email=...
     this.route.queryParamMap.subscribe((qp) => {
       const qpMode = (qp.get('mode') ?? 'register').toLowerCase() as VerifyMode;
       this.mode = qpMode === 'reset' ? 'reset' : 'register';
       this.resetEmail = qp.get('email');
 
-      // If reset mode but no email provided, bounce back to forgot-password
       if (this.mode === 'reset' && !this.resetEmail) {
         this.router.navigate(['/forgot-password']);
       }
@@ -82,20 +66,17 @@ export class VerifyCodePage implements OnInit {
     this.startResendCountdown();
   }
 
-  // Helper: the email we’ll verify against in the current flow
   private getFlowEmail(): string {
     return this.mode === 'reset'
       ? this.resetEmail ?? ''
       : this.registerStore.email();
   }
 
-  // Helper display text (keeps template tidy)
   get headline(): string {
     return 'Enter the 6-digit code';
   }
 
   get subtext(): string {
-    // You’re sending via SMS now
     return this.mode === 'reset'
       ? 'We sent a verification code via SMS to the phone linked to this account.'
       : 'We sent a verification code via SMS to your phone.';
@@ -113,7 +94,6 @@ export class VerifyCodePage implements OnInit {
     await loading.present();
 
     if (this.mode === 'register') {
-      // Existing registration flow
       this.authService
         .verifyCode(this.registerStore.email(), this.otp)
         .subscribe({
@@ -205,11 +185,17 @@ export class VerifyCodePage implements OnInit {
     this.resendCountdown = 60;
     const intervalId = setInterval(() => {
       this.resendCountdown--;
-      if (this.resendCountdown === 0) clearInterval(intervalId);
+      if (this.resendCountdown === 0) {
+        clearInterval(intervalId);
+      }
     }, 1000);
   }
 
   setToast() {
     this.toastOption = { color: '', message: '', show: false };
+  }
+
+  close() {
+    this.navCtrl.navigateBack('/login');
   }
 }

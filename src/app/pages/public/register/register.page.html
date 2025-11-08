@@ -1,158 +1,147 @@
-<ion-header>
-  <ion-toolbar color="primary" class="ion-no-border">
-    <ion-buttons slot="start">
-      <ion-back-button
-        text="Back to login"
-        defaultHref="/"
-        aria-label="Go back to welcome page"
-      ></ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="register-page">
+  <div class="page-inner">
+    <section class="hero">
+      <div class="hero-top">
+        <ion-button
+          fill="clear"
+          size="small"
+          class="back-btn"
+          (click)="goBack()"
+          aria-label="Back to login"
+        >
+          <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
 
-<ion-content [fullscreen]="true" class="auth-content">
-  <section class="hero ion-padding-horizontal">
-    <ion-img
-      class="logo ion-padding-bottom"
-      src="/assets/img/Recruut_logo.svg"
-      alt="WeRecruit logo"
-    ></ion-img>
-    <p class="subtitle">Create a free account</p>
-  </section>
-  <section class="auth-card ion-padding">
-    <form
-      [formGroup]="signup_form"
-      (ngSubmit)="signUp()"
-      novalidate
-      class="form-default"
-    >
-      <ion-list lines="none" class="form-list">
-        <!-- Email -->
-        <ion-item class="field">
-          <ion-input
-            #emailInput
-            label="Email"
-            labelPlacement="stacked"
-            formControlName="email"
-            type="email"
-            placeholder="you@example.com"
-            autocapitalize="off"
-            autocomplete="email"
-            inputmode="email"
-          >
-          </ion-input>
-        </ion-item>
-        @if (signup_form.get('email')!.invalid &&
-        (signup_form.get('email')!.touched || submit_attempt)) { @if
-        (signup_form.get('email')!.errors?.['required']) {
-        <div class="error">Email is required.</div>
-        } @if (signup_form.get('email')!.errors?.['email']) {
-        <div class="error">Please enter a valid email.</div>
-        } }
+      <img
+        class="hero-logo"
+        src="/assets/img/Recruut_logo.svg"
+        width="200"
+        height="200"
+        alt="WeRecruit logo"
+      />
 
-        <ion-item class="field ion-margin-top">
-          <ion-input
-            label="Password"
-            labelPlacement="stacked"
-            formControlName="password"
-            type="password"
-            placeholder="Your password"
-            autocomplete="new-password"
-          >
-            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-          </ion-input>
-        </ion-item>
-        @if (signup_form.get('password')!.invalid &&
-        (signup_form.get('password')!.touched || submit_attempt)) { @if
-        (signup_form.get('password')!.errors?.['strongPassword']) {
-        <div class="error">
-          Password must be at least 9 characters and include upper, lower, and a
-          number.
-        </div>
-        } }
-
-        <ion-item class="field ion-margin-top">
-          <ion-input
-            label="Repeat Password"
-            labelPlacement="stacked"
-            formControlName="passwordRepeat"
-            type="password"
-            placeholder="Repeat your password"
-            autocomplete="new-password"
-          >
-            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-          </ion-input>
-        </ion-item>
-        @if (signup_form.get('passwordRepeat')!.invalid &&
-        (signup_form.get('passwordRepeat')!.touched || submit_attempt)) { @if
-        (signup_form.get('passwordRepeat')!.errors?.['required']) {
-        <div class="error">Please repeat your password.</div>
-        } }
-
-        <ion-item class="field ion-margin-top">
-          <ion-select
-            label="Country"
-            labelPlacement="stacked"
-            formControlName="countryIso2"
-            interface="popover"
-            aria-label="Select country calling code"
-          >
-            @for (c of countries; track c.iso2) {
-            <ion-select-option [value]="c.iso2">
-              {{ c.name }} ({{ c.dialCode }})
-            </ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-
-        <ion-item class="field ion-margin-top">
-          <ion-input
-            label="Mobile number"
-            labelPlacement="stacked"
-            formControlName="phoneLocal"
-            type="tel"
-            inputmode="tel"
-            placeholder="e.g. 07123 456789 (UK) or 1234567890"
-          >
-          </ion-input>
-        </ion-item>
-        @if (signup_form.get('phoneLocal')!.invalid &&
-        (signup_form.get('phoneLocal')!.touched || submit_attempt)) {
-        <div class="error">Please enter digits only (6–15).</div>
-        }
-      </ion-list>
-
-      <ion-button
-        id="open-loading"
-        type="submit"
-        [disabled]="signup_form.invalid"
-        expand="block"
-        class="primary-btn ion-margin-top"
+      <h1 class="hero-title">Create account</h1>
+    </section>
+    <section class="form-card">
+      <form
+        [formGroup]="signup_form"
+        (ngSubmit)="signUp()"
+        novalidate
+        class="form-default"
       >
-        Sign up
-      </ion-button>
+        <ion-list lines="none" class="form-list">
+          <ion-item class="input-item">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input
+              #emailInput
+              formControlName="email"
+              type="email"
+              placeholder="Email"
+              autocapitalize="off"
+              autocomplete="email"
+              inputmode="email"
+            >
+            </ion-input>
+          </ion-item>
 
-      <ion-toast
-        [isOpen]="toastOption.show"
-        position="top"
-        [color]="toastOption.color"
-        [message]="toastOption.message"
-        duration="4000"
-        keyboardClose="true"
-        (didDismiss)="setToast()"
-      >
-      </ion-toast>
-    </form>
+          @if (signup_form.get('email')!.invalid &&
+          (signup_form.get('email')!.touched || submit_attempt)) { @if
+          (signup_form.get('email')!.errors?.['required']) {
+          <div class="error">Email is required.</div>
+          } @if (signup_form.get('email')!.errors?.['email']) {
+          <div class="error">Please enter a valid email.</div>
+          } }
+          <ion-item class="input-item">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="password"
+              type="password"
+              placeholder="Password"
+              autocomplete="new-password"
+            >
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
 
-    <div class="fine-print">
-      By continuing you agree to our <a href="#">Terms</a> and
-      <a href="#">Privacy Policy</a>.
-    </div>
-  </section>
+          @if (signup_form.get('password')!.invalid &&
+          (signup_form.get('password')!.touched || submit_attempt)) { @if
+          (signup_form.get('password')!.errors?.['strongPassword']) {
+          <div class="error">
+            Password must be at least 9 characters and include upper, lower, and
+            a number.
+          </div>
+          } }
 
-  <div class="copyright ion-text-center">
-    <ion-text color="medium">
-      <small>&copy; 2025 WeRecruit</small>
-    </ion-text>
+          <ion-item class="input-item">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="passwordRepeat"
+              type="password"
+              placeholder="Repeat password"
+              autocomplete="new-password"
+            >
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+
+          @if (signup_form.get('passwordRepeat')!.invalid &&
+          (signup_form.get('passwordRepeat')!.touched || submit_attempt)) { @if
+          (signup_form.get('passwordRepeat')!.errors?.['required']) {
+          <div class="error">Please repeat your password.</div>
+          } }
+          <ion-item class="input-item">
+            <ion-select
+              formControlName="countryIso2"
+              interface="popover"
+              aria-label="Select country calling code"
+              placeholder="Country"
+            >
+              @for (c of countries; track c.iso2) {
+              <ion-select-option [value]="c.iso2">
+                {{ c.name }} ({{ c.dialCode }})
+              </ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-icon name="call-outline" slot="start"></ion-icon>
+            <ion-input
+              formControlName="phoneLocal"
+              type="tel"
+              inputmode="tel"
+              placeholder="Mobile number"
+            >
+            </ion-input>
+          </ion-item>
+
+          @if (signup_form.get('phoneLocal')!.invalid &&
+          (signup_form.get('phoneLocal')!.touched || submit_attempt)) {
+          <div class="error">Please enter digits only (6-15).</div>
+          }
+        </ion-list>
+        <ion-button
+          id="open-loading"
+          type="submit"
+          [disabled]="signup_form.invalid"
+          expand="block"
+          class="primary-btn"
+        >
+          Sign Up
+        </ion-button>
+
+        <ion-toast
+          [isOpen]="toastOption.show"
+          position="top"
+          [color]="toastOption.color"
+          [message]="toastOption.message"
+          duration="4000"
+          keyboardClose="true"
+          (didDismiss)="setToast()"
+        >
+        </ion-toast>
+      </form>
+    </section>
   </div>
 </ion-content>

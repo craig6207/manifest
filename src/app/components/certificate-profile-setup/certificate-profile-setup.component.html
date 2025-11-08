@@ -2,7 +2,7 @@
   <ion-toolbar color="primary">
     <ion-title> Certificates </ion-title>
     <ion-buttons slot="end">
-      <ion-button aria-label="Close">Close</ion-button>
+      <ion-button aria-label="Close" (click)="onCancel()"> Close </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -28,18 +28,21 @@
       <p class="hero-subtitle">
         Verified cards and certificates help clients trust your profile and get
         you placed faster. @if (tradeName) {
-        <strong>Selected trade: {{ tradeName }}</strong> }
+        <strong>Selected trade: {{ tradeName }}</strong>
+        }
       </p>
       <ul class="hero-checklist">
         <li><span class="dot"></span> Upload a clear photo or PDF</li>
         <li>
           <span class="dot"></span> Make sure the name & expiry are visible
         </li>
-        <li><span class="dot"></span> Add “Other” if it’s not listed</li>
+        <li><span class="dot"></span> Add “Other” if it's not listed</li>
       </ul>
       <div class="format-row" aria-label="Supported file types">
-        <ion-chip>PDF</ion-chip><ion-chip>PNG</ion-chip><ion-chip>JPG</ion-chip
-        ><ion-chip>HEIC</ion-chip>
+        <ion-chip>PDF</ion-chip>
+        <ion-chip>PNG</ion-chip>
+        <ion-chip>JPG</ion-chip>
+        <ion-chip>HEIC</ion-chip>
       </div>
     </div>
   </section>
@@ -81,7 +84,7 @@
           @if (selectedId() === null) { Select a certificate above to continue }
           @else if (selectedId() === -1 && !otherName().trim()) { Enter the
           “Other” certificate name to continue } @else if
-          (hasUploadForCurrent()) { You’ve already added a file for this
+          (hasUploadForCurrent()) { You've already added a file for this
           certificate } @else if (hasReachedMax()) { Remove one to add another
           (max 5) } @else { Choose from library, take a photo, or pick a file }
         </div>
@@ -157,7 +160,12 @@
 <ion-footer>
   <ion-toolbar class="cta-toolbar">
     <div class="cta-row">
-      <ion-button class="ghost-btn" fill="outline" color="primary">
+      <ion-button
+        class="ghost-btn"
+        fill="outline"
+        color="primary"
+        (click)="onCancel()"
+      >
         Cancel
       </ion-button>
 

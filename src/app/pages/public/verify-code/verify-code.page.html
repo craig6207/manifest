@@ -1,78 +1,81 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="secondary">
-      <ion-button href="/login" aria-label="Close and go to login">
-        <ion-icon slot="icon-only" name="close"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Verify Code</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
-  <ion-grid class="ion-text-center">
-    <ion-row>
-      <ion-col>
-        <h2 class="ion-margin-top">{{ headline }}</h2>
-        <p>{{ subtext }}</p>
-      </ion-col>
-    </ion-row>
-
-    <ion-row class="ion-justify-content-center">
-      <ion-col size="auto">
-        <ion-input-otp
-          [(ngModel)]="otp"
-          length="6"
-          type="number"
-          fill="solid"
-          shape="soft"
-          size="large"
-          color="primary"
-          separators="all"
-          (ionComplete)="onOtpComplete($event)"
-        >
-        </ion-input-otp>
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col>
+<ion-content [fullscreen]="true" class="verify-page">
+  <div class="page-inner">
+    <section class="hero">
+      <div class="hero-top">
         <ion-button
-          id="open-toast"
-          expand="block"
-          [disabled]="otp.length < 6"
-          (click)="submitOtp()"
+          fill="clear"
+          size="small"
+          class="close-btn"
+          (click)="close()"
+          aria-label="Close and go to login"
         >
-          Verify
+          <ion-icon name="close" slot="icon-only"></ion-icon>
         </ion-button>
+      </div>
 
-        <ion-toast
-          [isOpen]="toastOption.show"
-          position="top"
-          [color]="toastOption.color"
-          [message]="toastOption.message"
-          duration="4000"
-          (didDismiss)="setToast()"
-        ></ion-toast>
-      </ion-col>
-    </ion-row>
+      <img
+        class="hero-logo"
+        src="/assets/img/Recruut_logo.svg"
+        width="200"
+        height="200"
+        alt="WeRecruit logo"
+      />
 
-    <ion-row class="ion-margin-top">
-      <ion-col>
-        <ion-text color="medium">
-          Didn't get a code?
-          <ion-button
-            fill="clear"
-            size="small"
-            (click)="resendCode()"
-            [disabled]="resendCountdown > 0"
-            aria-label="Resend code"
+      <h1 class="hero-title">{{ headline }}</h1>
+      <p class="hero-subtitle">{{ subtext }}</p>
+    </section>
+
+    <section class="form-card">
+      <div class="otp-section">
+        <div class="otp-inner">
+          <ion-input-otp
+            class="otp-input"
+            [(ngModel)]="otp"
+            length="6"
+            type="number"
+            fill="solid"
+            shape="soft"
+            size="large"
+            color="primary"
+            separators="all"
+            (ionComplete)="onOtpComplete($event)"
           >
-            @if (resendCountdown > 0) { Resend in {{ resendCountdown }}s } @else
-            { Resend code }
-          </ion-button>
-        </ion-text>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+          </ion-input-otp>
+        </div>
+      </div>
+
+      <ion-button
+        expand="block"
+        class="primary-btn"
+        [disabled]="otp.length < 6"
+        (click)="submitOtp()"
+      >
+        Verify
+      </ion-button>
+
+      <div class="resend-row">
+        <span class="resend-text">Didn't get a code?</span>
+        <button
+          type="button"
+          class="resend-link"
+          (click)="resendCode()"
+          [disabled]="resendCountdown > 0"
+          [class.resend-disabled]="resendCountdown > 0"
+        >
+          @if (resendCountdown > 0) { Resend in {{ resendCountdown }}s } @else {
+          Resend code }
+        </button>
+      </div>
+
+      <ion-toast
+        [isOpen]="toastOption.show"
+        position="top"
+        [color]="toastOption.color"
+        [message]="toastOption.message"
+        duration="4000"
+        keyboardClose="true"
+        (didDismiss)="setToast()"
+      ></ion-toast>
+    </section>
+  </div>
 </ion-content>

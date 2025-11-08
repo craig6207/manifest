@@ -1,35 +1,45 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Keyboard } from '@capacitor/keyboard';
-import { AuthService } from 'src/app/services/auth/auth.service';
-import { BiometricAuthService } from 'src/app/services/auth/biometric-auth.service';
+import { Capacitor } from '@capacitor/core';
 import {
   FormBuilder,
-  ReactiveFormsModule,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import {
-  IonHeader,
-  IonToolbar,
+  IonAlert,
   IonButton,
   IonContent,
-  IonList,
-  IonItem,
-  IonInput,
-  IonText,
   IonIcon,
-  IonSpinner,
-  IonLoading,
-  IonAlert,
-  IonToast,
-  IonInputPasswordToggle,
   IonImg,
+  IonInput,
+  IonItem,
+  IonLoading,
+  IonSpinner,
+  IonText,
+  IonToast,
+  IonHeader,
+  IonToolbar,
 } from '@ionic/angular/standalone';
+
 import { addIcons } from 'ionicons';
-import { fingerPrintOutline, logInOutline } from 'ionicons/icons';
+import {
+  arrowForward,
+  eyeOffOutline,
+  eyeOutline,
+  fingerPrintOutline,
+  lockClosedOutline,
+  logInOutline,
+  mailOutline,
+} from 'ionicons/icons';
+
 import { BiometryType } from '@aparajita/capacitor-biometric-auth';
-import { Capacitor } from '@capacitor/core';
+
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { BiometricAuthService } from 'src/app/services/auth/biometric-auth.service';
 
 @Component({
   selector: 'app-login',
@@ -42,38 +52,47 @@ import { Capacitor } from '@capacitor/core';
     IonLoading,
     IonIcon,
     IonSpinner,
-    IonText,
     IonInput,
     IonItem,
-    IonList,
     IonContent,
     IonButton,
-    IonToolbar,
-    IonHeader,
-    IonInputPasswordToggle,
     ReactiveFormsModule,
   ],
 })
 export class LoginPage implements OnInit {
   signin_form!: FormGroup;
-  submit_attempt: boolean = false;
+  submit_attempt = false;
+
   showBiometricButton = false;
   biometricType = '';
+
   isBiometricLoading = false;
   isLoading = false;
+
   isAlertOpen = false;
   alertHeader = '';
   alertMessage = '';
   alertButtons: any[] = [];
+
   toastOption = { color: '', message: '', show: false };
 
-  private authService = inject(AuthService);
-  private biometricAuth = inject(BiometricAuthService);
-  private formBuilder = inject(FormBuilder);
-  private router = inject(Router);
+  showPassword = false;
+
+  private readonly authService = inject(AuthService);
+  private readonly biometricAuth = inject(BiometricAuthService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   constructor() {
-    addIcons({ fingerPrintOutline, logInOutline });
+    addIcons({
+      fingerPrintOutline,
+      logInOutline,
+      mailOutline,
+      lockClosedOutline,
+      arrowForward,
+      eyeOutline,
+      eyeOffOutline,
+    });
   }
 
   async ngOnInit() {
@@ -120,9 +139,11 @@ export class LoginPage implements OnInit {
       };
       return;
     }
+
     if (Capacitor.isNativePlatform()) {
       await Keyboard.hide();
     }
+
     this.isLoading = true;
 
     try {
@@ -133,10 +154,11 @@ export class LoginPage implements OnInit {
 
       await this.promptBiometricSetup(this.signin_form.value.email);
       this.isLoading = false;
+
       await this.router.navigateByUrl('/secure/tabs/home', {
         replaceUrl: true,
       });
-    } catch (error: any) {
+    } catch {
       this.isLoading = false;
     }
   }
@@ -152,6 +174,7 @@ export class LoginPage implements OnInit {
         });
         return;
       }
+
       if (result.error === 'REAUTH_REQUIRED') {
         this.showBiometricButton = false;
 
@@ -188,7 +211,7 @@ export class LoginPage implements OnInit {
           : 'Biometric authentication failed. Please use email and password.',
         show: true,
       };
-    } catch (error) {
+    } catch {
       this.toastOption = {
         color: 'danger',
         message: 'Biometric authentication failed. Please try again.',
@@ -249,6 +272,10 @@ export class LoginPage implements OnInit {
     if (types.includes(BiometryType.fingerprintAuthentication))
       return 'Touch ID';
     return 'Biometric Authentication';
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   setToast() {

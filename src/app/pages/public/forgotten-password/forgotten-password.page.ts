@@ -7,45 +7,38 @@ import {
   UntypedFormGroup,
 } from '@angular/forms';
 import {
-  IonContent,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonBackButton,
-  IonList,
-  IonItem,
   IonButton,
-  IonText,
+  IonContent,
+  IonIcon,
   IonInput,
-  IonToast,
-  IonImg,
+  IonItem,
+  IonList,
   IonLoading,
+  IonToast,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
+import { addIcons } from 'ionicons';
+import { chevronBackOutline, mailOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgotten-password.page.html',
   styleUrls: ['./forgotten-password.page.scss'],
+  standalone: true,
   imports: [
+    CommonModule,
+    ReactiveFormsModule,
     IonContent,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonBackButton,
     IonList,
     IonItem,
     IonButton,
-    IonText,
     IonInput,
     IonToast,
-    IonImg,
     IonLoading,
-    CommonModule,
-    ReactiveFormsModule,
+    IonIcon,
   ],
 })
 export class ForgottenPasswordPage implements OnInit {
@@ -55,12 +48,20 @@ export class ForgottenPasswordPage implements OnInit {
 
   toastOption = { color: '', message: '', show: false };
 
-  private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private loadingCtrl = inject(LoadingController);
+  private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly loadingCtrl = inject(LoadingController);
+  private readonly navCtrl = inject(NavController);
 
   @ViewChild('emailInput', { static: false }) emailInput!: IonInput;
+
+  constructor() {
+    addIcons({
+      chevronBackOutline,
+      mailOutline,
+    });
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -111,5 +112,9 @@ export class ForgottenPasswordPage implements OnInit {
 
   setToast() {
     this.toastOption = { color: '', message: '', show: false };
+  }
+
+  goBack() {
+    this.navCtrl.navigateBack('/login');
   }
 }

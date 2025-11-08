@@ -115,6 +115,7 @@ export class AuthService {
             deviceId: device.deviceId,
             deviceName: device.deviceName,
             ipAddress: device.ipAddress,
+            accountType: 0,
           }
         )
       );
@@ -298,5 +299,18 @@ export class AuthService {
 
   async getAccessToken(): Promise<string | null> {
     return this.getSecureItem('access_token');
+  }
+
+  async getCurrentUserIdFromToken(): Promise<number | null> {
+    const token = await this.getSecureItem('access_token');
+    if (!token) return null;
+
+    const payload = this.decodeJwt(token);
+    if (!payload) return null;
+    const rawId = payload.userId ?? payload.sub;
+    if (rawId == null) return null;
+
+    const num = typeof rawId === 'string' ? parseInt(rawId, 10) : Number(rawId);
+    return Number.isFinite(num) && num > 0 ? num : null;
   }
 }

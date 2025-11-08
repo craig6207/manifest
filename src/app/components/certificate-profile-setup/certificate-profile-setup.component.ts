@@ -31,6 +31,7 @@ import {
   IonIcon,
   ActionSheetController,
   Platform,
+  ModalController,
 } from '@ionic/angular/standalone';
 
 import { TradesService } from 'src/app/services/trades/trades.service';
@@ -107,6 +108,7 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly actionSheetCtrl = inject(ActionSheetController);
   private readonly platform = inject(Platform);
+  private readonly modalCtrl = inject(ModalController);
 
   readonly loading = signal(false);
   readonly loadError = signal<string | null>(null);
@@ -136,6 +138,7 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
     }
     return String(id);
   }
+
   private keyLabel(key: string): string {
     if (key.startsWith('other:')) {
       const nm = key.slice('other:'.length);
@@ -201,10 +204,16 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initialCertificates'])
+    if (changes['initialCertificates']) {
       this.seedSelectedFromInitial(this.initialCertificates);
-    if (changes['tradeId'] && typeof this.tradeId === 'number')
+    }
+    if (changes['tradeId'] && typeof this.tradeId === 'number') {
       this.fetchCertificates(this.tradeId);
+    }
+  }
+
+  onCancel(): void {
+    this.modalCtrl.dismiss(null, 'cancel');
   }
 
   private seedSelectedFromInitial(
@@ -246,11 +255,13 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
     if (coerced !== OTHER_ID) this.otherName.set('');
     this.warn.set(null);
   }
+
   clearSelection(): void {
     this.selectedId.set(null);
     this.otherName.set('');
     this.warn.set(null);
   }
+
   setOtherName(next: string | null | undefined): void {
     if (this.hasUploadForCurrent()) return;
     const trimmed = (next ?? '').trim();
@@ -320,8 +331,11 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
         promptLabelHeader: 'Select certificate',
       });
       await this.addPhotoAsFile(key, photo);
-    } catch {}
+    } catch {
+      // user cancelled
+    }
   }
+
   async takePhoto(): Promise<void> {
     const key = this.selectionKey();
     if (!key || this.guardAddBlocked()) return;
@@ -334,8 +348,11 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
         promptLabelHeader: 'Take certificate photo',
       });
       await this.addPhotoAsFile(key, photo);
-    } catch {}
+    } catch {
+      // user cancelled
+    }
   }
+
   private async addPhotoAsFile(
     key: string,
     photo: { webPath?: string; mimeType?: string }
@@ -357,6 +374,7 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
     if (file) this.addFileToKey(key, file);
     input.value = '';
   }
+
   private guardAddBlocked(): boolean {
     if (this.hasUploadForCurrent()) {
       this.warn.set('Only one upload allowed for the selected certificate.');
@@ -369,6 +387,7 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
     this.warn.set(null);
     return false;
   }
+
   private addFileToKey(key: string, file: File): void {
     if (this.totalUploads() >= MAX_UPLOADS) {
       this.warn.set(`Maximum of ${MAX_UPLOADS} uploads reached.`);
@@ -389,6 +408,7 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
       return next;
     });
   }
+
   removeUploadByKey(key: string): void {
     const list = this.uploadMap()[key] ?? [];
     if (!list.length) return;
@@ -398,6 +418,7 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
     this.uploadMap.set(next);
     this.warn.set(null);
   }
+
   clearCurrentUpload(): void {
     const key = this.selectionKey();
     if (!key) return;
@@ -406,14 +427,17 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
 
   async confirmSelection(): Promise<void> {
     if (!this.canSubmit()) return;
+
     this.submitting.set(true);
     this.submitError.set(null);
     this.submitResults.set([]);
+
     try {
       const entries = Object.entries(this.uploadMap());
       const batch = entries.slice(0, MAX_UPLOADS);
 
       const results: CreateCertResult[] = [];
+
       for (const [key, list] of batch) {
         if (!list.length) continue;
         const file = list[0].file;
@@ -434,10 +458,16 @@ export class CertificateProfileSetupComponent implements OnInit, OnChanges {
       }
 
       this.submitResults.set(results);
-      for (const arr of Object.values(this.uploadMap()))
+      const certificates: CertDefinition[] = results
+        .map((r) => (r as any).certificate ?? r)
+        .filter((c): c is CertDefinition => !!c);
+
+      for (const arr of Object.values(this.uploadMap())) {
         for (const it of arr) URL.revokeObjectURL(it.url);
+      }
       this.uploadMap.set({});
       this.warn.set(null);
+      this.modalCtrl.dismiss({ certificates }, 'confirm');
     } catch (err: any) {
       const msg =
         err?.error?.title || err?.error || err?.message || 'Upload failed';

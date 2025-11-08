@@ -8,32 +8,29 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  AbstractControl,
   FormBuilder,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
   UntypedFormGroup,
-  AbstractControl,
-  ValidationErrors,
 } from '@angular/forms';
 import {
-  IonContent,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonBackButton,
-  IonList,
-  IonItem,
   IonButton,
-  IonText,
+  IonContent,
+  IonIcon,
   IonInput,
   IonInputPasswordToggle,
-  IonToast,
-  IonImg,
+  IonItem,
+  IonList,
   IonProgressBar,
+  IonToast,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
+import { addIcons } from 'ionicons';
+import { chevronBackOutline, lockClosedOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth/auth.service';
 
 function strongPasswordValidator(
@@ -61,23 +58,19 @@ function passwordsMatchValidator(
   selector: 'app-new-password',
   templateUrl: './new-password.page.html',
   styleUrls: ['./new-password.page.scss'],
+  standalone: true,
   imports: [
+    CommonModule,
+    ReactiveFormsModule,
     IonContent,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonBackButton,
     IonList,
     IonItem,
     IonButton,
-    IonText,
     IonInput,
     IonInputPasswordToggle,
     IonToast,
-    IonImg,
     IonProgressBar,
-    CommonModule,
-    ReactiveFormsModule,
+    IonIcon,
   ],
 })
 export class NewPasswordPage implements OnInit {
@@ -85,16 +78,24 @@ export class NewPasswordPage implements OnInit {
   isLoading = false;
   toastOption = { color: '', message: '', show: false };
 
-  private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private auth = inject(AuthService);
-  private loadingCtrl = inject(LoadingController);
+  private readonly fb = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly loadingCtrl = inject(LoadingController);
+  private readonly navCtrl = inject(NavController);
 
   emailSig = signal<string>('');
   codeSig = signal<string>('');
 
   @ViewChild('newPwdInput', { static: false }) newPwdInput!: IonInput;
+
+  constructor() {
+    addIcons({
+      chevronBackOutline,
+      lockClosedOutline,
+    });
+  }
 
   newPwdControl = () => this.form.get('newPassword')!;
   repeatControl = () => this.form.get('repeatPassword')!;
@@ -122,7 +123,6 @@ export class NewPasswordPage implements OnInit {
   });
 
   ngOnInit(): void {
-    // Build form
     this.form = this.fb.group(
       {
         newPassword: ['', [Validators.required, strongPasswordValidator]],
@@ -142,6 +142,7 @@ export class NewPasswordPage implements OnInit {
       this.router.navigate(['/forgot-password']);
       return;
     }
+
     setTimeout(() => this.newPwdInput?.setFocus(), 0);
   }
 
@@ -197,5 +198,9 @@ export class NewPasswordPage implements OnInit {
 
   setToast() {
     this.toastOption = { color: '', message: '', show: false };
+  }
+
+  goBack() {
+    this.navCtrl.navigateBack('/login');
   }
 }

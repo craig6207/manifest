@@ -1,107 +1,108 @@
-<ion-header>
-  <ion-toolbar color="primary" class="ion-no-border"> </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="login-page">
+  <div class="page-inner">
+    <section class="hero">
+      <ion-img
+        class="hero-logo"
+        src="/assets/img/Recruut_logo.svg"
+        alt="WeRecruit logo"
+      ></ion-img>
 
-<ion-content [fullscreen]="true" class="auth-content">
-  <section class="hero ion-padding-horizontal">
-    <ion-img
-      class="logo ion-padding-bottom"
-      src="/assets/img/Recruut_logo.svg"
-      alt="WeRecruit logo"
-    ></ion-img>
+      <h1 class="hero-title">Sign In</h1>
+    </section>
 
-    <p class="subtitle">Log in to your account</p>
-  </section>
+    <section class="form-card">
+      @if (showBiometricButton) {
+      <div class="biometric-wrapper">
+        <ion-button
+          expand="block"
+          (click)="loginWithBiometric()"
+          [disabled]="isBiometricLoading"
+          class="primary-btn"
+          aria-label="Login with biometrics"
+        >
+          <ion-icon name="finger-print-outline" slot="start"></ion-icon>
+          Login with {{ biometricType }} @if (isBiometricLoading) {
+          <ion-spinner name="crescent" slot="end"></ion-spinner>
+          }
+        </ion-button>
 
-  @if (showBiometricButton) {
-  <section class="auth-card ion-padding biometric-card">
-    <ion-button
-      expand="block"
-      fill="outline"
-      (click)="loginWithBiometric()"
-      [disabled]="isBiometricLoading"
-      class="ghost-btn"
-      aria-label="Login with biometrics"
-    >
-      <ion-icon name="finger-print-outline" slot="start"></ion-icon>
-      Login with {{ biometricType }} @if (isBiometricLoading) {
-      <ion-spinner name="crescent" slot="end"></ion-spinner>
+        <div class="divider">
+          <span>or</span>
+        </div>
+      </div>
       }
-    </ion-button>
 
-    <div class="divider"><span>or</span></div>
-  </section>
-  }
+      <form class="form-default" [formGroup]="signin_form" (submit)="signIn()">
+        <ion-item class="input-item" lines="none">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
 
-  <section class="auth-card ion-padding">
-    <form class="form-default" [formGroup]="signin_form" (submit)="signIn()">
-      <ion-list class="form-list" lines="none">
-        <ion-item class="field">
           <ion-input
-            label="Email"
-            labelPlacement="stacked"
             formControlName="email"
             type="email"
-            placeholder="you@example.com"
+            placeholder="Email"
             autocapitalize="off"
             autocomplete="email"
             inputmode="email"
           ></ion-input>
         </ion-item>
+        <ion-item class="input-item" lines="none">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
 
-        <ion-item class="field ion-margin-top">
           <ion-input
-            label="Password"
-            labelPlacement="stacked"
             formControlName="password"
-            type="password"
-            placeholder="Your password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password"
             autocomplete="current-password"
+          ></ion-input>
+
+          <ion-button
+            slot="end"
+            fill="clear"
+            size="small"
+            class="field-icon-btn"
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
           >
-            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-          </ion-input>
+            <ion-icon
+              [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              slot="icon-only"
+            ></ion-icon>
+          </ion-button>
         </ion-item>
-      </ion-list>
 
-      <ion-button
-        class="primary-btn ion-margin-top"
-        type="submit"
-        expand="block"
-        color="primary"
-      >
-        <ion-icon name="log-in-outline" slot="start"></ion-icon>
-        Sign in
-      </ion-button>
+        <button
+          type="button"
+          class="link-forgot"
+          (click)="goToForgottenPassword()"
+        >
+          Forgot Password?
+        </button>
+        <ion-button
+          class="primary-btn"
+          type="submit"
+          expand="block"
+          [disabled]="signin_form.invalid || isLoading"
+        >
+          Sign In
+        </ion-button>
+      </form>
+      <div class="signup-row">
+        <span>Don't have an account?</span>
+        <button type="button" class="signup-link" (click)="goToRegister()">
+          Sign Up
+        </button>
+      </div>
+    </section>
+  </div>
+  <ion-loading
+    [isOpen]="isLoading"
+    message="Signing in..."
+    spinner="crescent"
+    translucent="true"
+    backdropDismiss="false"
+  ></ion-loading>
 
-      <ion-loading
-        [isOpen]="isLoading"
-        message="Signing in..."
-        spinner="crescent"
-        translucent="true"
-        backdropDismiss="false"
-      ></ion-loading>
-    </form>
-    <ion-button
-      type="button"
-      color="primary"
-      fill="clear"
-      expand="block"
-      class="ion-button-small ion-margin-top-medium"
-      (click)="goToForgottenPassword()"
-    >
-      Forgot password?
-    </ion-button>
-    <ion-button
-      type="button"
-      color="primary"
-      fill="clear"
-      expand="block"
-      class="ion-button-small ion-margin-top-medium"
-      (click)="goToRegister()"
-    >
-      Register
-    </ion-button>
-  </section>
   <ion-toast
     [isOpen]="toastOption.show"
     position="top"
@@ -111,18 +112,11 @@
     keyboardClose="true"
     (didDismiss)="setToast()"
   ></ion-toast>
-
-  <div class="copyright ion-text-center">
-    <ion-text color="medium">
-      <small>&copy; 2025 WeRecruit</small>
-    </ion-text>
-  </div>
+  <ion-alert
+    [isOpen]="isAlertOpen"
+    [header]="alertHeader"
+    [message]="alertMessage"
+    [buttons]="alertButtons"
+    (didDismiss)="isAlertOpen = false"
+  ></ion-alert>
 </ion-content>
-
-<ion-alert
-  [isOpen]="isAlertOpen"
-  [header]="alertHeader"
-  [message]="alertMessage"
-  [buttons]="alertButtons"
-  (didDismiss)="isAlertOpen = false"
-></ion-alert>

@@ -1,34 +1,38 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  AbstractControl,
   FormBuilder,
   ReactiveFormsModule,
   UntypedFormGroup,
   Validators,
-  AbstractControl,
 } from '@angular/forms';
 import {
-  IonContent,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonBackButton,
-  IonList,
-  IonItem,
   IonButton,
-  IonText,
+  IonContent,
+  IonIcon,
   IonInput,
   IonInputPasswordToggle,
-  IonToast,
-  IonImg,
+  IonItem,
+  IonList,
   IonSelect,
   IonSelectOption,
+  IonToast,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { LoadingController, NavController } from '@ionic/angular';
+
+import { addIcons } from 'ionicons';
+import {
+  callOutline,
+  chevronBackOutline,
+  lockClosedOutline,
+  mailOutline,
+} from 'ionicons/icons';
+
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { RegisterStore } from 'src/app/+state/register-signal.store';
-import { HttpErrorResponse } from '@angular/common/http';
-import { LoadingController } from '@ionic/angular';
 import { COUNTRY_DIALS } from 'src/app/interfaces/country-code';
 
 function strongPasswordValidator(control: AbstractControl) {
@@ -47,23 +51,18 @@ function strongPasswordValidator(control: AbstractControl) {
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   imports: [
-    IonImg,
-    IonToast,
-    IonText,
-    IonButton,
-    IonItem,
-    IonList,
-    IonBackButton,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonToolbar,
-    IonInput,
-    IonInputPasswordToggle,
-    IonSelect,
-    IonSelectOption,
     CommonModule,
     ReactiveFormsModule,
+    IonContent,
+    IonList,
+    IonItem,
+    IonButton,
+    IonInput,
+    IonInputPasswordToggle,
+    IonToast,
+    IonSelect,
+    IonSelectOption,
+    IonIcon,
   ],
 })
 export class RegisterPage implements OnInit {
@@ -71,13 +70,24 @@ export class RegisterPage implements OnInit {
   submit_attempt = false;
   toastOption = { color: '', message: '', show: false };
   readonly countries = COUNTRY_DIALS;
-  private authService = inject(AuthService);
-  private formBuilder = inject(FormBuilder);
-  private router = inject(Router);
-  private registerStore = inject(RegisterStore);
-  private loadingCtrl = inject(LoadingController);
+
+  private readonly authService = inject(AuthService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly registerStore = inject(RegisterStore);
+  private readonly loadingCtrl = inject(LoadingController);
+  private readonly navCtrl = inject(NavController);
 
   @ViewChild('emailInput', { static: false }) emailInput!: IonInput;
+
+  constructor() {
+    addIcons({
+      chevronBackOutline,
+      mailOutline,
+      lockClosedOutline,
+      callOutline,
+    });
+  }
 
   ionViewDidEnter() {
     setTimeout(() => this.emailInput?.setFocus(), 0);
@@ -149,5 +159,9 @@ export class RegisterPage implements OnInit {
 
   setToast() {
     this.toastOption = { color: '', message: '', show: false };
+  }
+
+  goBack() {
+    this.navCtrl.navigateBack('/');
   }
 }

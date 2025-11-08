@@ -31,7 +31,6 @@ import {
   IonNote,
   IonSelect,
   IonSelectOption,
-  IonChip,
   ModalController,
   AlertController,
   LoadingController,
@@ -50,6 +49,7 @@ import { Trades, TradeSubcategories } from 'src/app/interfaces/trades';
 import { TradePickerComponent } from 'src/app/components/trade-picker/trade-picker.component';
 import { CertificateProfileSetupComponent } from 'src/app/components/certificate-profile-setup/certificate-profile-setup.component';
 import { CertDefinition } from 'src/app/interfaces/certificate';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 type LocationSelection = {
   placeName: string;
@@ -106,6 +106,7 @@ export class ProfileSetupPage implements OnInit {
   private readonly registerStore = inject(RegisterStore);
   private readonly tradesService = inject(TradesService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly authService = inject(AuthService);
 
   readonly totalSteps = 4;
   personalForm!: FormGroup;
@@ -121,11 +122,13 @@ export class ProfileSetupPage implements OnInit {
   private locationSel = signal<LocationSelection | null>(null);
   locationSelected = computed(() => !!this.locationSel());
   selectedRadiusMiles = computed(() => this.locationSel()?.radiusMiles ?? 15);
+
   readonly progress = computed(() => {
     const step = Math.max(1, Math.min(this.totalSteps, this.currentStep()));
     const denom = Math.max(1, this.totalSteps - 1);
     return (step - 1) / denom;
   });
+
   tradeIdSig = signal<number | null>(null);
   tradeSelected = computed(() => this.tradeIdSig() != null);
 
@@ -209,9 +212,11 @@ export class ProfileSetupPage implements OnInit {
   onLocationSelected(sel: LocationSelection) {
     this.locationSel.set(sel);
   }
+
   onOpenRadiusClick(): void {
     this.locationPicker?.openRadiusSheet();
   }
+
   onUseMyLocationClick(): void {
     this.locationPicker?.useMyLocation();
   }
@@ -231,6 +236,7 @@ export class ProfileSetupPage implements OnInit {
     }
     if (s < this.totalSteps) this.currentStep.set(s + 1);
   }
+
   back(): void {
     if (this.currentStep() > 1) this.currentStep.update((v) => v - 1);
   }
@@ -246,6 +252,7 @@ export class ProfileSetupPage implements OnInit {
       },
     });
   }
+
   private loadSubcategories(tradeId: number) {
     this.loadingSubs.set(true);
     this.tradesService.getTradeSubcategories(tradeId).subscribe({
@@ -353,6 +360,16 @@ export class ProfileSetupPage implements OnInit {
       return;
     }
 
+    let userId = this.registerStore.userId();
+    if (!userId || userId <= 0) {
+      userId = (await this.authService.getCurrentUserIdFromToken()) ?? 0;
+    }
+
+    if (!userId || userId <= 0) {
+      await this.router.navigate(['/login']);
+      return;
+    }
+
     const tradeId = this.payTradeForm.value.tradeId as number;
     const tradeName = this.trades().find((t) => t.id === tradeId)?.name ?? '';
 
@@ -363,9 +380,10 @@ export class ProfileSetupPage implements OnInit {
     const subNameJoined = subNames.join(', ');
 
     const loc = this.locationSel()!;
+
     const profileData: CandidateProfile = {
-      userId: this.registerStore.userId(),
-      phoneNumber: this.registerStore.phoneNumber(),
+      userId,
+      phoneNumber: this.registerStore.phoneNumber() || '',
       ...this.personalForm.value,
       locationName: loc.placeName || 'Custom',
       locationLat: loc.lat,
