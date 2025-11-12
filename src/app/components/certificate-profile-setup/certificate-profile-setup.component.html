@@ -1,8 +1,10 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title> Certificates </ion-title>
+<ion-header class="certificates-header">
+  <ion-toolbar class="certificates-toolbar ion-no-border">
+    <ion-title>Certificates</ion-title>
     <ion-buttons slot="end">
-      <ion-button aria-label="Close" (click)="onCancel()"> Close </ion-button>
+      <ion-button (click)="onCancel()" [attr.aria-label]="'Close'"
+        >Close</ion-button
+      >
     </ion-buttons>
   </ion-toolbar>
 </ion-header>

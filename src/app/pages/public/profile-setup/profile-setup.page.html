@@ -1,21 +1,30 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="secondary">
-      <ion-button (click)="presentExitAlert()" aria-label="Close setup">
+<ion-header class="profile-header">
+  <ion-toolbar class="profile-toolbar ion-no-border">
+    <ion-buttons slot="start">
+      <ion-button
+        (click)="presentExitAlert()"
+        aria-label="Close setup"
+        fill="clear"
+      >
         <ion-icon slot="icon-only" name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
+
+    <ion-title>Profile setup</ion-title>
+
     @if (currentStep() === 2) {
-    <ion-buttons slot="primary">
+    <ion-buttons slot="end">
       <ion-button
         [attr.aria-label]="'Use my location'"
         (click)="onUseMyLocationClick()"
+        fill="clear"
       >
         <ion-icon slot="icon-only" name="locate"></ion-icon>
       </ion-button>
     </ion-buttons>
-    } <ion-title>Profile Setup</ion-title>
+    }
   </ion-toolbar>
+
   <div class="progress-container ion-padding-horizontal ion-padding-vertical">
     <div class="progress-stack">
       <div class="dots">
@@ -30,13 +39,19 @@
     </div>
   </div>
 </ion-header>
-<ion-content class="setup-content ion-padding" [scrollY]="currentStep() !== 2">
+
+<ion-content
+  class="setup-content ion-padding-horizontal"
+  [scrollY]="currentStep() !== 2"
+>
   @if (currentStep() === 1) {
   <form id="personalForm" [formGroup]="personalForm" (ngSubmit)="next()">
     <section class="section-card form-card">
-      <div class="section-header"><h2>Personal details</h2></div>
+      <div class="section-header">
+        <h2>Personal details</h2>
+      </div>
       <ion-list lines="none" class="form-list">
-        <ion-item>
+        <ion-item class="input-item">
           <ion-input
             label="First name"
             labelPlacement="stacked"
@@ -45,7 +60,7 @@
             required
           ></ion-input>
         </ion-item>
-        <ion-item>
+        <ion-item class="input-item">
           <ion-input
             label="Surname"
             labelPlacement="stacked"
@@ -54,13 +69,14 @@
             required
           ></ion-input>
         </ion-item>
-        <ion-item>
+        <ion-item class="input-item">
           <ion-select
             label="Sex"
             labelPlacement="stacked"
             formControlName="sex"
             interface="popover"
             justify="start"
+            placeholder="Select"
           >
             <ion-select-option value="Male">Male</ion-select-option>
             <ion-select-option value="Female">Female</ion-select-option>
@@ -71,65 +87,94 @@
     </section>
   </form>
   } @if (currentStep() === 2) {
-  <app-location-picker
-    (changed)="onLocationSelected($event)"
-    [initialPlace]="''"
-    [initialLat]="null"
-    [initialLng]="null"
-    [initialRadiusMiles]="15"
-  >
-  </app-location-picker>
+  <section class="section-card map-card">
+    <div class="section-header">
+      <h2>Work location</h2>
+      <p class="section-subtitle">
+        Choose where you'd like to receive job matches.
+      </p>
+    </div>
+
+    <app-location-picker
+      (changed)="onLocationSelected($event)"
+      [initialPlace]="''"
+      [initialLat]="null"
+      [initialLng]="null"
+      [initialRadiusMiles]="15"
+    >
+    </app-location-picker>
+  </section>
   } @if (currentStep() === 3) {
   <form id="payTradeForm" [formGroup]="payTradeForm" (ngSubmit)="next()">
     <section class="section-card form-card">
-      <div class="section-header"><h2>Pay &amp; trade</h2></div>
+      <div class="section-header">
+        <h2>Pay &amp; trade</h2>
+      </div>
       <ion-list lines="none" class="form-list">
         <ion-item lines="none" class="range-header-item">
           <ion-label>Pay expectation</ion-label>
-          <ion-note slot="end"
-            >£{{ payTradeForm.get('expectedPay')?.value }} / h</ion-note
-          >
+          <ion-note slot="end">
+            £{{ payTradeForm.get('expectedPay')?.value }} / h
+          </ion-note>
         </ion-item>
 
-        <ion-item lines="none">
+        <ion-item lines="none" class="range-item">
           <ion-range
             [attr.aria-label]="'Pay Expectation'"
             formControlName="expectedPay"
             min="5"
             max="100"
             step="1"
-            ><ion-text slot="start">£0</ion-text>
-            <ion-text slot="end">£100</ion-text></ion-range
           >
+            <ion-text slot="start">£0</ion-text>
+            <ion-text slot="end">£100</ion-text>
+          </ion-range>
         </ion-item>
-        <ion-item button detail="true" (click)="openModal('trade')">
+
+        <ion-item
+          button
+          detail="true"
+          class="select-item"
+          (click)="openModal('trade')"
+        >
           <ion-label>
             <h3>Trade</h3>
             @if (payTradeForm.get('tradeId')?.value) {
             <p>{{ selectedTradeName() }}</p>
+            } @else {
+            <p class="placeholder">Select your main trade</p>
             }
           </ion-label>
         </ion-item>
+
         <ion-item
           button
           detail="true"
+          class="select-item"
           (click)="openModal('subcategories')"
           [disabled]="!subcategories().length"
         >
           <ion-label>
             <h3>Trade sub-categories</h3>
             @if (selectedSubcatNames().length) {
-            <p>{{selectedSubcatNames()}}</p>
+            <p>{{ selectedSubcatsLabel() }}</p>
+            } @else {
+            <p class="placeholder">
+              @if (!subcategories().length) { Choose a trade first } @else {
+              Select sub-categories }
+            </p>
             }
           </ion-label>
         </ion-item>
       </ion-list>
     </section>
+
     <section class="section-card form-card">
       <ion-list lines="none" class="form-list">
         <ion-item
           button
           detail="true"
+          class="select-item"
           (click)="openModal('certificates')"
           [disabled]="!tradeSelected()"
           [attr.aria-disabled]="!tradeSelected()"
@@ -138,9 +183,11 @@
             <h3>Certificates (optional)</h3>
 
             @if (!tradeSelected()) {
-            <p>Select a trade first</p>
+            <p class="placeholder">Select a trade first</p>
             } @else if (payTradeForm.get('certificates')?.value?.length) {
             <p>{{ payTradeForm.get('certificates')?.value.length }} selected</p>
+            } @else {
+            <p class="placeholder">Add any relevant certificates</p>
             }
           </ion-label>
         </ion-item>
@@ -150,9 +197,11 @@
   } @if (currentStep() === 4) {
   <form id="bankForm" [formGroup]="bankForm" (ngSubmit)="submit()">
     <section class="section-card form-card">
-      <div class="section-header"><h2>Payment details</h2></div>
+      <div class="section-header">
+        <h2>Payment details</h2>
+      </div>
       <ion-list lines="none" class="form-list">
-        <ion-item>
+        <ion-item class="input-item">
           <ion-input
             label="Bank account number"
             labelPlacement="stacked"
@@ -160,7 +209,7 @@
             formControlName="bankAccountNumber"
           ></ion-input>
         </ion-item>
-        <ion-item>
+        <ion-item class="input-item">
           <ion-input
             label="Sort code"
             labelPlacement="stacked"
@@ -168,7 +217,7 @@
             formControlName="bankSortCode"
           ></ion-input>
         </ion-item>
-        <ion-item>
+        <ion-item class="input-item">
           <ion-input
             label="NI number"
             labelPlacement="stacked"
@@ -180,8 +229,10 @@
     </section>
   </form>
   }
+
   <div class="bottom-spacer" aria-hidden="true"></div>
 </ion-content>
+
 <ion-footer>
   <ion-toolbar class="cta-toolbar">
     @if (currentStep() === 1) {
@@ -190,30 +241,34 @@
       class="primary-btn"
       [disabled]="personalForm.invalid"
       (click)="next()"
-      >Next</ion-button
     >
+      Next
+    </ion-button>
     } @else if (currentStep() === 2) {
     <ion-button
       expand="block"
-      class="ion-margin-bottom"
+      class="primary-btn"
       (click)="onOpenRadiusClick()"
     >
       Set radius - {{ selectedRadiusMiles() }} miles
     </ion-button>
+
     <div class="cta-row">
       <ion-button
         class="ghost-btn"
         fill="outline"
         color="primary"
         (click)="back()"
-        >Back</ion-button
       >
+        Back
+      </ion-button>
       <ion-button
         class="primary-btn"
         (click)="next()"
         [disabled]="!locationSelected()"
-        >Next</ion-button
       >
+        Next
+      </ion-button>
     </div>
     } @else if (currentStep() === 3) {
     <div class="cta-row">
@@ -222,14 +277,16 @@
         fill="outline"
         color="primary"
         (click)="back()"
-        >Back</ion-button
       >
+        Back
+      </ion-button>
       <ion-button
         class="primary-btn"
         (click)="next()"
         [disabled]="payTradeForm.invalid"
-        >Next</ion-button
       >
+        Next
+      </ion-button>
     </div>
     } @else if (currentStep() === 4) {
     <div class="cta-row">
@@ -238,14 +295,16 @@
         fill="outline"
         color="primary"
         (click)="back()"
-        >Back</ion-button
       >
+        Back
+      </ion-button>
       <ion-button
         class="primary-btn"
         [disabled]="bankForm.invalid"
         (click)="submit()"
-        >Submit</ion-button
       >
+        Submit
+      </ion-button>
     </div>
     }
   </ion-toolbar>

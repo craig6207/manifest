@@ -11,3 +11,24 @@
 .ghost-btn {
   width: 100%;
 }
+
+.trade-header {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.trade-toolbar {
+  --background: var(--recruut-primary-gradient);
+  --color: #ffffff;
+  --border-color: transparent;
+}
+
+.trade-toolbar ion-button {
+  --color: #ffffff;
+}
+
+.primary-btn {
+  --border-radius: 999px;
+  --background: var(--recruut-primary-gradient);
+  --box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+  font-weight: 800;
+}
