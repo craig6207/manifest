@@ -6,10 +6,35 @@
         src="/assets/img/Recruut_logo.svg"
         alt="WeRecruit logo"
       ></ion-img>
-
-      <h1 class="hero-title">Sign In</h1>
     </section>
-
+    <img
+      class="cityline cityline--crane-left"
+      src="/assets/img/crane2.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
+    <img
+      class="cityline cityline--back"
+      src="/assets/img/building2.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
+    <img
+      class="cityline cityline--crane"
+      src="/assets/img/crane1.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
+    <img
+      class="cityline cityline--front"
+      src="/assets/img/building1.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
     <section class="form-card">
       @if (showBiometricButton) {
       <div class="biometric-wrapper">
@@ -35,7 +60,6 @@
       <form class="form-default" [formGroup]="signin_form" (submit)="signIn()">
         <ion-item class="input-item" lines="none">
           <ion-icon name="mail-outline" slot="start"></ion-icon>
-
           <ion-input
             formControlName="email"
             type="email"
@@ -45,9 +69,9 @@
             inputmode="email"
           ></ion-input>
         </ion-item>
+
         <ion-item class="input-item" lines="none">
           <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-
           <ion-input
             formControlName="password"
             [type]="showPassword ? 'text' : 'password'"
@@ -78,6 +102,7 @@
         >
           Forgot Password?
         </button>
+
         <ion-button
           class="primary-btn"
           type="submit"
@@ -87,14 +112,16 @@
           Sign In
         </ion-button>
       </form>
+
       <div class="signup-row">
-        <span>Don't have an account?</span>
+        <p>Don't have an account?</p>
         <button type="button" class="signup-link" (click)="goToRegister()">
           Sign Up
         </button>
       </div>
     </section>
   </div>
+
   <ion-loading
     [isOpen]="isLoading"
     message="Signing in..."
@@ -112,6 +139,7 @@
     keyboardClose="true"
     (didDismiss)="setToast()"
   ></ion-toast>
+
   <ion-alert
     [isOpen]="isAlertOpen"
     [header]="alertHeader"
