@@ -1,0 +1,16 @@
+<ion-toolbar class="toolbar-auth">
+  <ion-buttons slot="start">
+    <ion-button
+      fill="clear"
+      size="small"
+      class="back-btn"
+      (click)="goBack()"
+      aria-label="Back to login"
+    >
+      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+
+  <ion-title>{{ title() }}</ion-title>
+  <ion-text slot="end">{{ profileStep() }}</ion-text>
+</ion-toolbar>

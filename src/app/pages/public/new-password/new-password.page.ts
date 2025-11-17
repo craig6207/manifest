@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  inject,
-  computed,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -20,18 +13,19 @@ import {
   IonContent,
   IonIcon,
   IonInput,
-  IonInputPasswordToggle,
   IonItem,
   IonList,
-  IonProgressBar,
   IonToast,
+  IonFooter,
+  IonHeader,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, NavController } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
 import { addIcons } from 'ionicons';
-import { chevronBackOutline, lockClosedOutline } from 'ionicons/icons';
+import { eyeOffOutline, eyeOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 function strongPasswordValidator(
   control: AbstractControl
@@ -60,6 +54,8 @@ function passwordsMatchValidator(
   styleUrls: ['./new-password.page.scss'],
   standalone: true,
   imports: [
+    IonHeader,
+    IonFooter,
     CommonModule,
     ReactiveFormsModule,
     IonContent,
@@ -67,16 +63,17 @@ function passwordsMatchValidator(
     IonItem,
     IonButton,
     IonInput,
-    IonInputPasswordToggle,
     IonToast,
-    IonProgressBar,
     IonIcon,
+    ToolbarBackComponent,
   ],
 })
 export class NewPasswordPage implements OnInit {
   form!: UntypedFormGroup;
   isLoading = false;
   toastOption = { color: '', message: '', show: false };
+  showPassword = false;
+  showRepeatPassword = false;
 
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
@@ -88,12 +85,10 @@ export class NewPasswordPage implements OnInit {
   emailSig = signal<string>('');
   codeSig = signal<string>('');
 
-  @ViewChild('newPwdInput', { static: false }) newPwdInput!: IonInput;
-
   constructor() {
     addIcons({
-      chevronBackOutline,
-      lockClosedOutline,
+      eyeOffOutline,
+      eyeOutline,
     });
   }
 
@@ -139,11 +134,9 @@ export class NewPasswordPage implements OnInit {
     this.codeSig.set(code);
 
     if (!email || !code) {
-      this.router.navigate(['/forgot-password']);
+      this.router.navigate(['/forgotten-password'], { replaceUrl: true });
       return;
     }
-
-    setTimeout(() => this.newPwdInput?.setFocus(), 0);
   }
 
   async submit(): Promise<void> {
@@ -198,6 +191,14 @@ export class NewPasswordPage implements OnInit {
 
   setToast() {
     this.toastOption = { color: '', message: '', show: false };
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleRepeatPasswordVisibility(): void {
+    this.showRepeatPassword = !this.showRepeatPassword;
   }
 
   goBack() {

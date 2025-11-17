@@ -1,6 +1,20 @@
-export type CountryDial = { name: string; iso2: string; dialCode: string };
+export type CountryDial = {
+  name: string;
+  iso2: string;
+  dialCode: string;
+  flag: string;
+};
 
-export const COUNTRY_DIALS: CountryDial[] = [
+function flagFromIso2(iso2: string): string {
+  const A = 0x41,
+    RI_BASE = 0x1f1e6;
+  const up = iso2.trim().toUpperCase();
+  if (up.length !== 2) return '';
+  const cps = [...up].map((ch) => RI_BASE + (ch.charCodeAt(0) - A));
+  return String.fromCodePoint(...cps);
+}
+
+const RAW: Omit<CountryDial, 'flag'>[] = [
   { name: 'United Kingdom', iso2: 'GB', dialCode: '+44' },
   { name: 'Afghanistan', iso2: 'AF', dialCode: '+93' },
   { name: 'Albania', iso2: 'AL', dialCode: '+355' },
@@ -52,3 +66,8 @@ export const COUNTRY_DIALS: CountryDial[] = [
   { name: 'United States', iso2: 'US', dialCode: '+1' },
   { name: 'Zimbabwe', iso2: 'ZW', dialCode: '+263' },
 ];
+
+export const COUNTRY_DIALS: CountryDial[] = RAW.map((c) => ({
+  ...c,
+  flag: flagFromIso2(c.iso2),
+}));

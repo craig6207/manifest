@@ -1,81 +1,52 @@
-<ion-content [fullscreen]="true" class="verify-page">
-  <div class="page-inner">
-    <section class="hero">
-      <div class="hero-top">
-        <ion-button
-          fill="clear"
-          size="small"
-          class="close-btn"
-          (click)="close()"
-          aria-label="Close and go to login"
-        >
-          <ion-icon name="close" slot="icon-only"></ion-icon>
-        </ion-button>
-      </div>
-
-      <img
-        class="hero-logo"
-        src="/assets/img/Recruut_logo.svg"
-        width="200"
-        height="200"
-        alt="WeRecruit logo"
-      />
-
-      <h1 class="hero-title">{{ headline }}</h1>
-      <p class="hero-subtitle">{{ subtext }}</p>
-    </section>
-
-    <section class="form-card">
-      <div class="otp-section">
-        <div class="otp-inner">
-          <ion-input-otp
-            class="otp-input"
-            [(ngModel)]="otp"
-            length="6"
-            type="number"
-            fill="solid"
-            shape="soft"
-            size="large"
-            color="primary"
-            separators="all"
-            (ionComplete)="onOtpComplete($event)"
-          >
-          </ion-input-otp>
-        </div>
-      </div>
-
-      <ion-button
-        expand="block"
-        class="primary-btn"
-        [disabled]="otp.length < 6"
-        (click)="submitOtp()"
+<ion-header no-shadow>
+  <app-toolbar-back title="Verify code" navigation="/login"></app-toolbar-back>
+</ion-header>
+<ion-content class="verify-page">
+  <section class="ion-padding">
+    <h1 class="hero-title">{{ headline }}</h1>
+    <p class="hero-subtitle">{{ subtext }}</p>
+    <ion-input-otp
+      class="otp-input"
+      [(ngModel)]="otp"
+      length="6"
+      type="number"
+      fill="solid"
+      size="large"
+      separators="all"
+      (ionComplete)="onOtpComplete($event)"
+    >
+    </ion-input-otp>
+    <div class="resend-row">
+      <span class="resend-text">Didn't get a code?</span>
+      <button
+        type="button"
+        class="resend-link"
+        (click)="resendCode()"
+        [disabled]="resendCountdown > 0"
+        [class.resend-disabled]="resendCountdown > 0"
       >
-        Verify
-      </ion-button>
-
-      <div class="resend-row">
-        <span class="resend-text">Didn't get a code?</span>
-        <button
-          type="button"
-          class="resend-link"
-          (click)="resendCode()"
-          [disabled]="resendCountdown > 0"
-          [class.resend-disabled]="resendCountdown > 0"
-        >
-          @if (resendCountdown > 0) { Resend in {{ resendCountdown }}s } @else {
-          Resend code }
-        </button>
-      </div>
-
-      <ion-toast
-        [isOpen]="toastOption.show"
-        position="top"
-        [color]="toastOption.color"
-        [message]="toastOption.message"
-        duration="4000"
-        keyboardClose="true"
-        (didDismiss)="setToast()"
-      ></ion-toast>
-    </section>
-  </div>
+        @if (resendCountdown > 0) { Resend in {{ resendCountdown }}s } @else {
+        Resend code }
+      </button>
+    </div>
+  </section>
 </ion-content>
+<ion-footer class="ion-no-border ion-padding">
+  <ion-button
+    expand="block"
+    color="primary"
+    [disabled]="otp.length < 6"
+    (click)="submitOtp()"
+    >Confirm</ion-button
+  >
+</ion-footer>
+
+<ion-toast
+  [isOpen]="toastOption.show"
+  position="top"
+  [color]="toastOption.color"
+  [message]="toastOption.message"
+  duration="4000"
+  keyboardClose="true"
+  (didDismiss)="setToast()"
+></ion-toast>

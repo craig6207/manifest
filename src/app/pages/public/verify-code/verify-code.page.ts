@@ -6,15 +6,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   IonButton,
   IonContent,
-  IonIcon,
   IonInputOtp,
   IonToast,
+  IonHeader,
+  IonFooter,
 } from '@ionic/angular/standalone';
 import { LoadingController, NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { RegisterStore } from 'src/app/+state/register-signal.store';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 type VerifyMode = 'register' | 'reset';
 
@@ -22,13 +24,15 @@ type VerifyMode = 'register' | 'reset';
   selector: 'app-verify-code',
   standalone: true,
   imports: [
+    IonFooter,
+    IonHeader,
     CommonModule,
     FormsModule,
     IonContent,
     IonButton,
     IonInputOtp,
-    IonIcon,
     IonToast,
+    ToolbarBackComponent,
   ],
   templateUrl: './verify-code.page.html',
   styleUrls: ['./verify-code.page.scss'],

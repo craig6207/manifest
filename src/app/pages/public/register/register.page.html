@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true" class="register-page">
   <div class="page-inner">
     <section class="hero">
-      <div class="hero-top">
+      <div class="hero-top ion-padding-top">
         <ion-button
           fill="clear"
           size="small"
@@ -13,17 +13,43 @@
         </ion-button>
       </div>
 
-      <img
+      <ion-img
         class="hero-logo"
         src="/assets/img/Recruut_logo.svg"
-        width="200"
-        height="200"
         alt="WeRecruit logo"
-      />
-
-      <h1 class="hero-title">Create account</h1>
+      ></ion-img>
     </section>
+    <img
+      class="cityline cityline--crane-left"
+      src="/assets/img/crane2.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
+    <img
+      class="cityline cityline--back"
+      src="/assets/img/building2.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
+    <img
+      class="cityline cityline--crane"
+      src="/assets/img/crane1.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
+    <img
+      class="cityline cityline--front"
+      src="/assets/img/building1.svg"
+      alt=""
+      aria-hidden="true"
+      role="presentation"
+    />
+
     <section class="form-card">
+      <h2 class="card-title">Sign Up</h2>
       <form
         [formGroup]="signup_form"
         (ngSubmit)="signUp()"
@@ -31,18 +57,16 @@
         class="form-default"
       >
         <ion-list lines="none" class="form-list">
-          <ion-item class="input-item">
+          <ion-item class="input-item ion-margin-bottom">
             <ion-icon name="mail-outline" slot="start"></ion-icon>
             <ion-input
-              #emailInput
               formControlName="email"
               type="email"
-              placeholder="Email"
+              placeholder="Enter email"
               autocapitalize="off"
               autocomplete="email"
               inputmode="email"
-            >
-            </ion-input>
+            ></ion-input>
           </ion-item>
 
           @if (signup_form.get('email')!.invalid &&
@@ -52,16 +76,30 @@
           } @if (signup_form.get('email')!.errors?.['email']) {
           <div class="error">Please enter a valid email.</div>
           } }
-          <ion-item class="input-item">
+
+          <ion-item class="input-item ion-margin-bottom">
             <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
             <ion-input
               formControlName="password"
-              type="password"
-              placeholder="Password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Enter password"
               autocomplete="new-password"
             >
-              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
             </ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              size="small"
+              class="field-icon-btn"
+              type="button"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <ion-icon
+                [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+                slot="icon-only"
+              ></ion-icon>
+            </ion-button>
           </ion-item>
 
           @if (signup_form.get('password')!.invalid &&
@@ -73,16 +111,29 @@
           </div>
           } }
 
-          <ion-item class="input-item">
+          <ion-item class="input-item ion-margin-bottom">
             <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
             <ion-input
               formControlName="passwordRepeat"
-              type="password"
-              placeholder="Repeat password"
+              [type]="showRepeatPassword ? 'text' : 'password'"
+              placeholder="Confirm password"
               autocomplete="new-password"
             >
-              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
             </ion-input>
+            <ion-button
+              slot="end"
+              fill="clear"
+              size="small"
+              class="field-icon-btn"
+              type="button"
+              (click)="toggleRepeatPasswordVisibility()"
+              [attr.aria-label]="showRepeatPassword ? 'Hide password' : 'Show password'"
+            >
+              <ion-icon
+                [name]="showRepeatPassword ? 'eye-off-outline' : 'eye-outline'"
+                slot="icon-only"
+              ></ion-icon>
+            </ion-button>
           </ion-item>
 
           @if (signup_form.get('passwordRepeat')!.invalid &&
@@ -90,43 +141,65 @@
           (signup_form.get('passwordRepeat')!.errors?.['required']) {
           <div class="error">Please repeat your password.</div>
           } }
-          <ion-item class="input-item">
-            <ion-select
-              formControlName="countryIso2"
-              interface="popover"
-              aria-label="Select country calling code"
-              placeholder="Country"
-            >
-              @for (c of countries; track c.iso2) {
-              <ion-select-option [value]="c.iso2">
-                {{ c.name }} ({{ c.dialCode }})
-              </ion-select-option>
-              }
-            </ion-select>
-          </ion-item>
 
-          <ion-item class="input-item">
-            <ion-icon name="call-outline" slot="start"></ion-icon>
-            <ion-input
-              formControlName="phoneLocal"
-              type="tel"
-              inputmode="tel"
-              placeholder="Mobile number"
-            >
-            </ion-input>
-          </ion-item>
+          <ion-grid class="phone-grid">
+            <ion-row class="ion-align-items-stretch">
+              <ion-col
+                class="ion-no-padding"
+                size="4"
+                sizeSm="5"
+                sizeMd="4"
+                sizeLg="4"
+              >
+                <ion-item
+                  class="input-item input-item-country ion-margin-bottom"
+                >
+                  <ion-select
+                    formControlName="countryIso2"
+                    interface="action-sheet"
+                    aria-label="Select country calling code"
+                    placeholder="Country"
+                    [selectedText]="selectedDialText"
+                    (ionChange)="onCountryChange($event.detail.value)"
+                  >
+                    @for (c of countries; track c.iso2) {
+                    <ion-select-option [value]="c.iso2">
+                      {{ c.flag }}&nbsp;{{ c.dialCode }} — {{ c.name }}
+                    </ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+              </ion-col>
 
-          @if (signup_form.get('phoneLocal')!.invalid &&
-          (signup_form.get('phoneLocal')!.touched || submit_attempt)) {
-          <div class="error">Please enter digits only (6-15).</div>
-          }
+              <ion-col
+                class="ion-no-padding"
+                size="8"
+                sizeSm="7"
+                sizeMd="8"
+                sizeLg="8"
+              >
+                <ion-item class="input-item ion-margin-bottom">
+                  <ion-input
+                    formControlName="phoneLocal"
+                    type="tel"
+                    inputmode="tel"
+                    placeholder="Enter phone number"
+                  ></ion-input>
+                </ion-item>
+                @if (signup_form.get('phoneLocal')!.invalid &&
+                (signup_form.get('phoneLocal')!.touched || submit_attempt)) {
+                <div class="error">Please enter digits only (6-15).</div>
+                }
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-list>
+
         <ion-button
-          id="open-loading"
           type="submit"
           [disabled]="signup_form.invalid"
           expand="block"
-          class="primary-btn"
+          color="primary"
         >
           Sign Up
         </ion-button>
@@ -139,8 +212,7 @@
           duration="4000"
           keyboardClose="true"
           (didDismiss)="setToast()"
-        >
-        </ion-toast>
+        ></ion-toast>
       </form>
     </section>
   </div>

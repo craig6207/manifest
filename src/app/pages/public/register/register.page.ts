@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -12,12 +12,15 @@ import {
   IonContent,
   IonIcon,
   IonInput,
-  IonInputPasswordToggle,
   IonItem,
   IonList,
   IonSelect,
   IonSelectOption,
   IonToast,
+  IonImg,
+  IonCol,
+  IonGrid,
+  IonRow,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -27,6 +30,8 @@ import { addIcons } from 'ionicons';
 import {
   callOutline,
   chevronBackOutline,
+  eyeOffOutline,
+  eyeOutline,
   lockClosedOutline,
   mailOutline,
 } from 'ionicons/icons';
@@ -51,6 +56,10 @@ function strongPasswordValidator(control: AbstractControl) {
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   imports: [
+    IonRow,
+    IonGrid,
+    IonCol,
+    IonImg,
     CommonModule,
     ReactiveFormsModule,
     IonContent,
@@ -58,7 +67,6 @@ function strongPasswordValidator(control: AbstractControl) {
     IonItem,
     IonButton,
     IonInput,
-    IonInputPasswordToggle,
     IonToast,
     IonSelect,
     IonSelectOption,
@@ -69,6 +77,10 @@ export class RegisterPage implements OnInit {
   signup_form!: UntypedFormGroup;
   submit_attempt = false;
   toastOption = { color: '', message: '', show: false };
+  selectedDialCode = '';
+  selectedDialText = '';
+  showPassword = false;
+  showRepeatPassword = false;
   readonly countries = COUNTRY_DIALS;
 
   private readonly authService = inject(AuthService);
@@ -78,19 +90,15 @@ export class RegisterPage implements OnInit {
   private readonly loadingCtrl = inject(LoadingController);
   private readonly navCtrl = inject(NavController);
 
-  @ViewChild('emailInput', { static: false }) emailInput!: IonInput;
-
   constructor() {
     addIcons({
       chevronBackOutline,
       mailOutline,
       lockClosedOutline,
       callOutline,
+      eyeOffOutline,
+      eyeOutline,
     });
-  }
-
-  ionViewDidEnter() {
-    setTimeout(() => this.emailInput?.setFocus(), 0);
   }
 
   ngOnInit() {
@@ -101,6 +109,14 @@ export class RegisterPage implements OnInit {
       countryIso2: ['GB', [Validators.required]],
       phoneLocal: ['', [Validators.required, Validators.pattern(/^\d{6,15}$/)]],
     });
+
+    this.updateSelectedDialCode(this.signup_form.value.countryIso2);
+
+    this.signup_form
+      .get('countryIso2')!
+      .valueChanges.subscribe((iso2: string) => {
+        this.updateSelectedDialCode(iso2);
+      });
   }
 
   private buildE164(iso2: string, local: string): string {
@@ -163,5 +179,23 @@ export class RegisterPage implements OnInit {
 
   goBack() {
     this.navCtrl.navigateBack('/');
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleRepeatPasswordVisibility(): void {
+    this.showRepeatPassword = !this.showRepeatPassword;
+  }
+
+  onCountryChange(iso2: string) {
+    this.updateSelectedDialCode(iso2);
+  }
+
+  private updateSelectedDialCode(iso2: string) {
+    const hit = this.countries.find((c) => c.iso2 === iso2);
+    this.selectedDialCode = hit?.dialCode ?? '';
+    this.selectedDialText = hit ? `${hit.flag}\u00A0${hit.dialCode}` : '';
   }
 }

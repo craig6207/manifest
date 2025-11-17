@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -7,7 +7,6 @@ import {
   UntypedFormGroup,
 } from '@angular/forms';
 import {
-  IonButton,
   IonContent,
   IonIcon,
   IonInput,
@@ -15,13 +14,17 @@ import {
   IonList,
   IonLoading,
   IonToast,
+  IonHeader,
+  IonFooter,
+  IonButton,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { LoadingController, NavController } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
 import { addIcons } from 'ionicons';
-import { chevronBackOutline, mailOutline } from 'ionicons/icons';
+import { arrowBack, informationCircleOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 @Component({
   selector: 'app-forgot-password',
@@ -29,16 +32,19 @@ import { AuthService } from 'src/app/services/auth/auth.service';
   styleUrls: ['./forgotten-password.page.scss'],
   standalone: true,
   imports: [
+    IonButton,
+    IonIcon,
+    IonHeader,
     CommonModule,
     ReactiveFormsModule,
     IonContent,
-    IonList,
     IonItem,
-    IonButton,
     IonInput,
     IonToast,
     IonLoading,
-    IonIcon,
+    IonList,
+    ToolbarBackComponent,
+    IonFooter,
   ],
 })
 export class ForgottenPasswordPage implements OnInit {
@@ -54,12 +60,10 @@ export class ForgottenPasswordPage implements OnInit {
   private readonly loadingCtrl = inject(LoadingController);
   private readonly navCtrl = inject(NavController);
 
-  @ViewChild('emailInput', { static: false }) emailInput!: IonInput;
-
   constructor() {
     addIcons({
-      chevronBackOutline,
-      mailOutline,
+      informationCircleOutline,
+      arrowBack,
     });
   }
 
@@ -67,10 +71,6 @@ export class ForgottenPasswordPage implements OnInit {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
-  }
-
-  ionViewDidEnter() {
-    setTimeout(() => this.emailInput?.setFocus(), 0);
   }
 
   async onSubmit(): Promise<void> {

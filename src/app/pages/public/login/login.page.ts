@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import {
   IonAlert,
   IonButton,
@@ -18,13 +17,9 @@ import {
   IonInput,
   IonItem,
   IonLoading,
-  IonSpinner,
-  IonText,
   IonToast,
-  IonHeader,
-  IonToolbar,
+  IonSpinner,
 } from '@ionic/angular/standalone';
-
 import { addIcons } from 'ionicons';
 import {
   arrowForward,
@@ -35,9 +30,7 @@ import {
   logInOutline,
   mailOutline,
 } from 'ionicons/icons';
-
 import { BiometryType } from '@aparajita/capacitor-biometric-auth';
-
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { BiometricAuthService } from 'src/app/services/auth/biometric-auth.service';
 
@@ -46,12 +39,12 @@ import { BiometricAuthService } from 'src/app/services/auth/biometric-auth.servi
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   imports: [
+    IonSpinner,
     IonImg,
     IonToast,
     IonAlert,
     IonLoading,
     IonIcon,
-    IonSpinner,
     IonInput,
     IonItem,
     IonContent,

@@ -36,6 +36,8 @@
       role="presentation"
     />
     <section class="form-card">
+      <h2 class="card-title">Sign In</h2>
+
       @if (showBiometricButton) {
       <div class="biometric-wrapper">
         <ion-button
@@ -58,7 +60,7 @@
       }
 
       <form class="form-default" [formGroup]="signin_form" (submit)="signIn()">
-        <ion-item class="input-item" lines="none">
+        <ion-item class="input-item ion-margin-bottom" lines="none">
           <ion-icon name="mail-outline" slot="start"></ion-icon>
           <ion-input
             formControlName="email"
@@ -70,7 +72,7 @@
           ></ion-input>
         </ion-item>
 
-        <ion-item class="input-item" lines="none">
+        <ion-item class="input-item ion-margin-bottom" lines="none">
           <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
           <ion-input
             formControlName="password"
@@ -98,13 +100,14 @@
         <button
           type="button"
           class="link-forgot"
+          color="primary"
           (click)="goToForgottenPassword()"
         >
           Forgot Password?
         </button>
 
         <ion-button
-          class="primary-btn"
+          color="primary"
           type="submit"
           expand="block"
           [disabled]="signin_form.invalid || isLoading"
@@ -114,7 +117,7 @@
       </form>
 
       <div class="signup-row">
-        <p>Don't have an account?</p>
+        <p class="signup-text">Don't have an account?</p>
         <button type="button" class="signup-link" (click)="goToRegister()">
           Sign Up
         </button>

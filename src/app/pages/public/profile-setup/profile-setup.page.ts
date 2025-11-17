@@ -35,6 +35,7 @@ import {
   AlertController,
   LoadingController,
   IonText,
+  IonToast,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { close, locate } from 'ionicons/icons';
@@ -50,6 +51,7 @@ import { TradePickerComponent } from 'src/app/components/trade-picker/trade-pick
 import { CertificateProfileSetupComponent } from 'src/app/components/certificate-profile-setup/certificate-profile-setup.component';
 import { CertDefinition } from 'src/app/interfaces/certificate';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 type LocationSelection = {
   placeName: string;
@@ -66,6 +68,7 @@ type LocationSelection = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ModalController],
   imports: [
+    IonToast,
     IonText,
     ReactiveFormsModule,
     IonNote,
@@ -85,6 +88,7 @@ type LocationSelection = {
     IonSelect,
     IonSelectOption,
     LocationPickerComponent,
+    ToolbarBackComponent,
   ],
 })
 export class ProfileSetupPage implements OnInit {
