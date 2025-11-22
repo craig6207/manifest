@@ -27,6 +27,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'timesheets-log',
+        loadComponent: () =>
+          import('../timesheets/timesheet-log/timesheet-log.page').then(
+            (m) => m.TimesheetLogPage
+          ),
+      },
+      {
         path: 'job-search',
         loadComponent: () =>
           import('../job-search/job-search.page').then((m) => m.JobSearchPage),
@@ -50,6 +57,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('../job-history/job-history.page').then(
             (m) => m.JobHistoryPage
+          ),
+      },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('../notifications/notifications.page').then(
+            (m) => m.NotificationsPage
           ),
       },
       {

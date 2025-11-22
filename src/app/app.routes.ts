@@ -76,4 +76,8 @@ export const routes: Routes = [
   },
 
   { path: '**', redirectTo: '' },
+  {
+    path: 'timesheet-log',
+    loadComponent: () => import('./pages/secure/timesheets/timesheet-log/timesheet-log.page').then( m => m.TimesheetLogPage)
+  },
 ];

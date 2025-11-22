@@ -1,10 +1,22 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/secure/tabs/timesheets"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Timesheets</ion-title>
-  </ion-toolbar>
+  <app-toolbar-back
+    title="Timesheet edit"
+    [calendarShow]="true"
+    navigation="/secure/tabs/timesheets"
+  ></app-toolbar-back>
+  <div class="week-container">
+    <div class="week-pill">
+      <ion-button fill="clear" class="week-arrow-btn" (click)="goPrevWeek()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+
+      <div class="week-label">{{ weekRangeLabel() }}</div>
+
+      <ion-button fill="clear" class="week-arrow-btn" (click)="goNextWeek()">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
@@ -15,42 +27,29 @@
   </ion-refresher>
 
   @if (loading()) {
-  <div class="week-bar">
-    <ion-button fill="clear" disabled>
-      <ion-skeleton-text
-        animated
-        style="width: 20px; height: 20px"
-      ></ion-skeleton-text>
-    </ion-button>
-
-    <div class="week-range">
-      <div class="range">
+  <div class="week-container">
+    <div class="week-pill">
+      <ion-button fill="clear" class="week-arrow-btn" disabled>
         <ion-skeleton-text
           animated
-          style="width: 160px; height: 18px"
+          style="width: 20px; height: 20px"
+        ></ion-skeleton-text>
+      </ion-button>
+
+      <div class="week-label">
+        <ion-skeleton-text
+          animated
+          style="width: 120px; height: 18px"
         ></ion-skeleton-text>
       </div>
-      <ion-note class="hint">
+
+      <ion-button fill="clear" class="week-arrow-btn" disabled>
         <ion-skeleton-text
           animated
-          style="width: 140px; height: 12px"
+          style="width: 20px; height: 20px"
         ></ion-skeleton-text>
-      </ion-note>
+      </ion-button>
     </div>
-
-    <ion-button fill="clear" disabled>
-      <ion-skeleton-text
-        animated
-        style="width: 20px; height: 20px"
-      ></ion-skeleton-text>
-    </ion-button>
-
-    <ion-button fill="clear" class="date-btn" disabled>
-      <ion-skeleton-text
-        animated
-        style="width: 80px; height: 18px"
-      ></ion-skeleton-text>
-    </ion-button>
   </div>
 
   <ion-list inset="true" style="margin-top: 12px">
@@ -82,149 +81,45 @@
     }
   </ion-list>
   } @else {
-  <div class="week-bar">
-    <ion-button fill="clear" (click)="goPrevWeek()">
-      <ion-icon name="chevron-back-outline"></ion-icon>
-    </ion-button>
 
-    <div class="week-range">
-      <div class="range">{{ weekRangeLabel() }}</div>
-      <ion-note class="hint">Tap calendar to pick a date</ion-note>
-    </div>
-
-    <ion-button fill="clear" (click)="goNextWeek()">
-      <ion-icon name="chevron-forward-outline"></ion-icon>
-    </ion-button>
-
-    <ion-datetime-button
-      datetime="weekDatePicker"
-      class="date-btn"
-    ></ion-datetime-button>
-
-    <ion-modal [keepContentsMounted]="true">
-      <ng-template>
-        <ion-datetime
-          id="weekDatePicker"
-          presentation="date"
-          [value]="selectedDateISO()"
-          [min]="minDateISO()"
-          [max]="maxDateISO()"
-          (ionChange)="onDatePicked($event)"
-        >
-        </ion-datetime>
-      </ng-template>
-    </ion-modal>
-  </div>
-
-  @if (!editing()) {
-  <ion-list inset="true">
+  <ion-list inset="true" class="timesheet-list">
     @for (d of days(); track d.dateISO) {
-    <ion-item lines="full">
-      <ion-label class="day-label">
-        <div class="top">
-          {{ d.weekdayShort }} <span class="date">{{ d.displayDate }}</span>
-        </div>
-        @if (d.entries.length === 0) {
-        <ion-note>No entries</ion-note>
-        } @else {
-        <div class="chips">
-          @for (e of d.entries; track e.checkIn) {
-          <ion-chip>
-            <ion-icon name="time-outline"></ion-icon>
-            <ion-label>{{ e.inLabel }} — {{ e.outLabel ?? '—' }}</ion-label>
-          </ion-chip>
-          }
-        </div>
-        }
-      </ion-label>
+    <ion-item lines="none" class="day-row">
+      <div class="day-meta">
+        <div class="day-week">{{ d.weekdayShort }}</div>
+        <div class="day-day">{{ d.displayDate }}</div>
+      </div>
 
-      @if (d.totalHoursLabel) {
-      <ion-badge color="primary">{{ d.totalHoursLabel }}</ion-badge>
-      }
+      <div
+        class="day-card"
+        [class.day-card-empty]="d.entries.length === 0 && weekStatus() === 'Open'"
+        [class.day-card-disabled]="d.entries.length === 0 && weekStatus() !== 'Open'"
+        (click)="onDayCardClick(d)"
+      >
+        @if (d.entries.length === 0) { @if (weekStatus() === 'Open') {
+        <div class="day-card-main">
+          <ion-icon name="add-circle-outline" class="day-card-icon"></ion-icon>
+          <span class="day-card-text-primary">Log your time</span>
+        </div>
+        } @else {
+        <div class="day-card-main">
+          <span class="day-card-text-muted">No entries</span>
+        </div>
+        } } @else {
+        <div class="day-card-main">
+          <ion-icon name="time-outline" class="day-card-icon"></ion-icon>
+          <span class="day-card-text-primary">
+            {{ d.entries[0]?.inLabel }} - {{ d.entries[0]?.outLabel ?? '—' }}
+          </span>
+        </div>
+
+        @if (d.totalHoursLabel) {
+        <div class="day-card-total">{{ d.totalHoursLabel }} logged</div>
+        } }
+      </div>
     </ion-item>
     }
   </ion-list>
 
-  <div class="footer-actions">
-    @if (weekStatus() === 'Open') {
-    <ion-button expand="block" (click)="startEdit()">
-      <ion-icon slot="start" name="create-outline"></ion-icon>
-      Edit week
-    </ion-button>
-    }
-  </div>
-  } @else {
-  <form [formGroup]="form">
-    <ion-list inset="true">
-      @for (dayCtrl of dayControls(); track dayCtrl.get('dateISO')?.value) {
-      <ion-item lines="full">
-        <ion-label class="day-label">
-          <div class="top">
-            {{ dayCtrl.get('weekdayShort')?.value }}
-            <span class="date">{{ dayCtrl.get('displayDate')?.value }}</span>
-          </div>
-        </ion-label>
-      </ion-item>
-
-      <div class="entries">
-        @for (entryCtrl of entryControls(dayCtrl); let i = $index; track i) {
-        <div class="entry-row">
-          <ion-item>
-            <ion-label position="stacked">Check in</ion-label>
-            <ion-input
-              type="time"
-              [value]="entryCtrl.get('inLocal')?.value"
-              (ionInput)="onTimeChange(entryCtrl, 'inLocal', $any($event.target).value)"
-              inputmode="numeric"
-            >
-            </ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="stacked">Check out</ion-label>
-            <ion-input
-              type="time"
-              [value]="entryCtrl.get('outLocal')?.value"
-              (ionInput)="onTimeChange(entryCtrl, 'outLocal', $any($event.target).value)"
-              inputmode="numeric"
-            >
-            </ion-input>
-          </ion-item>
-
-          <ion-button
-            fill="clear"
-            size="small"
-            (click)="removeEntry(dayCtrl, i)"
-            [disabled]="entryCtrlCount(dayCtrl) <= 1"
-            class="remove-btn"
-          >
-            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-          </ion-button>
-        </div>
-        }
-      </div>
-      }
-    </ion-list>
-
-    <div class="edit-actions">
-      <ion-button expand="block" (click)="openReasonAlert()">
-        <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
-        Submit for approval
-      </ion-button>
-    </div>
-  </form>
-  } }
-
-  <div style="height: 24px"></div>
-
-  <ion-alert
-    [isOpen]="isAlertOpen()"
-    header="Submit edits"
-    subHeader="Optional reason"
-    message="Add a short reason for your timesheet changes (optional)."
-    [inputs]="alertInputs"
-    [buttons]="alertButtons"
-    (didDismiss)="isAlertOpen.set(false)"
-  >
-  </ion-alert>
+  }
 </ion-content>

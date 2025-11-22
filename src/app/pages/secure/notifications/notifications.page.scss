@@ -1,0 +1,150 @@
+.notif-content {
+  --background: #f3f5fb;
+}
+
+.toolbar-sub {
+  background: #f3f5fb;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.segment-shell {
+  width: 100%;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.07);
+}
+
+.notif-segment {
+  --background: #f4f8fb;
+  --color: #111827;
+  border-radius: 12px;
+  padding: 0;
+}
+
+.notif-segment ion-segment-button {
+  --background: transparent;
+  --background-checked: var(--ion-color-primary);
+  --color: #1c1c1e;
+  --color-checked: #ffffff;
+  --indicator-color: transparent;
+  min-height: 44px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.segment-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.seg-badge {
+  --background: #ef4444;
+  --color: #ffffff;
+  font-size: 11px;
+  border-radius: 9999px;
+  padding: 0 6px;
+}
+
+.empty {
+  padding: 64px 24px;
+  text-align: center;
+  color: var(--ion-color-medium);
+  ion-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 8px;
+  }
+}
+
+.skeleton-list {
+  padding: 16px;
+}
+
+.skeleton-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 14px 16px 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}
+
+.skeleton-meta {
+  margin-top: 10px;
+  display: flex;
+  gap: 12px;
+}
+
+.notif-list {
+  padding: 16px 16px 24px;
+}
+
+.notif-item {
+  --background: #ffffff;
+  --border-radius: 20px;
+  --inner-padding-top: 14px;
+  --inner-padding-bottom: 14px;
+  --inner-padding-start: 16px;
+  --inner-padding-end: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.notif-label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notif-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.notif-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.notif-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.notif-item.unread .notif-title {
+  font-weight: 800;
+}
+
+.notif-item.unread .notif-status-dot {
+  background: #ffcc00;
+}
+
+.notif-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.notif-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notif-meta ion-icon {
+  font-size: 16px;
+  color: #4b5a78;
+}

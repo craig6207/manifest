@@ -7,15 +7,8 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
   IonButton,
   IonIcon,
   IonLabel,
@@ -27,22 +20,17 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  briefcaseOutline,
-  businessOutline,
+  calendarClearOutline,
   chevronForwardOutline,
-  documentTextOutline,
+  pricetagOutline,
 } from 'ionicons/icons';
 import { NavController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { TimesheetService } from 'src/app/services/timesheet/timesheet.service';
 import { JobAssignmentSummary } from 'src/app/interfaces/timesheets';
-
-addIcons({
-  briefcaseOutline,
-  businessOutline,
-  chevronForwardOutline,
-  documentTextOutline,
-});
+import { ToolbarHomeComponent } from 'src/app/components/toolbar-home/toolbar-home.component';
+import { ProfileStore } from 'src/app/+state/profile-signal.store';
+import { Router } from '@angular/router';
 
 function parseDateOnlyToLocal(
   dateOnly: string | null | undefined
@@ -79,15 +67,8 @@ function dateRangeLabel(
 @Component({
   selector: 'app-timesheets',
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonCardContent,
     IonButton,
     IonIcon,
     IonLabel,
@@ -96,6 +77,7 @@ function dateRangeLabel(
     IonRefresher,
     IonRefresherContent,
     IonSkeletonText,
+    ToolbarHomeComponent,
   ],
   templateUrl: './timesheets.page.html',
   styleUrls: ['timesheets.page.scss'],
@@ -104,6 +86,8 @@ function dateRangeLabel(
 export class TimesheetsPage {
   private readonly nav = inject(NavController);
   private readonly svc = inject(TimesheetService);
+  private readonly profileStore = inject(ProfileStore);
+  private readonly router = inject(Router);
 
   readonly loading = signal(true);
   readonly current = signal<JobAssignmentSummary | null>(null);
@@ -111,11 +95,21 @@ export class TimesheetsPage {
 
   readonly hasCurrent = computed(() => !!this.current());
   readonly hasHistory = computed(() => this.history().length > 0);
+  readonly unreadCount = computed(() =>
+    this.profileStore.unreadNotificationCount()
+  );
+
+  readonly firstName = computed(() => {
+    const profile = this.profileStore.profile();
+    const name = (profile?.firstName ?? 'there').trim();
+    return name.length ? name : 'there';
+  });
 
   constructor() {
     effect(() => {
       this.load();
     });
+    addIcons({ pricetagOutline, calendarClearOutline, chevronForwardOutline });
   }
 
   async load() {
@@ -146,6 +140,10 @@ export class TimesheetsPage {
 
   dates(a: JobAssignmentSummary) {
     return dateRangeLabel(a.startDate, a.endDate);
+  }
+
+  goToJobsList() {
+    this.router.navigate(['/secure/tabs/job-search']);
   }
 
   openCurrentTimesheet(a: JobAssignmentSummary | null) {

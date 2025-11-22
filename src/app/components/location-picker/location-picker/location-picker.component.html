@@ -7,8 +7,18 @@
       [value]="searchQuery()"
       (ionInput)="onSearch($any($event).detail?.value ?? '')"
       aria-label="Search location"
+    ></ion-input>
+  </div>
+  <div class="locate-cta">
+    <ion-button
+      class="locate-btn"
+      size="small"
+      fill="solid"
+      (click)="useMyLocation()"
+      aria-label="Use my current location"
     >
-    </ion-input>
+      <ion-icon name="locate-outline" slot="icon-only"></ion-icon>
+    </ion-button>
   </div>
 
   <div #mapEl class="map"></div>

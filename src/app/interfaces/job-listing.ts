@@ -12,14 +12,16 @@ export interface JobListing {
   profileId: number;
 }
 
-export type JobFilterOptions = {
+export interface JobFilterOptions {
   skip?: number;
   take?: number;
   includePast?: boolean;
   subCategory?: string;
   minPay?: number;
   startDateFrom?: string;
-};
+  endDateTo?: string;
+  radiusMiles?: number;
+}
 
 export interface JobListingView extends JobListing {
   clientId?: number;

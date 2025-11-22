@@ -23,12 +23,25 @@ export class JobListingsService {
       .set('take', String(options?.take ?? 20))
       .set('includePast', String(options?.includePast ?? false));
 
-    if (options?.subCategory)
+    if (options?.subCategory) {
       params = params.set('subCategory', options.subCategory);
-    if (typeof options?.minPay === 'number')
+    }
+
+    if (typeof options?.minPay === 'number') {
       params = params.set('minPay', String(options.minPay));
-    if (options?.startDateFrom)
+    }
+
+    if (options?.startDateFrom) {
       params = params.set('startDateFrom', options.startDateFrom);
+    }
+
+    if (options?.endDateTo) {
+      params = params.set('endDateTo', options.endDateTo);
+    }
+
+    if (typeof options?.radiusMiles === 'number') {
+      params = params.set('radiusMiles', String(options.radiusMiles));
+    }
 
     return this.http.get<JobListing[]>(
       `${environment.apiEndpoint}/api/joblistings/candidate/${candidateProfileId}`,
@@ -45,12 +58,25 @@ export class JobListingsService {
       String(options?.includePast ?? false)
     );
 
-    if (options?.subCategory)
+    if (options?.subCategory) {
       params = params.set('subCategory', options.subCategory);
-    if (typeof options?.minPay === 'number')
+    }
+
+    if (typeof options?.minPay === 'number') {
       params = params.set('minPay', String(options.minPay));
-    if (options?.startDateFrom)
+    }
+
+    if (options?.startDateFrom) {
       params = params.set('startDateFrom', options.startDateFrom);
+    }
+
+    if (options?.endDateTo) {
+      params = params.set('endDateTo', options.endDateTo);
+    }
+
+    if (typeof options?.radiusMiles === 'number') {
+      params = params.set('radiusMiles', String(options.radiusMiles));
+    }
 
     return this.http
       .get<{ count: number }>(

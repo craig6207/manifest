@@ -38,6 +38,7 @@
 
 :root {
   --kb: 0px;
+  --we-toolbar-gradient: linear-gradient(135deg, #c2f5ff 0%, #5481e3 200%);
 }
 
 :is(.login-page, .register-page) {
@@ -182,7 +183,7 @@
 }
 
 .toolbar-auth {
-  --background: linear-gradient(135deg, #c2f5ff 0%, #5481e3 200%);
+  --background: var(--we-toolbar-gradient);
   --color: #0b2b36;
   --min-height: 120px;
   --padding-start: 16px;

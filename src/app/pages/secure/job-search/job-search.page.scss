@@ -1,54 +1,222 @@
-.filter-fixed {
-  position: fixed;
-  right: 16px;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  z-index: 30;
+.jobs-header {
+  position: relative;
+  z-index: 5;
 }
 
-.filter-btn {
-  --border-radius: 14px;
-  --padding-start: 14px;
-  --padding-end: 14px;
-  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  font-weight: 600;
+.header-filter-btn {
+  position: absolute;
+  right: 16px;
+  bottom: -24px;
+  width: 52px;
+  height: 52px;
+  --border-radius: 18px;
+  border-radius: 18px;
+  --background: #ffffff;
+  --box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+  --color: var(--ion-color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-filter-btn ion-icon {
+  font-size: 24px;
 }
 
 .filter-sheet {
-  --border-radius: 16px 16px 0 0;
   --box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
 }
 
-.sheet-toolbar ion-toolbar {
-  --min-height: 48px;
+.filter-sheet ion-header {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  overflow: hidden;
+  padding: 0;
 }
 
-.sheet-title {
-  margin: 8px 0 16px;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1.15;
+.filter-sheet ion-toolbar {
+  --background: #ffffff;
+  padding: 16px;
 }
 
-.filter-section {
-  margin-top: 16px;
+.filter-sheet ion-content {
+  --background: #f4f8fb;
 }
+
 .section-heading {
-  margin: 12px 0 8px;
+  margin-bottom: 12px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.section-end {
+  border-bottom: 1px solid #d5d9e4;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.location-section .section-heading {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.location-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.location-chip {
+  --background: #ffffff;
+  --color: #111827;
+  --border-radius: 9999px;
+  --padding-start: 18px;
+  --padding-end: 18px;
+  --box-shadow: 0 10px 32px rgba(15, 23, 42, 0.14);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.location-arrow {
+  font-size: 24px;
+  color: #4b5a78;
+}
+
+.roles-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.trade-chip {
+  --background: #ffffff;
+  --color: #1c1c1e;
+  --border-radius: 12px;
+  font-weight: 600;
+}
+
+.trade-chip ion-icon {
   font-size: 18px;
-  font-weight: 700;
+  margin-right: 6px;
+  color: #65758b;
 }
 
-.range-header {
-  --inner-padding-end: 0;
-  --inner-padding-start: 0;
-
-  .range-value {
-    font-weight: 700;
-  }
+.trade-chip-selected {
+  --background: var(--ion-color-primary);
+  --color: #ffffff;
 }
 
-.pay-range {
-  margin-top: 0;
+.trade-chip-selected ion-icon {
+  color: #ffffff;
+}
+
+.range-header-item {
+  --background: transparent;
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #1c1c1e;
+}
+
+.range-item {
+  --background: transparent;
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+}
+
+.divider-top {
+  margin-top: 10px;
+  border-top: 1px solid #e8edf6;
+}
+
+ion-range {
+  --bar-background: #e8edf6;
+  --bar-background-active: #2f55c1;
+  --bar-height: 6px;
+  --bar-border-radius: 6px;
+  --height: 44px;
+  --knob-background: transparent;
+  --knob-box-shadow: none;
+  --knob-size: 28px;
+  padding: 0;
+}
+
+ion-range::part(knob) {
+  background: transparent;
+  border: 0;
+}
+
+ion-range::part(pin) {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  background: #ffffff;
+  color: #1c1c1e;
+  border: 2px solid #2f55c1;
+  border-radius: 999px;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.dates-block {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.date-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.date-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1c1c1e;
+}
+
+.date-inputs {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.date-item {
+  flex: 1 1 0;
+  --background: #ffffff;
+  --border-radius: 16px;
+  --min-height: 48px;
+  --padding-start: 10px;
+  --inner-padding-end: 6px;
+}
+
+.date-item::part(native) {
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.date-item ion-select {
+  --padding-start: 4px;
+  font-size: 15px;
+  color: #6b7280;
+  width: 100%;
 }
 
 .content-spacer {
@@ -69,107 +237,163 @@
 .job-list {
   background: transparent;
   padding: 0;
-  margin: 8px 0 16px;
+  margin: 32px 0 16px;
 }
 
-.job-slide {
-  margin-bottom: 12px;
+.job-card {
+  margin-top: 16px;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e6f2;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  padding: 20px 18px 16px;
 }
 
-ion-item.job-card {
-  --background: transparent;
-  --inner-padding-start: 14px;
-  --inner-padding-end: 12px;
-  --padding-start: 0;
-  --padding-end: 0;
-}
-
-ion-item.job-card::part(native) {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-}
-
-ion-item.job-card .chevron {
-  font-size: 18px;
-  color: var(--ion-color-medium);
-  opacity: 0.7;
-}
-
-.card-header {
+.job-card-top {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6px;
 }
 
-.icon-badge {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: color-mix(in srgb, var(--ion-color-primary) 12%, white);
-  color: var(--ion-color-primary);
-}
-
-.title-wrap .title {
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-.title-wrap .subtitle {
-  margin-top: 2px;
-  font-size: 13px;
-  color: var(--ion-color-medium);
-}
-
-.rate-badge {
-  white-space: nowrap;
-  padding: 6px 10px;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 13px;
-  background: color-mix(in srgb, var(--ion-color-primary) 10%, white);
-  color: var(--ion-color-primary);
-  border: 1px solid
-    color-mix(in srgb, var(--ion-color-primary) 18%, transparent);
-}
-
-.spacer {
+.job-card-heading {
   flex: 1 1 auto;
 }
 
-.meta-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 6px 0 2px;
-  color: var(--ion-color-medium);
-  font-size: 14px;
-
-  ion-icon {
-    font-size: 16px;
-    color: var(--ion-color-medium);
-  }
+.job-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
 }
 
-.empty-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  text-align: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  margin-top: 8px;
+.job-company {
+  margin: 0;
+  font-size: 14px;
+  color: #4b5a78;
+}
 
-  .empty-title {
-    font-weight: 800;
-    margin-bottom: 4px;
-  }
-  .empty-text {
-    color: var(--ion-color-medium);
-    margin-bottom: 10px;
-  }
+.job-favourite-btn {
+  border: 0;
+  padding: 6px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+
+.job-favourite-btn ion-icon {
+  font-size: 22px;
+  color: #8b9ac2;
+}
+
+.job-meta-row {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13px;
+  color: #111827;
+}
+
+.job-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.job-meta-icon {
+  font-size: 16px;
+  color: #4b5a78;
+}
+
+.job-meta-divider {
+  color: #d0d6e5;
+}
+
+.job-description {
+  margin: 16px 0 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.job-card-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e6f2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.job-salary {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.job-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #275fcb;
+}
+
+.job-link ion-icon {
+  font-size: 18px;
+}
+
+.empty-state {
+  margin-top: 40px;
+  padding: 24px 16px 32px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 104px;
+  height: 104px;
+  border-radius: 9999px;
+  background: #ffffff;
+  margin: 0 auto 24px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.empty-icon ion-icon {
+  font-size: 40px;
+  color: var(--ion-color-primary);
+}
+
+.empty-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.empty-text {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.empty-btn {
+  --border-radius: 14px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  font-weight: 700;
+  max-width: 360px;
+  margin: 0 auto;
 }

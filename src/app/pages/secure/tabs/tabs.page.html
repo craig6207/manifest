@@ -1,30 +1,40 @@
 <ion-tabs>
-  <ion-tab-bar slot="bottom">
+  <ion-tab-bar slot="bottom" class="main-tab-bar ion-padding">
     <ion-tab-button tab="home">
-      <ion-icon name="home"></ion-icon>
+      <div class="tab-icon-wrap">
+        <ion-icon name="home"></ion-icon>
+      </div>
       <ion-label>Home</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="timesheets">
-      <ion-icon name="calendar"></ion-icon>
+      <div class="tab-icon-wrap">
+        <ion-icon name="calendar"></ion-icon>
+      </div>
       <ion-label>Timesheets</ion-label>
     </ion-tab-button>
 
     <ion-tab-button (click)="openActions()">
-      <ion-icon name="add-circle-outline"></ion-icon>
+      <div class="tab-icon-wrap">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </div>
       <ion-label>Actions</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="job-search">
-      <ion-icon name="search"></ion-icon>
+      <div class="tab-icon-wrap">
+        <ion-icon name="search"></ion-icon>
+      </div>
       <ion-label>Job search</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="profile" class="tab-with-badge">
-      <ion-icon name="person"></ion-icon>
+      <div class="tab-icon-wrap">
+        <ion-icon name="person"></ion-icon>
+      </div>
       <ion-label>Profile</ion-label>
       @if (unreadCount() > 0) {
-      <ion-badge color="danger">{{ unreadCount() }}</ion-badge>
+      <ion-badge>{{ unreadCount() }}</ion-badge>
       }
     </ion-tab-button>
   </ion-tab-bar>

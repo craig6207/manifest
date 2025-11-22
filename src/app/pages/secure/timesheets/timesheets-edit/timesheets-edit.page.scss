@@ -1,53 +1,165 @@
-.week-bar {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
+.week-container {
+  position: relative;
+  top: -10px;
+  width: 100%;
+  margin-bottom: 12px;
+  z-index: 1;
 }
-.week-range {
+
+.week-pill {
+  width: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 10px 16px;
 }
-.week-range .range {
+
+.week-arrow-btn {
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 0;
+  --padding-end: 0;
+  min-width: auto;
+  height: 32px;
+}
+
+.week-arrow-btn ion-icon {
+  font-size: 22px;
+  color: #65758b;
+}
+
+.week-label {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 16px;
   font-weight: 600;
+  color: #1c1c1e;
 }
-.week-range .hint {
-  font-size: 12px;
-  opacity: 0.7;
-}
-.date-btn {
-  margin-left: 4px;
-}
+
 .day-label .top {
   font-weight: 600;
 }
+
 .day-label .date {
   margin-left: 6px;
   opacity: 0.7;
 }
+
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 6px;
 }
+
 .footer-actions,
 .edit-actions {
   margin-top: 16px;
   display: grid;
   gap: 8px;
 }
+
 .entries {
   padding: 8px 12px 4px;
 }
+
 .entry-row {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
   gap: 8px;
   align-items: end;
 }
+
 .entry-row.single .remove-btn {
   visibility: hidden;
+}
+
+.timesheet-list {
+  background: transparent;
+  margin: 0;
+}
+
+.day-row {
+  --background: transparent;
+}
+
+.day-row::part(native) {
+  padding-inline: 0;
+  padding-block: 12px;
+}
+
+.day-meta {
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 4px;
+}
+
+.day-week {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4b5563;
+}
+
+.day-day {
+  margin-top: 4px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.day-card {
+  flex: 1 1 auto;
+  margin-left: 12px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.day-card-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.day-card-icon {
+  font-size: 26px;
+  color: var(--ion-color-primary);
+}
+
+.day-card-text-primary {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1c1c1e;
+}
+
+.day-card-text-muted {
+  font-size: 16px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.day-card-total {
+  font-size: 16px;
+  font-weight: 500;
+  color: #65758b;
+  white-space: nowrap;
+}
+
+.day-card-empty .day-card-text-primary {
+  color: var(--ion-color-primary);
+}
+
+.day-card-disabled {
+  opacity: 0.7;
 }

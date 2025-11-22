@@ -47,8 +47,8 @@ const PERSONAL_KEYS: FieldKey[] = [
 ];
 
 const PREF_KEYS: FieldKey[] = [
-  'location',
-  'locationRadius',
+  'locationName',
+  'locationRadiusMeters',
   'expectedPay',
   'tradeCategory',
   'tradeSubcategory',
@@ -163,7 +163,7 @@ export class ProfileEditPage {
       case 'phoneNumber':
         return [...req, Validators.maxLength(20)];
 
-      case 'location':
+      case 'locationName':
         return [...req, Validators.maxLength(100)];
       case 'bankAccountNumber':
         return [...req, Validators.minLength(8), Validators.maxLength(10)];
@@ -173,7 +173,7 @@ export class ProfileEditPage {
       case 'niNumber':
         return [...req, Validators.pattern(UK_NI)];
 
-      case 'locationRadius':
+      case 'locationRadiusMeters':
       case 'expectedPay':
       case 'sex':
       case 'tradeCategory':

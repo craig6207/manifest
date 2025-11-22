@@ -8,55 +8,35 @@ import {
 } from '@angular/core';
 import {
   IonHeader,
-  IonToolbar,
-  IonTitle,
   IonContent,
   IonList,
   IonItem,
   IonLabel,
-  IonNote,
   IonChip,
   IonBadge,
   IonButton,
   IonIcon,
   IonRefresher,
   IonRefresherContent,
-  IonDatetime,
-  IonDatetimeButton,
-  IonModal,
-  IonInput,
-  IonButtons,
-  IonBackButton,
-  IonAlert,
   IonSkeletonText,
 } from '@ionic/angular/standalone';
+import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
-  chevronBackOutline,
-  chevronForwardOutline,
   timeOutline,
-  createOutline,
-  closeOutline,
-  saveOutline,
-  checkmarkDoneOutline,
+  arrowBackOutline,
+  arrowForwardOutline,
   addOutline,
 } from 'ionicons/icons';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-} from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { TimesheetService } from 'src/app/services/timesheet/timesheet.service';
 import {
   TimesheetWeek as TimesheetWeekDto,
   TimesheetDay as TimesheetDayDto,
-  TimesheetAdjustmentCreateRequest,
   JobAssignmentSummary,
 } from 'src/app/interfaces/timesheets';
 import { ActivatedRoute } from '@angular/router';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 type WeekStatus = 'Open' | 'Submitted' | 'Approved';
 
@@ -64,10 +44,12 @@ interface TimesheetEntry {
   checkIn: string;
   checkOut: string | null;
 }
+
 interface TimesheetDayVM {
   dateISO: string;
   entries: TimesheetEntry[];
 }
+
 interface TimesheetWeekVM {
   weekStartISO: string;
   weekEndISO: string;
@@ -78,11 +60,12 @@ interface TimesheetWeekVM {
 function startOfWeek(d: Date): Date {
   const copy = new Date(d);
   const day = copy.getDay();
-  const diff = day === 0 ? -6 : 1 - day; // Monday start
+  const diff = day === 0 ? -6 : 1 - day;
   copy.setDate(copy.getDate() + diff);
   copy.setHours(0, 0, 0, 0);
   return copy;
 }
+
 function endOfWeek(d: Date): Date {
   const s = startOfWeek(d);
   const e = new Date(s);
@@ -90,22 +73,26 @@ function endOfWeek(d: Date): Date {
   e.setHours(23, 59, 59, 999);
   return e;
 }
+
 function addDays(d: Date, days: number): Date {
   const c = new Date(d);
   c.setDate(c.getDate() + days);
   return c;
 }
+
 function toISODateMidnight(d: Date): string {
   const c = new Date(d);
   c.setHours(0, 0, 0, 0);
   return c.toISOString();
 }
+
 function toDateOnlyString(d: Date): string {
   const y = d.getFullYear();
   const m = (d.getMonth() + 1).toString().padStart(2, '0');
   const dd = d.getDate().toString().padStart(2, '0');
   return `${y}-${m}-${dd}`;
 }
+
 function dateOnlyToLocalDate(yyyyMMdd: string): Date {
   const [y, m, d] = yyyyMMdd.split('-').map(Number);
   return new Date(
@@ -118,6 +105,7 @@ function dateOnlyToLocalDate(yyyyMMdd: string): Date {
     0
   );
 }
+
 function formatDayLabel(d: Date): {
   weekdayShort: string;
   displayDate: string;
@@ -125,36 +113,24 @@ function formatDayLabel(d: Date): {
   const weekdayShort = d.toLocaleDateString(undefined, { weekday: 'short' });
   const displayDate = d.toLocaleDateString(undefined, {
     day: '2-digit',
-    month: 'short',
   });
   return { weekdayShort, displayDate };
 }
-function hhmm(date: Date | null): string | null {
-  if (!date) return null;
-  const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-function parseHHMMToISO(
-  dateISO: string,
-  hhmmStr: string | null
-): string | null {
-  if (!hhmmStr) return null;
-  const [h, m] = hhmmStr.split(':').map(Number);
-  const d = new Date(dateISO);
-  d.setHours(h, m, 0, 0);
-  return d.toISOString();
-}
+
 function hoursBetween(ci: Date, co: Date | null): number {
   if (!co) return 0;
   const ms = co.getTime() - ci.getTime();
   return Math.max(0, ms / (1000 * 60 * 60));
 }
+
 function applyLunchDeduction(hours: number): number {
   return hours > 0 ? Math.max(0, hours - 0.5) : 0;
 }
+
 function isDateOnly(s: string | null | undefined): s is string {
   return !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
 }
+
 function formatHoursToHHmm(hours: number): string {
   const totalMinutes = Math.round(hours * 60);
   const h = Math.floor(totalMinutes / 60);
@@ -166,28 +142,18 @@ function formatHoursToHHmm(hours: number): string {
   selector: 'app-timesheets-edit',
   imports: [
     IonSkeletonText,
-    IonAlert,
-    IonBackButton,
-    IonButtons,
     IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
-    IonNote,
     IonChip,
     IonBadge,
     IonButton,
     IonIcon,
     IonRefresher,
     IonRefresherContent,
-    IonDatetime,
-    IonDatetimeButton,
-    IonModal,
-    IonInput,
-    ReactiveFormsModule,
+    ToolbarBackComponent,
   ],
   templateUrl: './timesheets-edit.page.html',
   styleUrls: ['timesheets-edit.page.scss'],
@@ -195,28 +161,22 @@ function formatHoursToHHmm(hours: number): string {
   host: { class: 'ion-page' },
 })
 export class TimesheetsEditPage {
-  private readonly fb = inject(FormBuilder);
   private readonly svc = inject(TimesheetService);
   private readonly route = inject(ActivatedRoute);
+  private readonly nav = inject(NavController);
+
   readonly jobListingId = signal<number | null>(null);
   readonly loading = signal(true);
-  readonly editing = signal(false);
   readonly selectedDate = signal(new Date());
   readonly week = signal<TimesheetWeekVM | null>(null);
-  readonly baselineWeek = signal<TimesheetWeekVM | null>(null);
-  readonly isAlertOpen = signal(false);
   readonly minDateISO = signal<string | null>(null);
   readonly maxDateISO = signal<string | null>(null);
 
   readonly weekStart = computed(() => startOfWeek(this.selectedDate()));
   readonly weekEnd = computed(() => endOfWeek(this.selectedDate()));
-  readonly selectedDateISO = computed(() =>
-    toDateOnlyString(this.selectedDate())
-  );
   readonly weekStatus = computed<WeekStatus>(
     () => (this.week()?.status ?? 'Open') as WeekStatus
   );
-  readonly canEditWeek = computed(() => this.weekStatus() !== 'Approved');
 
   readonly days = computed(() => {
     const w = this.week();
@@ -263,41 +223,20 @@ export class TimesheetsEditPage {
     });
   });
 
-  readonly form: FormGroup = this.fb.group({
-    weekStartISO: new FormControl<string>(''),
-    weekEndISO: new FormControl<string>(''),
-    days: this.fb.array<FormGroup>([]),
+  weekRangeLabel = computed(() => {
+    const s = this.weekStart();
+    const e = this.weekEnd();
+    const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
+    const left = s.toLocaleDateString(undefined, opts);
+    const right = e.toLocaleDateString(undefined, opts);
+    return `${left} — ${right}`;
   });
-
-  readonly alertInputs = [
-    {
-      type: 'textarea' as const,
-      name: 'reason',
-      placeholder: 'Reason (optional)',
-      attributes: { maxlength: 512, rows: 4 },
-    },
-  ];
-  readonly alertButtons = [
-    { text: 'Cancel', role: 'cancel', handler: () => {} },
-    {
-      text: 'Submit',
-      handler: (value: { reason?: string }) => {
-        const reason = (value?.reason ?? '').trim() || null;
-        this.confirmSubmitWithReason(reason);
-        return true;
-      },
-    },
-  ];
 
   constructor() {
     addIcons({
-      chevronBackOutline,
-      chevronForwardOutline,
       timeOutline,
-      createOutline,
-      closeOutline,
-      saveOutline,
-      checkmarkDoneOutline,
+      arrowBackOutline,
+      arrowForwardOutline,
       addOutline,
     });
 
@@ -342,6 +281,7 @@ export class TimesheetsEditPage {
         current && jl != null && current.jobListingId === jl
           ? (current as JobAssignmentSummary)
           : null;
+
       const historyMatch =
         jl != null && Array.isArray(history)
           ? (history as JobAssignmentSummary[]).find(
@@ -382,6 +322,7 @@ export class TimesheetsEditPage {
       minDate = new Date(today);
       maxDate = new Date(today);
     }
+
     this.minDateISO.set(toDateOnlyString(minDate!));
     this.maxDateISO.set(toDateOnlyString(maxDate!));
 
@@ -404,64 +345,6 @@ export class TimesheetsEditPage {
       if (localMidnight > max) return max;
     }
     return localMidnight;
-  }
-
-  openReasonAlert() {
-    this.isAlertOpen.set(true);
-  }
-
-  dayControls() {
-    return (this.form.get('days') as FormArray<FormGroup>).controls;
-  }
-  entryControls(dayCtrl: FormGroup) {
-    return (dayCtrl.get('entries') as FormArray<FormGroup>).controls;
-  }
-  entryCtrlCount(dayCtrl: FormGroup) {
-    return (dayCtrl.get('entries') as FormArray<FormGroup>).length;
-  }
-
-  private buildForm(w: TimesheetWeekVM) {
-    this.form.reset();
-
-    const dayGroups = w.days.map((day) => {
-      const date = new Date(day.dateISO);
-      const { weekdayShort, displayDate } = formatDayLabel(date);
-
-      const entries =
-        day.entries.length > 0
-          ? day.entries
-          : [
-              {
-                checkIn: null as unknown as string,
-                checkOut: null as string | null,
-              },
-            ];
-
-      const entriesFA = this.fb.array<FormGroup>(
-        entries.map((e) => {
-          const ci = e.checkIn ? new Date(e.checkIn) : null;
-          const co = e.checkOut ? new Date(e.checkOut) : null;
-          return this.fb.group({
-            inLocal: new FormControl<string>(ci ? hhmm(ci) ?? '' : ''),
-            outLocal: new FormControl<string>(co ? hhmm(co) ?? '' : ''),
-          });
-        })
-      );
-
-      return this.fb.group({
-        dateISO: new FormControl(day.dateISO),
-        weekdayShort: new FormControl(weekdayShort),
-        displayDate: new FormControl(displayDate),
-        entries: entriesFA,
-      });
-    });
-
-    this.form.setControl(
-      'weekStartISO',
-      new FormControl<string>(w.weekStartISO)
-    );
-    this.form.setControl('weekEndISO', new FormControl<string>(w.weekEndISO));
-    this.form.setControl('days', this.fb.array<FormGroup>(dayGroups));
   }
 
   private async loadWeek(weekStartISO: string, jobListingId: number | null) {
@@ -492,11 +375,8 @@ export class TimesheetsEditPage {
       };
 
       this.week.set(mapped);
-      this.baselineWeek.set(mapped);
-      this.buildForm(mapped);
     } finally {
       this.loading.set(false);
-      this.editing.set(false);
     }
   }
 
@@ -504,15 +384,10 @@ export class TimesheetsEditPage {
     const prev = addDays(this.weekStart(), -1);
     this.selectedDate.set(this.clampToBounds(prev));
   }
+
   goNextWeek() {
     const next = addDays(this.weekEnd(), 1);
     this.selectedDate.set(this.clampToBounds(next));
-  }
-  onDatePicked(ev: CustomEvent) {
-    const value = (ev.detail as unknown as { value: string }).value;
-    if (!value) return;
-    const picked = dateOnlyToLocalDate(value.substring(0, 10));
-    this.selectedDate.set(this.clampToBounds(picked));
   }
 
   onRefresh(ev: CustomEvent) {
@@ -522,133 +397,22 @@ export class TimesheetsEditPage {
     );
   }
 
-  weekRangeLabel = computed(() => {
-    const s = this.weekStart();
-    const e = this.weekEnd();
-    const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
-    const left = s.toLocaleDateString(undefined, opts);
-    const right = e.toLocaleDateString(undefined, opts);
-    return `${left} — ${right}`;
-  });
-
-  startEdit() {
-    if (this.canEditWeek()) this.editing.set(true);
-  }
-  cancelEdit() {
-    const w = this.week();
-    if (w) this.buildForm(w);
-    this.editing.set(false);
+  onDayCardClick(d: {
+    dateISO: string;
+    entries: TimesheetEntry[];
+    totalHoursLabel?: string;
+  }) {
+    if (d.entries.length === 0 && this.weekStatus() === 'Open') {
+      this.logTimeForDay(d.dateISO);
+    }
   }
 
-  addEntry(dayCtrl: FormGroup) {
-    const fa = dayCtrl.get('entries') as FormArray<FormGroup>;
-    fa.push(
-      this.fb.group({
-        inLocal: new FormControl<string>(''),
-        outLocal: new FormControl<string>(''),
-      })
-    );
-  }
-  removeEntry(dayCtrl: FormGroup, idx: number) {
-    const fa = dayCtrl.get('entries') as FormArray<FormGroup>;
-    if (fa.length > 1) fa.removeAt(idx);
-  }
-  onTimeChange(
-    entryCtrl: FormGroup,
-    key: 'inLocal' | 'outLocal',
-    value: string
-  ) {
-    (entryCtrl.get(key) as FormControl<string>).setValue(value ?? '');
-  }
-
-  async confirmSubmitWithReason(reason: string | null) {
+  private logTimeForDay(dateISO: string) {
     const jl = this.jobListingId();
     if (!Number.isFinite(jl)) return;
-
-    const anchorDate = toDateOnlyString(this.weekStart());
-    const edits = this.buildWeekEdits(jl!, reason);
-
-    if (edits.length === 0) {
-      this.editing.set(false);
-      this.isAlertOpen.set(false);
-      return;
-    }
-
-    this.loading.set(true);
-    try {
-      await firstValueFrom(this.svc.submitWeekEdits(anchorDate, edits));
-      await this.loadWeek(toISODateMidnight(this.weekStart()), jl!);
-      this.editing.set(false);
-    } finally {
-      this.loading.set(false);
-      this.isAlertOpen.set(false);
-    }
-  }
-
-  private reduceDayToProposedUtc(dayCtrl: FormGroup): {
-    inUtc: string | null;
-    outUtc: string | null;
-  } {
-    const dateISO = dayCtrl.get('dateISO')!.value as string;
-    const entriesFA = dayCtrl.get('entries') as FormArray<FormGroup>;
-
-    let earliestIn: string | null = null;
-    let latestOut: string | null = null;
-
-    for (const ec of entriesFA.controls) {
-      const inLocal = (ec.get('inLocal')!.value as string) || '';
-      const outLocal = (ec.get('outLocal')!.value as string) || '';
-
-      const inUtc = inLocal ? parseHHMMToISO(dateISO, inLocal) : null;
-      const outUtc = outLocal ? parseHHMMToISO(dateISO, outLocal) : null;
-
-      if (inUtc && (!earliestIn || new Date(inUtc) < new Date(earliestIn)))
-        earliestIn = inUtc;
-      if (outUtc && (!latestOut || new Date(outUtc) > new Date(latestOut)))
-        latestOut = outUtc;
-    }
-
-    if (
-      earliestIn &&
-      latestOut &&
-      new Date(latestOut) <= new Date(earliestIn)
-    ) {
-      latestOut = null;
-    }
-
-    return { inUtc: earliestIn, outUtc: latestOut };
-  }
-
-  private buildWeekEdits(
-    jobListingId: number,
-    reason: string | null = null
-  ): TimesheetAdjustmentCreateRequest[] {
-    const base = this.baselineWeek();
-    if (!base) return [];
-
-    const daysFA = this.form.get('days') as FormArray<FormGroup>;
-    const edits: TimesheetAdjustmentCreateRequest[] = [];
-
-    for (const dayCtrl of daysFA.controls) {
-      const dateISO = dayCtrl.get('dateISO')!.value as string;
-      const { inUtc, outUtc } = this.reduceDayToProposedUtc(dayCtrl);
-
-      const baseDay = base.days.find((d) => d.dateISO === dateISO);
-      const baseIn = baseDay?.entries[0]?.checkIn ?? null;
-      const baseOut = baseDay?.entries[0]?.checkOut ?? null;
-
-      const changed = inUtc !== baseIn || outUtc !== baseOut;
-      if (!changed && !(inUtc || outUtc)) continue;
-
-      edits.push({
-        jobListingId,
-        workDate: toDateOnlyString(new Date(dateISO)),
-        proposedCheckInUtc: inUtc,
-        proposedCheckOutUtc: outUtc,
-        reason,
-      });
-    }
-
-    return edits;
+    const workDate = toDateOnlyString(new Date(dateISO));
+    this.nav.navigateForward(
+      `/secure/tabs/timesheets-log?jobListingId=${jl}&workDate=${workDate}`
+    );
   }
 }

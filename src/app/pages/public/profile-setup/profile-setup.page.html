@@ -1,311 +1,420 @@
-<ion-header class="profile-header">
-  <ion-toolbar class="profile-toolbar ion-no-border">
-    <ion-buttons slot="start">
-      <ion-button
-        (click)="presentExitAlert()"
-        aria-label="Close setup"
-        fill="clear"
-      >
-        <ion-icon slot="icon-only" name="close"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-
-    <ion-title>Profile setup</ion-title>
-
-    @if (currentStep() === 2) {
-    <ion-buttons slot="end">
-      <ion-button
-        [attr.aria-label]="'Use my location'"
-        (click)="onUseMyLocationClick()"
-        fill="clear"
-      >
-        <ion-icon slot="icon-only" name="locate"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    }
-  </ion-toolbar>
-
-  <div class="progress-container ion-padding-horizontal ion-padding-vertical">
-    <div class="progress-stack">
-      <div class="dots">
-        <span [class.active]="currentStep() >= 1">1</span>
-        <span [class.active]="currentStep() >= 2">2</span>
-        <span [class.active]="currentStep() >= 3">3</span>
-        <span [class.active]="currentStep() >= 4">4</span>
-      </div>
-      <div class="track">
-        <div class="fill" [style.width.%]="progress() * 100"></div>
-      </div>
-    </div>
-  </div>
+<ion-header no-shadow>
+  <app-toolbar-back
+    [title]="headerTitle()"
+    [profileStep]="headerStep()"
+    [navigation]="'/login'"
+    [confirmOnBack]="true"
+  ></app-toolbar-back>
 </ion-header>
 
-<ion-content
-  class="setup-content ion-padding-horizontal"
-  [scrollY]="currentStep() !== 2"
->
+<ion-content class="setup-page ion-padding-horizontal">
   @if (currentStep() === 1) {
-  <form id="personalForm" [formGroup]="personalForm" (ngSubmit)="next()">
-    <section class="section-card form-card">
-      <div class="section-header">
-        <h2>Personal details</h2>
+  <section class="section-card photo-card" aria-labelledby="photoPromptTitle">
+    <div class="photo-row">
+      <div class="photo-illustration" role="img" aria-label="Profile photo">
+        @if (avatarLoaded()) {
+        <ion-avatar>
+          <img [src]="avatarSrc()" alt="Profile photo" />
+        </ion-avatar>
+        } @else {
+        <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+        }
       </div>
-      <ion-list lines="none" class="form-list">
-        <ion-item class="input-item">
-          <ion-input
-            label="First name"
-            labelPlacement="stacked"
-            placeholder="First name"
-            formControlName="firstName"
-            required
-          ></ion-input>
-        </ion-item>
-        <ion-item class="input-item">
-          <ion-input
-            label="Surname"
-            labelPlacement="stacked"
-            placeholder="Surname"
-            formControlName="lastName"
-            required
-          ></ion-input>
-        </ion-item>
-        <ion-item class="input-item">
-          <ion-select
-            label="Sex"
-            labelPlacement="stacked"
-            formControlName="sex"
-            interface="popover"
-            justify="start"
-            placeholder="Select"
-          >
-            <ion-select-option value="Male">Male</ion-select-option>
-            <ion-select-option value="Female">Female</ion-select-option>
-            <ion-select-option value="Other">Other</ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-list>
-    </section>
-  </form>
-  } @if (currentStep() === 2) {
-  <section class="section-card map-card">
-    <div class="section-header">
-      <h2>Work location</h2>
-      <p class="section-subtitle">
-        Choose where you'd like to receive job matches.
-      </p>
-    </div>
 
+      <div class="photo-copy ion-padding-horizontal">
+        <h3 id="photoPromptTitle" class="sr-only">Profile photo</h3>
+        <p class="photo-text ion-padding-top">
+          Upload your photo to increase your chances of finding a job
+        </p>
+
+        <ion-button
+          class="add-image-btn"
+          size="small"
+          (click)="openAvatarSheet()"
+        >
+          Add image
+        </ion-button>
+      </div>
+    </div>
+  </section>
+
+  <form [formGroup]="personalForm" (ngSubmit)="next()" novalidate>
+    <ion-list lines="none" class="form-list">
+      <label class="field-label ion-padding" for="first-name">Name</label>
+      <ion-item class="input-item" lines="none">
+        <ion-input
+          id="first-name"
+          formControlName="firstName"
+          type="text"
+          placeholder="Enter name"
+          autocomplete="name"
+          inputmode="text"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <label class="field-label ion-padding" for="last-name">Last name</label>
+      <ion-item class="input-item" lines="none">
+        <ion-input
+          id="last-name"
+          formControlName="lastName"
+          type="text"
+          placeholder="Enter last name"
+          autocomplete="family-name"
+          inputmode="text"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <label class="field-label ion-padding" for="sex-select">Gender</label>
+      <ion-item class="input-item" lines="none">
+        <ion-select
+          id="sex-select"
+          formControlName="sex"
+          interface="popover"
+          justify="start"
+          placeholder="Select"
+          required
+        >
+          <ion-select-option value="Male">Male</ion-select-option>
+          <ion-select-option value="Female">Female</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+  </form>
+  } @else if (currentStep() === 2) {
+  <section class="section-card map-card">
     <app-location-picker
       (changed)="onLocationSelected($event)"
       [initialPlace]="''"
       [initialLat]="null"
       [initialLng]="null"
-      [initialRadiusMiles]="15"
+      [initialRadiusMiles]="selectedRadiusMiles()"
     >
     </app-location-picker>
   </section>
-  } @if (currentStep() === 3) {
-  <form id="payTradeForm" [formGroup]="payTradeForm" (ngSubmit)="next()">
-    <section class="section-card form-card">
-      <div class="section-header">
-        <h2>Pay &amp; trade</h2>
-      </div>
-      <ion-list lines="none" class="form-list">
-        <ion-item lines="none" class="range-header-item">
-          <ion-label>Pay expectation</ion-label>
-          <ion-note slot="end">
-            £{{ payTradeForm.get('expectedPay')?.value }} / h
-          </ion-note>
-        </ion-item>
+  } @else if (currentStep() === 3) {
+  <form [formGroup]="payTradeForm" novalidate>
+    <section class="section-card form-card ion-padding-top">
+      <h2 class="section-title">Expectation</h2>
 
-        <ion-item lines="none" class="range-item">
-          <ion-range
-            [attr.aria-label]="'Pay Expectation'"
-            formControlName="expectedPay"
-            min="5"
-            max="100"
-            step="1"
+      <ion-item lines="none" class="range-header-item ion-no-padding">
+        <ion-label>Hourly Rate</ion-label>
+      </ion-item>
+      <ion-item lines="none" class="ion-no-padding">
+        <ion-range
+          class="ion-no-padding"
+          aria-label="Hourly Rate"
+          [pin]="true"
+          [pinFormatter]="formatHourly"
+          min="5"
+          max="100"
+          step="1"
+          formControlName="hourlyRate"
+        ></ion-range>
+      </ion-item>
+
+      <ion-item
+        lines="none"
+        class="range-header-item divider-top ion-no-padding"
+      >
+        <ion-label>Day Rate</ion-label>
+      </ion-item>
+      <ion-item lines="none" class="ion-no-padding">
+        <ion-range
+          class="ion-no-padding"
+          aria-label="Day Rate"
+          [pin]="true"
+          [pinFormatter]="formatDaily"
+          min="50"
+          max="1000"
+          step="10"
+          formControlName="dayRate"
+        ></ion-range>
+      </ion-item>
+    </section>
+
+    <section class="section-card form-card">
+      <h2 class="section-title">Role</h2>
+
+      <label class="field-label ion-padding">Trade category</label>
+      <ion-item
+        button
+        detail="true"
+        class="input-item selectish"
+        lines="none"
+        (click)="openModal('trade')"
+      >
+        <ion-label>
+          <div class="placeholder">Select your main trade</div>
+        </ion-label>
+      </ion-item>
+
+      @if (tradeId()) {
+      <div class="chip-row">
+        <ion-chip class="pill">
+          {{ selectedTradeName() }}
+          <ion-icon name="close" (click)="setTrade(null)"></ion-icon>
+        </ion-chip>
+      </div>
+      }
+
+      <div class="hr"></div>
+
+      <label class="field-label ion-padding">Trade sub-category</label>
+      <ion-item
+        button
+        detail="true"
+        class="input-item selectish"
+        lines="none"
+        [disabled]="!tradeId()"
+        [attr.aria-disabled]="!tradeId()"
+        (click)="openModal('subcategories')"
+      >
+        <ion-label>
+          <div class="placeholder">
+            @if (!tradeId()) { Choose a trade first } @else { Select
+            sub-categories }
+          </div>
+        </ion-label>
+      </ion-item>
+
+      @if (subcatIds().length) {
+      <div class="chip-row">
+        @for (s of subcategories(); track s.id) { @if
+        (subcatIds().includes(s.id)) {
+        <ion-chip class="pill">
+          {{ s.name }}
+          <ion-icon name="close" (click)="removeSubcategory(s.id)"></ion-icon>
+        </ion-chip>
+        } }
+      </div>
+      }
+    </section>
+  </form>
+  } @else if (currentStep() === 4) {
+
+  <section class="section-card form-card ion-padding">
+    @if (certLoading()) {
+    <div class="loading-row" role="status" aria-live="polite">
+      <ion-spinner></ion-spinner>
+      <ion-note>Loading certificates…</ion-note>
+    </div>
+    } @else if (certLoadError()) {
+    <ion-note color="danger" class="block-note">{{ certLoadError() }}</ion-note>
+    } @else if (!certHasData()) {
+    <ion-note class="block-note"
+      >No certificates found for this trade.</ion-note
+    >
+    } @else {
+
+    <section class="hero-card" aria-label="Certificate uploader introduction">
+      <div class="hero-icon">
+        <ion-icon name="document-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <div class="hero-text">
+        <h2 class="hero-title">Add your certifications</h2>
+        <p class="hero-subtitle">
+          Verified cards and certificates help clients trust your profile and
+          get you placed faster. @if (selectedTradeName()) {
+          <strong>Selected trade: {{ selectedTradeName() }}</strong>
+          }
+        </p>
+        <ul class="hero-checklist">
+          <li><span class="dot"></span> Upload a clear photo or PDF</li>
+          <li>
+            <span class="dot"></span> Make sure the name & expiry are visible
+          </li>
+          <li><span class="dot"></span> Add “Other” if it's not listed</li>
+        </ul>
+        <div class="format-row" aria-label="Supported file types">
+          <ion-chip>PDF</ion-chip>
+          <ion-chip>PNG</ion-chip>
+          <ion-chip>JPG</ion-chip>
+          <ion-chip>HEIC</ion-chip>
+        </div>
+      </div>
+    </section>
+
+    <ion-list>
+      <ion-item>
+        <ion-select
+          label="Select Certificate"
+          placeholder="Choose certificate"
+          [value]="certSelectedId()"
+          (ionChange)="certOnSelectionChange($event.detail.value)"
+        >
+          @for (c of certOptions(); track c.id) {
+          <ion-select-option [value]="c.id">{{ c.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <section class="big-upload">
+      @if (certWarn()) {
+      <ion-note color="warning" class="block-note">{{ certWarn() }}</ion-note>
+      }
+
+      <button
+        class="dropzone"
+        type="button"
+        [disabled]="!certCanUploadForCurrent()"
+        (click)="certOpenUploadSheet(nativeFileInput)"
+        aria-label="Upload certificate file"
+      >
+        <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+        <div class="dz-text">
+          <div class="dz-title">
+            @if (certHasReachedMax()) { Uploads limited to 5 } @else { Upload
+            certificate }
+          </div>
+          <div class="dz-sub">
+            @if (certSelectedId() === null) { Select a certificate above to
+            continue } @else if (certSelectedId() === -1 &&
+            !certOtherName().trim()) { Enter the “Other” certificate name to
+            continue } @else if (certHasUploadForCurrent()) { You've already
+            added a file for this certificate } @else if (certHasReachedMax()) {
+            Remove one to add another (max 5) } @else { Choose from library,
+            take a photo, or pick a file }
+          </div>
+        </div>
+      </button>
+
+      <input
+        #nativeFileInput
+        type="file"
+        accept="image/*,application/pdf"
+        hidden
+        (change)="certOnNativeFileChosen($event)"
+      />
+    </section>
+
+    @if (certSelectedId() === -1) {
+    <ion-list class="stacked-list">
+      <ion-item lines="none" class="other-name">
+        <ion-label position="stacked">Enter certificate name</ion-label>
+        <ion-input
+          [value]="certOtherName()"
+          (ionInput)="certSetOtherName($event.detail.value ?? '')"
+          [disabled]="certHasUploadForCurrent()"
+          placeholder="e.g. City & Guilds Level 3 – custom"
+          maxlength="80"
+          inputmode="text"
+        ></ion-input>
+        <ion-note class="hint">
+          @if (certHasUploadForCurrent()) { Name locked after upload. } @else {
+          Required for “Other”. }
+        </ion-note>
+      </ion-item>
+    </ion-list>
+    } @if (certAllUploads().length > 0) {
+    <section class="preview-section">
+      <div class="preview-header">
+        <div class="ph-left">
+          <strong>{{ certAllUploads().length }}</strong>
+          file{{ certAllUploads().length === 1 ? "" : "s" }} selected
+          <span class="muted"> (max {{ 5 }})</span>
+        </div>
+      </div>
+
+      <div class="preview-grid">
+        @for (u of certAllUploads(); track u.item.url) {
+        <figure class="preview-card">
+          @if (u.item.mime.startsWith('image/')) {
+          <img [src]="u.item.url" alt="Selected image" />
+          } @else {
+          <div class="pdf-icon" aria-label="PDF file">
+            <ion-icon name="document-outline"></ion-icon>
+          </div>
+          }
+          <figcaption class="preview-caption">
+            <div class="cap-name">{{ u.item.name }}</div>
+            <div class="cap-cert">{{ u.label }}</div>
+          </figcaption>
+          <button
+            class="remove-btn"
+            type="button"
+            (click)="certRemoveUploadByKey(u.key)"
+            aria-label="Remove file"
           >
-            <ion-text slot="start">£0</ion-text>
-            <ion-text slot="end">£100</ion-text>
-          </ion-range>
-        </ion-item>
-
-        <ion-item
-          button
-          detail="true"
-          class="select-item"
-          (click)="openModal('trade')"
-        >
-          <ion-label>
-            <h3>Trade</h3>
-            @if (payTradeForm.get('tradeId')?.value) {
-            <p>{{ selectedTradeName() }}</p>
-            } @else {
-            <p class="placeholder">Select your main trade</p>
-            }
-          </ion-label>
-        </ion-item>
-
-        <ion-item
-          button
-          detail="true"
-          class="select-item"
-          (click)="openModal('subcategories')"
-          [disabled]="!subcategories().length"
-        >
-          <ion-label>
-            <h3>Trade sub-categories</h3>
-            @if (selectedSubcatNames().length) {
-            <p>{{ selectedSubcatsLabel() }}</p>
-            } @else {
-            <p class="placeholder">
-              @if (!subcategories().length) { Choose a trade first } @else {
-              Select sub-categories }
-            </p>
-            }
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </section>
-
-    <section class="section-card form-card">
-      <ion-list lines="none" class="form-list">
-        <ion-item
-          button
-          detail="true"
-          class="select-item"
-          (click)="openModal('certificates')"
-          [disabled]="!tradeSelected()"
-          [attr.aria-disabled]="!tradeSelected()"
-        >
-          <ion-label>
-            <h3>Certificates (optional)</h3>
-
-            @if (!tradeSelected()) {
-            <p class="placeholder">Select a trade first</p>
-            } @else if (payTradeForm.get('certificates')?.value?.length) {
-            <p>{{ payTradeForm.get('certificates')?.value.length }} selected</p>
-            } @else {
-            <p class="placeholder">Add any relevant certificates</p>
-            }
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </section>
-  </form>
-  } @if (currentStep() === 4) {
-  <form id="bankForm" [formGroup]="bankForm" (ngSubmit)="submit()">
-    <section class="section-card form-card">
-      <div class="section-header">
-        <h2>Payment details</h2>
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </figure>
+        }
       </div>
-      <ion-list lines="none" class="form-list">
-        <ion-item class="input-item">
-          <ion-input
-            label="Bank account number"
-            labelPlacement="stacked"
-            placeholder="Account number"
-            formControlName="bankAccountNumber"
-          ></ion-input>
-        </ion-item>
-        <ion-item class="input-item">
-          <ion-input
-            label="Sort code"
-            labelPlacement="stacked"
-            placeholder="Sort code"
-            formControlName="bankSortCode"
-          ></ion-input>
-        </ion-item>
-        <ion-item class="input-item">
-          <ion-input
-            label="NI number"
-            labelPlacement="stacked"
-            placeholder="NI number"
-            formControlName="niNumber"
-          ></ion-input>
-        </ion-item>
-      </ion-list>
     </section>
-  </form>
+    } }
+  </section>
   }
 
   <div class="bottom-spacer" aria-hidden="true"></div>
 </ion-content>
 
-<ion-footer>
+<ion-footer class="ion-no-border ion-padding">
   <ion-toolbar class="cta-toolbar">
     @if (currentStep() === 1) {
     <ion-button
       expand="block"
-      class="primary-btn"
       [disabled]="personalForm.invalid"
       (click)="next()"
+      >Next</ion-button
     >
-      Next
-    </ion-button>
     } @else if (currentStep() === 2) {
-    <ion-button
-      expand="block"
-      class="primary-btn"
-      (click)="onOpenRadiusClick()"
-    >
+    <ion-button expand="block" (click)="onOpenRadiusClick()">
       Set radius - {{ selectedRadiusMiles() }} miles
     </ion-button>
-
     <div class="cta-row">
-      <ion-button
-        class="ghost-btn"
-        fill="outline"
-        color="primary"
-        (click)="back()"
+      <ion-button class="ghost-btn" fill="outline" (click)="back()"
+        >Previous Step</ion-button
       >
-        Back
-      </ion-button>
-      <ion-button
-        class="primary-btn"
-        (click)="next()"
-        [disabled]="!locationSelected()"
+      <ion-button (click)="goToStep3()" [disabled]="!locationSelected()"
+        >Next</ion-button
       >
-        Next
-      </ion-button>
     </div>
     } @else if (currentStep() === 3) {
     <div class="cta-row">
-      <ion-button
-        class="ghost-btn"
-        fill="outline"
-        color="primary"
-        (click)="back()"
+      <ion-button class="ghost-btn" fill="outline" (click)="back()"
+        >Previous Step</ion-button
       >
-        Back
-      </ion-button>
-      <ion-button
-        class="primary-btn"
-        (click)="next()"
-        [disabled]="payTradeForm.invalid"
+      <ion-button (click)="next()" [disabled]="payTradeForm.invalid"
+        >Next</ion-button
       >
-        Next
-      </ion-button>
     </div>
     } @else if (currentStep() === 4) {
     <div class="cta-row">
-      <ion-button
-        class="ghost-btn"
-        fill="outline"
-        color="primary"
-        (click)="back()"
+      <ion-button class="ghost-btn" fill="outline" (click)="back()"
+        >Previous Step</ion-button
       >
-        Back
-      </ion-button>
-      <ion-button
-        class="primary-btn"
-        [disabled]="bankForm.invalid"
-        (click)="submit()"
+      <ion-button [disabled]="certSubmitting()" (click)="submit()"
+        >Submit</ion-button
       >
-        Submit
-      </ion-button>
     </div>
     }
   </ion-toolbar>
 </ion-footer>
+
+<ion-action-sheet
+  [isOpen]="isAvatarSheetOpen()"
+  (didDismiss)="isAvatarSheetOpen.set(false)"
+  header="Add profile photo"
+  [buttons]="[
+    { text: 'Take photo', icon: 'camera-outline', role: 'camera' },
+    { text: 'Choose from library', icon: 'image-outline', role: 'photos' },
+    { text: 'Cancel', role: 'cancel' }
+  ]"
+  (ionActionSheetDidDismiss)="onActionSheetDismiss($event)"
+>
+</ion-action-sheet>
+
+<ion-loading
+  [isOpen]="isUploading()"
+  message="Processing photo..."
+></ion-loading>
+
+<ion-toast
+  [isOpen]="toastMsg() !== ''"
+  [message]="toastMsg()"
+  duration="1600"
+  (didDismiss)="toastMsg.set('')"
+></ion-toast>

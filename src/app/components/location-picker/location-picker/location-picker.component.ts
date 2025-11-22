@@ -12,10 +12,12 @@ import {
   inject,
   effect,
 } from '@angular/core';
-import { IonInput, IonButton } from '@ionic/angular/standalone';
+import { IonInput, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { ActionSheetController } from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
 import { environment } from 'src/app/environment/environment';
+import { addIcons } from 'ionicons';
+import { locateOutline } from 'ionicons/icons';
 
 export type LocationSelection = {
   placeName: string;
@@ -28,7 +30,7 @@ export type LocationSelection = {
 @Component({
   selector: 'app-location-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonInput],
+  imports: [IonIcon, IonInput, IonButton],
   templateUrl: './location-picker.component.html',
   styleUrls: ['./location-picker.component.scss'],
   host: { class: 'location-picker' },
@@ -43,6 +45,12 @@ export class LocationPickerComponent implements OnInit, OnDestroy {
 
   @ViewChild('mapEl', { static: true }) mapEl!: ElementRef<HTMLDivElement>;
   @ViewChild('searchInput', { static: true }) searchInput!: IonInput;
+
+  constructor() {
+    addIcons({
+      locateOutline,
+    });
+  }
 
   private map = signal<google.maps.Map | null>(null);
   private marker = signal<google.maps.marker.AdvancedMarkerElement | null>(

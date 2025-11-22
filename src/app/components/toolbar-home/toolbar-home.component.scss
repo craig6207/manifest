@@ -1,0 +1,102 @@
+.toolbar-home {
+  --background: transparent;
+  --color: #0b2b36;
+  --border-color: transparent;
+  --min-height: 112px;
+}
+
+.toolbar-home::part(content) {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 20px 16px;
+}
+
+.toolbar-home-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 44px;
+  height: 45px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 6px;
+  box-shadow: 0 4px 10px rgba(10, 17, 114, 0.18);
+}
+
+.welcome-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 2px;
+}
+
+.welcome-label {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.welcome-name {
+  margin: 0;
+  margin-top: 2px;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-btn {
+  --background: #7ca2d6;
+  --color: #ffffff;
+  --border-radius: 9999px;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn::part(native) {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 9999px;
+  padding: 0;
+}
+
+.icon-btn ion-icon {
+  font-size: 20px;
+  color: inherit;
+}
+
+.notifications-btn {
+  position: relative;
+  --background: #7ca2d6;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 7px;
+  right: 4px;
+  font-size: 11px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 9999px;
+  border: solid #709acf;
+  padding: 0 4px;
+  background-color: #ffcc00;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}

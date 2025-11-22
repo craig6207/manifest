@@ -1,14 +1,3 @@
-<ion-header class="certificates-header">
-  <ion-toolbar class="certificates-toolbar ion-no-border">
-    <ion-title>Certificates</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="onCancel()" [attr.aria-label]="'Close'"
-        >Close</ion-button
-      >
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="ion-padding">
   @if (loading()) {
   <div class="loading-row" role="status" aria-live="polite">
@@ -158,26 +147,3 @@
   </section>
   } }
 </ion-content>
-
-<ion-footer>
-  <ion-toolbar class="cta-toolbar">
-    <div class="cta-row">
-      <ion-button
-        class="ghost-btn"
-        fill="outline"
-        color="primary"
-        (click)="onCancel()"
-      >
-        Cancel
-      </ion-button>
-
-      <ion-button
-        class="primary-btn"
-        [disabled]="!canSubmit()"
-        (click)="confirmSelection()"
-      >
-        Confirm
-      </ion-button>
-    </div>
-  </ion-toolbar>
-</ion-footer>

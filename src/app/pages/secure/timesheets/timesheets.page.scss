@@ -1,40 +1,175 @@
 .section-title {
   font-weight: 700;
-  margin: 8px 0;
 }
-.kpi-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 8px;
+
+.home-hero-shell {
+  background: var(--we-toolbar-gradient);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+  padding-bottom: 0;
 }
-.kpi {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px;
-  border-radius: 12px;
-  background: var(--ion-color-step-100, rgba(0, 0, 0, 0.03));
+
+.hero-card-wrap {
+  margin-top: 16px;
 }
-.kpi ion-icon {
-  font-size: 20px;
+
+.hero-card {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.14);
 }
-.kpi .value {
+
+.home-body {
+  background: #f3f5fb;
+  margin-top: -20px;
+  padding: 24px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+.hero-eyebrow {
+  font-size: 16px;
+  font-weight: 400;
+  color: #1c1c1e;
+  line-height: 24px;
+}
+
+.hero-heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  line-height: 32px;
+}
+
+.current-job-company {
+  font-size: 14px;
+  font-weight: 400;
+  color: #65758b;
+  line-height: 24px;
+}
+
+.current-job-button {
   font-weight: 600;
 }
-.card-actions {
-  display: grid;
-  gap: 8px;
-  margin-top: 12px;
+
+.empty-job-header {
+  padding-top: 18px;
+  padding-bottom: 18px;
 }
+
+.empty-job-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  margin-bottom: 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #1c4a8a;
+  background: #e3ebff;
+}
+
+.empty-job-title {
+  font-size: 22px;
+  line-height: 30px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.empty-job-copy {
+  margin: 0;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6a718c;
+}
+
 .empty {
   opacity: 0.7;
   text-align: center;
   padding: 16px 8px;
 }
+
 .list-note {
   margin-top: 4px;
 }
+
 .chev {
   margin-left: 8px;
+}
+
+.background-white {
+  --background: #ffffff;
+}
+
+.past-jobs-list {
+  margin: 0;
+  padding: 0;
+  --background: #ffffff;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.past-job-item {
+  --background: #ffffff;
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+  --inner-padding-top: 0;
+  --inner-padding-bottom: 0;
+}
+
+.past-job-item::part(native) {
+  border-bottom: 1px solid #e2e6f2;
+  padding-inline: 16px 12px;
+  padding-block: 14px;
+}
+
+.past-job-item:last-child::part(native) {
+  border-bottom: none;
+}
+
+.past-job-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.past-job-label {
+  flex: 1 1 auto;
+  margin-right: 8px;
+}
+
+.past-job-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.past-job-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.past-job-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #4b5563;
+  margin-top: 4px;
+}
+
+.past-job-row-icon {
+  font-size: 18px;
+  color: #4b5a78;
+}
+
+.past-job-chevron {
+  font-size: 20px;
+  color: #9ca3af;
 }

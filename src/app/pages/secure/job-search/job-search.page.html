@@ -1,7 +1,17 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Job search</ion-title>
-  </ion-toolbar>
+<ion-header class="jobs-header">
+  <app-toolbar-back
+    title="Jobs List"
+    [backButtonShow]="false"
+  ></app-toolbar-back>
+
+  <ion-button
+    class="header-filter-btn"
+    fill="solid"
+    (click)="openFilter()"
+    aria-label="Filter jobs"
+  >
+    <ion-icon slot="icon-only" name="filter-sharp"></ion-icon>
+  </ion-button>
 </ion-header>
 
 <ion-content
@@ -9,8 +19,6 @@
   class="ion-padding"
   fixed-slot-placement="before"
 >
-  <h2 class="section-title">Open jobs</h2>
-
   @if (loading()) {
   <ion-skeleton-text
     animated
@@ -29,180 +37,284 @@
   } @else {
   <ion-list class="job-list" lines="none">
     @for (job of jobs(); track job.id) {
-    <ion-item-sliding class="job-slide">
-      <ion-item
-        [button]="true"
-        detail="false"
-        class="job-card"
-        (click)="openJob(job)"
-        aria-label="Open job details"
-      >
-        <ion-label class="job-label">
-          <div class="card-header">
-            <div class="icon-badge">
-              <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
-            </div>
+    <div class="job-card">
+      <div class="job-card-top">
+        <div class="job-card-heading">
+          <h3 class="job-title">{{ job.trade }} {{ job.tradeSubCategory }}</h3>
+          <p class="job-company">ABC Company Ltd</p>
+        </div>
 
-            <div class="title-wrap">
-              <div class="title">{{ job.trade }}</div>
-              @if (job.tradeSubCategory.trim()) {
-              <div class="subtitle">{{ job.tradeSubCategory }}</div>
-              }
-            </div>
-
-            <div class="spacer"></div>
-
-            <div class="rate-badge">£{{ job.payRate }}/hr</div>
-          </div>
-          <div class="meta-row">
-            <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
-            <span>
-              {{ job.startDate | date:'EEE, d MMM' }} – {{ job.endDate |
-              date:'EEE, d MMM' }}
-            </span>
-          </div>
-
-          <div class="meta-row">
-            <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
-            <span>{{ job.location || 'Within your preferred area' }}</span>
-          </div>
-        </ion-label>
-        <ion-icon
-          name="chevron-forward-outline"
-          class="chevron"
-          slot="end"
-          aria-hidden="true"
-        ></ion-icon>
-      </ion-item>
-
-      <ion-item-options side="end">
-        <ion-item-option color="success" (click)="$event.stopPropagation()">
-          Quick Apply
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-    } @if (jobs().length === 0) {
-    <div class="empty-card">
-      <div class="empty-title">No matching jobs</div>
-      <div class="empty-text">
-        Try adjusting your filters to see more results.
+        <button type="button" class="job-favourite-btn" aria-label="Save job">
+          <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+        </button>
       </div>
-      <ion-button size="small" shape="round" (click)="openFilter()">
-        Update filters
+
+      <div class="job-meta-row">
+        <div class="job-meta">
+          <ion-icon name="location-outline" class="job-meta-icon"></ion-icon>
+          <span>{{ job.location || 'Within your preferred area' }}</span>
+        </div>
+
+        <span class="job-meta-divider">|</span>
+
+        <div class="job-meta">
+          <ion-icon name="briefcase-outline" class="job-meta-icon"></ion-icon>
+          <span>
+            {{ job.hours && job.hours.length ? job.hours[0] : 'Full-time' }}
+          </span>
+        </div>
+
+        <span class="job-meta-divider">|</span>
+
+        <div class="job-meta">
+          <ion-icon name="time-outline" class="job-meta-icon"></ion-icon>
+          <span>
+            {{ job.startDate | date: 'EEE, d MMM' }} – {{ job.endDate |
+            date:'EEE, d MMM' }}
+          </span>
+        </div>
+      </div>
+
+      <p class="job-description">{{ job.projectInfo }}</p>
+
+      <div class="job-card-footer">
+        <p class="job-salary">£{{ job.payRate }}/h</p>
+
+        <button
+          type="button"
+          class="job-link"
+          (click)="openJob(job)"
+          aria-label="View job details"
+        >
+          <span>View Details</span>
+          <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </div>
+    } @if (jobs().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+      </div>
+      <h3 class="empty-title">No jobs match your criteria</h3>
+      <p class="empty-text">
+        Try adjusting your filters to see more roles in your area.
+      </p>
+      <ion-button
+        expand="block"
+        class="empty-btn"
+        (click)="goToPreferences()"
+        aria-label="Update job preferences"
+      >
+        Update preferences
       </ion-button>
     </div>
     }
   </ion-list>
   }
 
-  <div slot="fixed" class="filter-fixed">
-    <ion-button
-      class="filter-btn"
-      color="primary"
-      (click)="openFilter()"
-      aria-label="Filter jobs"
-    >
-      <ion-icon slot="start" name="funnel-outline"></ion-icon>
-      Filter
-    </ion-button>
-  </div>
-
   <ion-modal
     [isOpen]="filterOpen()"
     (didDismiss)="closeFilter()"
+    [initialBreakpoint]="'0.90'"
     aria-label="Filter jobs"
     class="filter-sheet"
   >
     <ng-template>
-      <ion-header class="sheet-toolbar">
+      <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button
-              fill="clear"
-              color="medium"
-              (click)="closeFilter()"
-              aria-label="Close"
-            >
+            <ion-button fill="clear" (click)="closeFilter()" aria-label="Close">
               <ion-icon name="close-outline"></ion-icon>
             </ion-button>
           </ion-buttons>
+
+          <ion-title>Filter Jobs</ion-title>
+
           <ion-buttons slot="end">
             <ion-button
               fill="clear"
-              color="primary"
               (click)="resetFilters()"
-              aria-label="Reset"
+              aria-label="Reset filters"
             >
               Reset
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
+
       <ion-content class="ion-padding">
-        <h1 class="sheet-title">Filter your search</h1>
-        <section class="filter-section">
-          <h2 class="section-heading">Filter by role</h2>
-          <ion-item lines="full">
-            <ion-label position="stacked">Trade subcategory</ion-label>
-            <ion-select
-              interface="popover"
-              [value]="subCategory()"
-              placeholder="Any"
-              (ionChange)="setSubCategory($any($event.detail.value))"
-            >
-              <ion-select-option [value]="''">Any</ion-select-option>
-              @for (sub of availableSubcategories(); track sub) {
-              <ion-select-option [value]="sub">{{ sub }}</ion-select-option>
-              }
-            </ion-select>
-          </ion-item>
-        </section>
-        <section class="filter-section">
-          <h2 class="section-heading">Filter by pay</h2>
-          <ion-item lines="none" class="range-header">
-            <ion-label>Min pay</ion-label>
-            <ion-note slot="end" class="range-value"
-              >£{{ minPay() ?? payMin }}/hr</ion-note
-            >
-          </ion-item>
-          <ion-range
-            class="pay-range"
-            [min]="payMin"
-            [max]="payMax"
-            [step]="1"
-            [pin]="true"
-            [value]="minPay() ?? payMin"
-            (ionChange)="setMinPay($any($event.detail.value))"
-          ></ion-range>
+        <section
+          class="filter-section location-section section-end ion-padding-vertical"
+        >
+          <div class="location-row">
+            <h2 class="section-heading">Location</h2>
+            <div class="location-right">
+              <ion-chip
+                class="location-chip"
+                (click)="openRadiusSheet()"
+                aria-label="Change search radius"
+              >
+                +{{ radius() }} miles
+              </ion-chip>
+            </div>
+          </div>
         </section>
 
-        <section class="filter-section">
-          <h2 class="section-heading">Filter by dates</h2>
-          <ion-item lines="full">
-            <ion-label position="stacked">Start date</ion-label>
-            <ion-datetime
-              presentation="date"
-              [value]="startDateFrom() ?? undefined"
-              (ionChange)="setStartDateFrom($any($event.detail.value))"
-            ></ion-datetime>
+        <section class="filter-section section-end ion-padding-vertical">
+          <h2 class="section-heading">Trade sub categories</h2>
+          <div class="roles-grid">
+            @for (sub of availableSubcategories(); track sub) {
+            <ion-chip
+              class="ion-no-margin trade-chip"
+              [outline]="!selectedSubcategories().includes(sub)"
+              (click)="toggleSubcategory(sub)"
+              [class.trade-chip-selected]="selectedSubcategories().includes(sub)"
+            >
+              <ion-icon name="swap-horizontal-outline"></ion-icon>
+              <ion-label>{{ sub }}</ion-label>
+            </ion-chip>
+            }
+          </div>
+        </section>
+
+        <section
+          class="filter-section pay-section section-end ion-padding-vertical"
+        >
+          <h2 class="section-heading">Pay</h2>
+
+          <ion-item lines="none" class="range-header-item ion-no-padding">
+            <ion-label>Hourly rate</ion-label>
+          </ion-item>
+          <ion-item lines="none" class="range-item ion-no-padding">
+            <ion-range
+              aria-label="Hourly rate"
+              [pin]="true"
+              [pinFormatter]="formatHourly"
+              [min]="hourlyMin"
+              [max]="hourlyMax"
+              [step]="1"
+              [value]="hourlyRate() ?? hourlyMin"
+              (ionChange)="setHourlyRate($any($event.detail.value))"
+            ></ion-range>
           </ion-item>
         </section>
+
+        <section class="filter-section dates-section ion-padding-vertical">
+          <h2 class="section-heading">Dates</h2>
+
+          <div class="dates-block">
+            <div class="date-row">
+              <div class="date-label">Start date</div>
+              <div class="date-inputs">
+                <ion-item lines="none" class="date-item">
+                  <ion-select
+                    interface="popover"
+                    placeholder="Day"
+                    fill="outline"
+                    [value]="startDay()"
+                    (ionChange)="onStartDayChange($event.detail.value)"
+                  >
+                    @for (d of days; track d) {
+                    <ion-select-option [value]="d">{{ d }}</ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+
+                <ion-item lines="none" class="date-item">
+                  <ion-select
+                    interface="popover"
+                    placeholder="Month"
+                    fill="outline"
+                    [value]="startMonth()"
+                    (ionChange)="onStartMonthChange($event.detail.value)"
+                  >
+                    @for (m of months; track m.value) {
+                    <ion-select-option [value]="m.value">
+                      {{ m.label }}
+                    </ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+
+                <ion-item lines="none" class="date-item">
+                  <ion-select
+                    interface="popover"
+                    placeholder="Year"
+                    fill="outline"
+                    [value]="startYear()"
+                    (ionChange)="onStartYearChange($event.detail.value)"
+                  >
+                    @for (y of years; track y) {
+                    <ion-select-option [value]="y">{{ y }}</ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+              </div>
+            </div>
+
+            <div class="date-row">
+              <div class="date-label">End date</div>
+              <div class="date-inputs">
+                <ion-item lines="none" class="date-item">
+                  <ion-select
+                    interface="popover"
+                    placeholder="Day"
+                    fill="outline"
+                    [value]="endDay()"
+                    (ionChange)="onEndDayChange($event.detail.value)"
+                  >
+                    @for (d of days; track d) {
+                    <ion-select-option [value]="d">{{ d }}</ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+
+                <ion-item lines="none" class="date-item">
+                  <ion-select
+                    interface="popover"
+                    placeholder="Month"
+                    fill="outline"
+                    [value]="endMonth()"
+                    (ionChange)="onEndMonthChange($event.detail.value)"
+                  >
+                    @for (m of months; track m.value) {
+                    <ion-select-option [value]="m.value">
+                      {{ m.label }}
+                    </ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+
+                <ion-item lines="none" class="date-item">
+                  <ion-select
+                    interface="popover"
+                    placeholder="Year"
+                    fill="outline"
+                    [value]="endYear()"
+                    (ionChange)="onEndYearChange($event.detail.value)"
+                  >
+                    @for (y of years; track y) {
+                    <ion-select-option [value]="y">{{ y }}</ion-select-option>
+                    }
+                  </ion-select>
+                </ion-item>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div class="content-spacer" aria-hidden="true"></div>
+        <ion-button
+          expand="block"
+          size="large"
+          class="apply-btn"
+          color="primary"
+          (click)="applyFilters()"
+        >
+          Update filters
+        </ion-button>
       </ion-content>
-      <ion-footer class="sheet-footer">
-        <ion-toolbar>
-          <ion-button
-            expand="block"
-            size="large"
-            class="apply-btn"
-            color="primary"
-            [disabled]="loading()"
-            (click)="applyFilters()"
-          >
-            Show jobs
-          </ion-button>
-        </ion-toolbar>
-      </ion-footer>
     </ng-template>
   </ion-modal>
 </ion-content>

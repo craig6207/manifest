@@ -21,6 +21,14 @@ export class TradesService {
     );
   }
 
+  getTradeSubcategoriesByName(
+    tradeName?: string
+  ): Observable<TradeSubcategories[]> {
+    return this.http.get<TradeSubcategories[]>(
+      `${environment.apiEndpoint}/api/reference/trades/${tradeName}/subcategories`
+    );
+  }
+
   getTradeCertificates(tradeId: number): Observable<TradeCertificateRef[]> {
     return this.http.get<TradeCertificateRef[]>(
       `${environment.apiEndpoint}/api/reference/trades/${tradeId}/certificates`

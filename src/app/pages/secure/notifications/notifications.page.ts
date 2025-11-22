@@ -7,17 +7,12 @@ import {
 } from '@angular/core';
 import {
   IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonBackButton,
   IonContent,
   IonList,
   IonItem,
   IonLabel,
   IonIcon,
   IonBadge,
-  IonNote,
   IonRefresher,
   IonRefresherContent,
   IonSkeletonText,
@@ -32,6 +27,8 @@ import {
   chevronForward,
   linkOutline,
   mailUnreadOutline,
+  calendarOutline,
+  timeOutline,
 } from 'ionicons/icons';
 import { NotificationsService } from 'src/app/services/notification/notification.service';
 import { Notification } from 'src/app/interfaces/notification';
@@ -39,29 +36,26 @@ import { JobInviteComponent } from 'src/app/components/job-invite/job-invite.com
 import { JobExtraDetailsComponent } from 'src/app/components/job-extra-details/job-extra-details.component';
 import { JobSuccessConfirmationComponent } from 'src/app/components/job-success-confirmation/job-success-confirmation.component';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
   imports: [
     IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonBackButton,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
     IonIcon,
     IonBadge,
-    IonNote,
     IonRefresher,
     IonRefresherContent,
     IonSkeletonText,
     IonSegment,
     IonSegmentButton,
     DatePipe,
+    ToolbarBackComponent,
   ],
   templateUrl: './notifications.page.html',
   styleUrls: ['./notifications.page.scss'],
@@ -98,6 +92,8 @@ export class NotificationsPage {
       chevronForward,
       linkOutline,
       mailUnreadOutline,
+      calendarOutline,
+      timeOutline,
     });
     this.load();
   }

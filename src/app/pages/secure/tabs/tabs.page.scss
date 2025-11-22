@@ -1,3 +1,77 @@
+.main-tab-bar {
+  --background: #ffffff;
+  display: flex;
+  justify-content: space-around;
+}
 
+ion-tab-button {
+  --ripple-color: transparent;
+  --color: #7a8297;
+  --color-selected: #111827;
+  background: transparent;
+  flex: 1 1 0;
+  max-width: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
 
+.tab-icon-wrap {
+  width: 60px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
 
+ion-tab-button ion-icon {
+  font-size: 24px;
+  color: #7a8297;
+  transition: color 160ms ease;
+}
+
+ion-tab-button ion-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #7a8297;
+  transition: color 160ms ease, font-weight 160ms ease;
+}
+
+ion-tab-button.tab-selected .tab-icon-wrap {
+  background: var(--ion-color-primary);
+}
+
+ion-tab-button.tab-selected ion-icon {
+  color: #ffffff;
+}
+
+ion-tab-button.tab-selected ion-label {
+  color: #111827;
+  font-weight: 700;
+}
+
+.tab-with-badge {
+  position: relative;
+}
+
+.tab-with-badge ion-badge {
+  position: absolute;
+  top: 2px;
+  right: 18px;
+  --background: #ffcc00;
+  --color: #000000;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

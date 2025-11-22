@@ -1,0 +1,98 @@
+<ion-header>
+  <app-toolbar-back
+    title="Log your time"
+    [navigation]="backUrl"
+  ></app-toolbar-back>
+
+  <div class="segment-container">
+    <div class="segment-pill">
+      <ion-segment [value]="mode" (ionChange)="onModeChange($event)">
+        <ion-segment-button value="timer">
+          <ion-label>Check in</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="manual">
+          <ion-label>Manually</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (mode === 'manual') {
+  <div class="time-form">
+    <div class="time-group">
+      <div class="time-label">Start time</div>
+      <div class="time-row">
+        <ion-item lines="none" class="time-input-item">
+          <ion-input
+            type="text"
+            inputmode="numeric"
+            maxlength="5"
+            [(ngModel)]="manualStartTime"
+            placeholder="0:00"
+            (ionInput)="onTimeInput('start', $event)"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="time-ampm-item">
+          <ion-select interface="popover" [(ngModel)]="manualStartPeriod">
+            <ion-select-option value="AM">AM</ion-select-option>
+            <ion-select-option value="PM">PM</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+    </div>
+
+    <div class="time-group">
+      <div class="time-label">End time</div>
+      <div class="time-row">
+        <ion-item lines="none" class="time-input-item">
+          <ion-input
+            type="text"
+            inputmode="numeric"
+            maxlength="5"
+            [(ngModel)]="manualEndTime"
+            placeholder="0:00"
+            (ionInput)="onTimeInput('end', $event)"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="time-ampm-item">
+          <ion-select interface="popover" [(ngModel)]="manualEndPeriod">
+            <ion-select-option value="AM">AM</ion-select-option>
+            <ion-select-option value="PM">PM</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div class="timer-placeholder">Timer mode coming soon</div>
+  }
+</ion-content>
+
+@if (mode === 'manual') {
+<ion-footer class="ion-no-border ion-padding">
+  <ion-button
+    expand="block"
+    color="primary"
+    (click)="openReasonAlert()"
+    aria-label="Save timesheet entry"
+  >
+    Save hours
+  </ion-button>
+</ion-footer>
+}
+
+<ion-alert
+  [isOpen]="isAlertOpen"
+  header="Save hours"
+  subHeader="Optional reason"
+  message="Add a short reason for your timesheet changes (optional)."
+  [inputs]="alertInputs"
+  [buttons]="alertButtons"
+  (didDismiss)="isAlertOpen = false"
+>
+</ion-alert>

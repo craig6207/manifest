@@ -1,0 +1,31 @@
+<ion-toolbar class="toolbar-home">
+  <div class="toolbar-home-left ion-padding" slot="start">
+    <ion-img
+      class="logo"
+      src="/assets/img/Recruut_mob_logo.svg"
+      alt="Recruut logo"
+    ></ion-img>
+
+    <div class="welcome-block">
+      <p class="welcome-label">Welcome back</p>
+      <p class="welcome-name">{{ firstName() }}</p>
+    </div>
+  </div>
+
+  <div class="toolbar-actions ion-padding" slot="end">
+    <ion-button
+      fill="clear"
+      class="icon-btn notifications-btn"
+      aria-label="View notifications"
+      (click)="openNotifications()"
+    >
+      <ion-icon name="notifications-outline" slot="icon-only"></ion-icon>
+
+      @if (hasNotifications()) {
+      <ion-badge class="notification-badge">
+        {{ notificationsCount() }}
+      </ion-badge>
+      }
+    </ion-button>
+  </div>
+</ion-toolbar>

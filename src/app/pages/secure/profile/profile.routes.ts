@@ -25,13 +25,6 @@ export const profileRoutes: Routes = [
       ),
   },
   {
-    path: 'notifications',
-    loadComponent: () =>
-      import('./notifications/notifications.page').then(
-        (m) => m.NotificationsPage
-      ),
-  },
-  {
     path: 'about',
     loadComponent: () => import('./about/about.page').then((m) => m.AboutPage),
   },

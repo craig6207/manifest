@@ -40,3 +40,26 @@
   --padding-top: 0;
   --padding-bottom: 0;
 }
+
+.locate-cta {
+  position: absolute;
+  right: 12px;
+  bottom: 14px;
+  z-index: 3; /* above the map, same layer as search */
+}
+
+.locate-btn {
+  --background: #ffffff;
+  --color: var(--ion-color-primary);
+  --border-radius: 12px;
+  --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
+
+@media (hover: hover) {
+  .locate-btn:hover {
+    filter: brightness(0.98);
+  }
+}

@@ -4,14 +4,10 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- Add a class to ion-content for styling -->
 <ion-content [fullscreen]="true" class="centered ion-padding">
-  <!-- IMPORTANT: refresher must be a direct child of ion-content -->
   <ion-refresher slot="fixed" (ionRefresh)="pullRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-
-  <!-- Everything else stays the same below -->
   @if (loading()) {
   <div class="skeleton-wrap">
     <ion-skeleton-text

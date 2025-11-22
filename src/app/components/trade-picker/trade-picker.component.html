@@ -1,5 +1,5 @@
 <ion-header class="trade-header">
-  <ion-toolbar class="trade-toolbar ion-no-border">
+  <ion-toolbar class="ion-no-border" color="primary">
     <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cancel()" [attr.aria-label]="'Close'"
@@ -35,9 +35,7 @@
         (click)="cancel()"
         >Cancel</ion-button
       >
-      <ion-button class="primary-btn" [disabled]="!valid()" (click)="confirm()"
-        >Confirm</ion-button
-      >
+      <ion-button [disabled]="!valid()" (click)="confirm()">Confirm</ion-button>
     </div>
   </ion-toolbar>
 </ion-footer>

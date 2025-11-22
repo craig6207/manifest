@@ -1,16 +1,30 @@
 <ion-toolbar class="toolbar-auth">
+  @if(backButtonShow()){
   <ion-buttons slot="start">
     <ion-button
       fill="clear"
       size="small"
       class="back-btn"
       (click)="goBack()"
-      aria-label="Back to login"
+      aria-label="Back page"
     >
       <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
     </ion-button>
   </ion-buttons>
+  }
 
   <ion-title>{{ title() }}</ion-title>
+  @if(calendarShow()){
+  <ion-buttons slot="end">
+    <ion-button
+      fill="clear"
+      size="small"
+      class="back-btn"
+      aria-label="Calendar open"
+    >
+      <ion-icon name="calendar-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+  }
   <ion-text slot="end">{{ profileStep() }}</ion-text>
 </ion-toolbar>

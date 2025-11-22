@@ -1,81 +1,140 @@
-<ion-content [fullscreen]="true" class="home-content ion-padding">
-  @if (isLoading()) {
-  <div class="skeleton-wrap">
-    <ion-img
-      class="logo"
-      src="/assets/img/Recruut_logo.svg"
-      alt="WeRecruit logo"
-    ></ion-img>
+<ion-content [fullscreen]="true" class="home-content">
+  <div class="home-hero-shell">
+    <app-toolbar-home
+      [firstName]="firstName()"
+      [notificationsCount]="unreadCount()"
+    ></app-toolbar-home>
 
-    <ion-text color="primary" class="welcome">
-      <h1>
-        <ion-skeleton-text
-          animated
-          style="width: 220px; height: 32px"
-        ></ion-skeleton-text>
-      </h1>
-    </ion-text>
+    @if (isLoading()) {
+    <div class="hero-card-wrap">
+      <ion-card class="hero-card">
+        <ion-card-header class="hero-card-header">
+          <p class="hero-eyebrow">
+            <ion-skeleton-text animated style="width: 110px; height: 14px">
+            </ion-skeleton-text>
+          </p>
+          <h2 class="hero-heading">
+            <ion-skeleton-text animated style="width: 70%; height: 26px">
+            </ion-skeleton-text>
+          </h2>
+        </ion-card-header>
 
-    <ion-card class="cta-card">
-      <ion-card-header>
-        <ion-icon
-          name="briefcase-outline"
-          class="cta-icon"
-          aria-hidden="true"
-        ></ion-icon>
-        <ion-card-title class="cta-title">
-          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content class="cta-content">
-        <ion-skeleton-text
-          animated
-          style="width: 60%; height: 16px"
-        ></ion-skeleton-text>
-        <div class="cta-actions" style="margin-top: 12px">
-          <ion-button color="primary" size="default" disabled>
-            <ion-skeleton-text
-              animated
-              style="width: 180px; height: 16px"
-            ></ion-skeleton-text>
+        <ion-card-content class="hero-card-content">
+          <p class="hero-copy">
+            <ion-skeleton-text animated style="width: 80%; height: 14px">
+            </ion-skeleton-text>
+          </p>
+
+          <ion-button expand="block" disabled class="hero-cta">
+            <ion-skeleton-text animated style="width: 70%; height: 16px">
+            </ion-skeleton-text>
           </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+    } @else {
+    <div class="hero-card-wrap">
+      <ion-card class="hero-card ion-no-margin ion-padding">
+        <div class="hero-card-header ion-padding">
+          <p class="hero-eyebrow">Find your next</p>
+
+          <h2 class="hero-heading">
+            Construction <span class="hero-heading-accent">role</span>
+          </h2>
         </div>
-      </ion-card-content>
-    </ion-card>
+
+        <ion-card-content class="hero-card-content">
+          <p class="hero-copy">
+            Browse thousands of UK construction jobs from top employers.
+          </p>
+
+          <ion-button expand="block" (click)="goBrowse()" class="hero-cta">
+            Contract jobs selected for you
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+    }
   </div>
-  } @else {
-  <img src="/assets/img/Recruut_logo.svg" alt="WeRecruit logo" class="logo" />
 
-  <ion-text class="welcome">
-    <h1>Welcome {{ firstName() }}</h1>
-  </ion-text>
+  <div class="home-body">
+    <h2 class="body-heading ion-margin-vertical ion-padding-top">
+      Your Activity
+    </h2>
 
-  <ion-card class="cta-card" button="true" (click)="goBrowse()">
-    <ion-card-header>
-      <ion-icon
-        name="briefcase-outline"
-        class="cta-icon"
-        aria-hidden="true"
-      ></ion-icon>
-      <ion-card-title class="cta-title">
-        There {{jobCount() > 1 ? 'are': 'is'}} {{ jobCount() }} job{{jobCount()
-        > 1 ? 's': ''}} waiting for you
-      </ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content class="cta-content">
-      Please click to browse jobs.
-      <div class="cta-actions">
-        <ion-button
-          color="primary"
-          size="default"
-          (click)="$event.stopPropagation(); goBrowse()"
-        >
-          Browse job{{jobCount() > 1 ? 's': ''}} ({{ jobCount() }})
-          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
-        </ion-button>
+    <div class="activity-card">
+      <div class="activity-item">
+        <p class="activity-label">Booked</p>
+        <p class="activity-value">3</p>
       </div>
-    </ion-card-content>
-  </ion-card>
-  }
+
+      <div class="activity-item">
+        <p class="activity-label">Offered</p>
+        <p class="activity-value">12</p>
+      </div>
+
+      <div class="activity-item">
+        <p class="activity-label">Applied</p>
+        <p class="activity-value">8</p>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2 class="section-title">Selected Jobs</h2>
+      <button type="button" class="section-link" (click)="goBrowse()">
+        View All
+      </button>
+    </div>
+
+    @if (!isLoading() && jobs().length === 0) {
+    <p class="no-jobs">No jobs available right now.</p>
+    } @else { @for (job of jobs(); track job.id) {
+    <div class="job-card">
+      <div class="job-card-top">
+        <div class="job-card-heading">
+          <h3 class="job-title">{{ job.trade }} {{ job.tradeSubCategory }}</h3>
+          <p class="job-company">ABC Company Ltd</p>
+        </div>
+
+        <button type="button" class="job-favourite-btn" aria-label="Save job">
+          <ion-icon name="heart-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+
+      <div class="job-meta-row">
+        <div class="job-meta">
+          <ion-icon name="location-outline" class="job-meta-icon"></ion-icon>
+          <span>{{ job.location }}</span>
+        </div>
+
+        <span class="job-meta-divider">|</span>
+
+        <div class="job-meta">
+          <ion-icon name="briefcase-outline" class="job-meta-icon"></ion-icon>
+          <span>
+            {{ job.hours && job.hours.length ? job.hours[0] : 'Full-time' }}
+          </span>
+        </div>
+
+        <span class="job-meta-divider">|</span>
+
+        <div class="job-meta">
+          <ion-icon name="time-outline" class="job-meta-icon"></ion-icon>
+          <span>{{ job.startDate }}</span>
+        </div>
+      </div>
+
+      <p class="job-description">{{ job.projectInfo }}</p>
+
+      <div class="job-card-footer">
+        <p class="job-salary">£{{ job.payRate }}/h</p>
+
+        <button type="button" class="job-link" (click)="goToJob(job.id)">
+          <span>View Details</span>
+          <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </div>
+    } }
+  </div>
 </ion-content>

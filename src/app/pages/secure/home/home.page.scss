@@ -1,59 +1,247 @@
 .home-content {
-  color: var(--ion-color-primary);
+  --background: #f3f5fb;
+}
+
+.home-hero-shell {
+  background: var(--we-toolbar-gradient);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+  padding-bottom: 0;
+}
+
+.hero-card-wrap {
+  margin-top: 16px;
+}
+
+.hero-card {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.14);
+}
+
+.home-body {
+  background: #f3f5fb;
+  margin-top: -20px;
+  padding: 24px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+.body-heading {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b2b36;
+}
+
+.hero-card-header {
+  padding-bottom: 4px;
+}
+
+.hero-eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555e7b;
+}
+
+.hero-heading {
+  margin: 4px 0 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #0b2b36;
+}
+
+.hero-heading-accent {
+  color: #4f7cea;
+}
+
+.hero-card-content {
+  padding-top: 8px;
+}
+
+.hero-copy {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #6a718c;
+}
+
+.hero-cta {
+  --border-radius: 9999px;
+  font-weight: 600;
+}
+
+.activity-card {
+  margin-top: 4px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  overflow: hidden;
+}
+
+.activity-item {
+  flex: 1 1 0;
+  padding: 16px 12px 18px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+}
+
+.activity-item + .activity-item {
+  border-left: 1px solid #e2e5f0;
+}
+
+.activity-label {
+  margin: 0;
+  font-size: 14px;
+  color: #111827;
+}
+
+.activity-value {
+  margin: 8px 0 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: #1c4a8a;
+}
+
+.section-header {
+  margin-top: 24px;
+  margin-bottom: 4px;
+  display: flex;
   align-items: center;
-  padding-top: calc(20px + env(safe-area-inset-top));
+  justify-content: space-between;
 }
 
-.logo {
-  display: block;
-  width: clamp(220px, 35vw, 320px);
-  height: auto;
-  margin: 8px auto 12px;
-  padding-top: 100px;
-  padding-bottom: 30px;
+.section-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
 }
 
-.welcome {
-  margin-bottom: 12px;
-
-  h1 {
-    margin: 0;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.2px;
-  }
+.section-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: #275fcb;
 }
 
-.cta-card {
-  --background: var(--ion-background-color);
-  color: var(--ion-text-color);
-  width: 100%;
-  max-width: 680px;
-  margin: 12px auto 0;
-  border-radius: 16px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+.no-jobs {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: #6b7280;
 }
 
-.cta-icon {
-  font-size: 32px;
-  margin-right: 8px;
-  vertical-align: middle;
-  color: var(--ion-color-primary);
+.job-card {
+  margin-top: 16px;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e6f2;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  padding: 20px 18px 16px;
 }
 
-.cta-title {
+.job-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.job-card-heading {
+  flex: 1 1 auto;
+}
+
+.job-title {
+  margin: 0 0 4px;
   font-size: 20px;
   font-weight: 800;
-  line-height: 1.2;
+  color: #111827;
 }
 
-.cta-content {
+.job-company {
+  margin: 0;
   font-size: 14px;
-  color: var(--ion-color-medium);
+  color: #4b5a78;
 }
 
-.cta-actions {
+.job-favourite-btn {
+  border: 0;
+  padding: 6px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+
+.job-favourite-btn ion-icon {
+  font-size: 22px;
+  color: #8b9ac2;
+}
+
+.job-meta-row {
   margin-top: 12px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13px;
+  color: #111827;
+}
+
+.job-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.job-meta-icon {
+  font-size: 16px;
+  color: #4b5a78;
+}
+
+.job-meta-divider {
+  color: #d0d6e5;
+}
+
+.job-description {
+  margin: 16px 0 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.job-card-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e6f2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.job-salary {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.job-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #275fcb;
+}
+
+.job-link ion-icon {
+  font-size: 18px;
 }

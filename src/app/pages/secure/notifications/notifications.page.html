@@ -1,0 +1,104 @@
+<ion-header>
+  <app-toolbar-back
+    [title]="'Notifications'"
+    [navigation]="'/home'"
+  ></app-toolbar-back>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="notif-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content
+      pullingText="Pull to refresh"
+    ></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="toolbar-sub">
+    <div class="segment-shell ion-padding">
+      <ion-segment
+        mode="md"
+        class="notif-segment"
+        [value]="filter()"
+        (ionChange)="onFilterChanged($event)"
+      >
+        <ion-segment-button value="unread">
+          <span class="segment-label">
+            Unread @if (unreadCount() > 0) {
+            <ion-badge class="seg-badge" color="danger">
+              {{ unreadCount() }}
+            </ion-badge>
+            }
+          </span>
+        </ion-segment-button>
+
+        <ion-segment-button value="all">
+          <span class="segment-label">All</span>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
+  @if (loading()) {
+  <div class="skeleton-list">
+    @for (s of [1,2,3,4,5]; track s) {
+    <div class="skeleton-card">
+      <ion-skeleton-text
+        animated
+        style="width: 60%; height: 18px"
+      ></ion-skeleton-text>
+      <div class="skeleton-meta">
+        <ion-skeleton-text
+          animated
+          style="width: 40%; height: 14px"
+        ></ion-skeleton-text>
+        <ion-skeleton-text
+          animated
+          style="width: 30%; height: 14px"
+        ></ion-skeleton-text>
+      </div>
+    </div>
+    }
+  </div>
+  } @if (showEmpty()) {
+  <div class="empty">
+    <p>No notifications yet</p>
+  </div>
+  } @if (!loading() && !showEmpty()) {
+  <ion-list class="notif-list">
+    @for (notification of visibleItems(); track notification.id) {
+    <ion-item
+      button
+      detail="true"
+      class="notif-item"
+      [class.unread]="!notification.isRead"
+      (click)="open(notification)"
+      lines="none"
+    >
+      <ion-label class="notif-label">
+        <div class="notif-title-row">
+          <h3 class="notif-title">
+            {{ notification.title || notification.type }}
+          </h3>
+          <span class="notif-status-dot"></span>
+        </div>
+
+        <div class="notif-meta-row">
+          <div class="notif-meta">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>
+              {{ toDate(notification.createdAt) | date: 'MMM d, y, H:mm' }}
+            </span>
+          </div>
+
+          <div class="notif-meta">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>
+              {{ toDate(notification.createdAt) | date: 'h:mm:ss a' }}
+            </span>
+          </div>
+        </div>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  }
+</ion-content>

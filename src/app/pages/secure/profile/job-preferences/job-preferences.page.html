@@ -26,12 +26,12 @@
 
       <div class="meta">
         <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
-        <span>{{ jobPreferences.location }}</span>
+        <span>{{ jobPreferences.locationName }}</span>
       </div>
 
       <div class="badge-row">
         <span class="pill"
-          >Radius: {{ jobPreferences.locationRadius }} miles</span
+          >Radius: {{ jobPreferences.locationRadiusMeters }} miles</span
         >
         <span class="pill">Pay: £{{ jobPreferences.expectedPay }}/h</span>
       </div>
@@ -46,11 +46,13 @@
     <div class="kv">
       <div class="kv-row">
         <div class="kv-label">Location</div>
-        <div class="kv-value">{{ jobPreferences.location }}</div>
+        <div class="kv-value">{{ jobPreferences.locationName }}</div>
       </div>
       <div class="kv-row">
         <div class="kv-label">Distance radius</div>
-        <div class="kv-value">{{ jobPreferences.locationRadius }} miles</div>
+        <div class="kv-value">
+          {{ jobPreferences.locationRadiusMeters }} miles
+        </div>
       </div>
       <div class="kv-row">
         <div class="kv-label">Pay expectation</div>
