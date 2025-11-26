@@ -1,83 +1,120 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Job details</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="dismiss()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+  <app-toolbar-back title="Job Offer"></app-toolbar-back>
+
+  <div class="invite-container">
+    <div class="invite-pill"></div>
+  </div>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   @if (loading()) {
-  <div class="skeleton">
+  <div class="job-card skeleton">
     <ion-skeleton-text
       animated
-      style="width: 60%; height: 20px"
+      style="width: 60%; height: 22px"
     ></ion-skeleton-text>
     <ion-skeleton-text
       animated
-      style="width: 90%; height: 16px"
+      style="width: 30%; height: 16px"
+    ></ion-skeleton-text>
+
+    <div class="meta-skeleton">
+      <ion-skeleton-text
+        animated
+        style="width: 80%; height: 16px"
+      ></ion-skeleton-text>
+      <ion-skeleton-text
+        animated
+        style="width: 70%; height: 16px"
+      ></ion-skeleton-text>
+      <ion-skeleton-text
+        animated
+        style="width: 60%; height: 16px"
+      ></ion-skeleton-text>
+      <ion-skeleton-text
+        animated
+        style="width: 55%; height: 16px"
+      ></ion-skeleton-text>
+      <ion-skeleton-text
+        animated
+        style="width: 45%; height: 16px"
+      ></ion-skeleton-text>
+    </div>
+
+    <ion-skeleton-text
+      animated
+      style="width: 40%; height: 18px; margin-top: 16px"
     ></ion-skeleton-text>
     <ion-skeleton-text
       animated
-      style="width: 80%; height: 16px"
+      style="width: 100%; height: 60px"
     ></ion-skeleton-text>
   </div>
-  } @if (!loading() && job()) {
-  <section class="hero">
-    <h2 class="role">{{ jobTitle() }}</h2>
-    @if (clientName()) {
-    <div class="client">{{ clientName() }}</div>
-    }
+  } @else if (job()) {
 
-    <section class="pill-groups">
-      @if (hours().length) {
-      <div class="group">
-        <h3 class="subhead">Hours</h3>
-        <div class="chips">
-          @for (h of hours(); track h) {
-          <span class="pill neutral">{{ h }}</span>
+  <div class="job-card">
+    <header class="job-header">
+      <h1 class="job-title">{{ jobTitle() }}</h1>
+    </header>
+
+    <section class="job-meta">
+      <div class="meta-row">
+        <div class="meta-icon">
+          <ion-icon name="cash-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <div class="meta-text">{{ payText() }}</div>
+      </div>
+
+      @if (clientName()) {
+      <div class="meta-row">
+        <div class="meta-icon">
+          <ion-icon name="business-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <div class="meta-text">{{ clientName() }}</div>
+      </div>
+      }
+
+      <div class="meta-row">
+        <div class="meta-icon">
+          <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <div class="meta-text">
+          {{ job()?.hours }}
+        </div>
+      </div>
+
+      @if (hasDates()) {
+      <div class="meta-row">
+        <div class="meta-icon">
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <div class="meta-text">
+          @if (startDateText()) {
+          {{ startDateText() | date : "d MMM, y" }}
+          } @if (startDateText() && endDateText()) { – } @if (endDateText()) {
+          {{ endDateText() | date : "d MMM, y" }}
           }
         </div>
       </div>
       }
-      <div class="group">
-        <h3 class="subhead">Pay</h3>
-        <div class="chips">
-          <ion-badge color="primary" class="pill pay">{{
-            payText()
-          }}</ion-badge>
+
+      <div class="meta-row">
+        <div class="meta-icon">
+          <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
         </div>
+        <div class="meta-text">{{ locationText() }}</div>
       </div>
     </section>
-  </section>
 
-  <section class="kv">
-    <div class="row">
-      <div class="k">Location</div>
-      <div class="v">{{ locationText() }}</div>
-    </div>
+    <section class="job-description">
+      <h2 class="section-title">Job Description</h2>
+      <p class="description-text">
+        {{ job()?.projectInfo }}
+      </p>
+    </section>
+  </div>
 
-    @if (hasDates()) {
-    <div class="row">
-      <div class="k">Dates</div>
-      <div class="v">
-        @if (startDateText()) { Start:
-        {{ startDateText() | date : "mediumDate" }} } @if (endDateText()) { ·
-        End: {{ endDateText() | date : "mediumDate" }} }
-      </div>
-    </div>
-    }
-  </section>
-
-  @if (job()?.projectInfo) {
-  <section class="card">
-    <h3>Project</h3>
-    <p class="project">{{ job()?.projectInfo }}</p>
-  </section>
-  } } @if (!loading() && error()) {
+  } @else if (error()) {
   <div class="error">{{ error() }}</div>
   }
 </ion-content>
@@ -100,7 +137,7 @@
       [disabled]="actioning()"
       (click)="decline()"
     >
-      Not Interested
+      Decline
     </ion-button>
   </div>
 </ion-footer>

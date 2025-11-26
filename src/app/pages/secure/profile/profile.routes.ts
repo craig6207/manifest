@@ -13,11 +13,6 @@ export const profileRoutes: Routes = [
       ),
   },
   {
-    path: 'profile-edit',
-    loadComponent: () =>
-      import('./profile-edit/profile-edit.page').then((m) => m.ProfileEditPage),
-  },
-  {
     path: 'job-preferences',
     loadComponent: () =>
       import('./job-preferences/job-preferences.page').then(
@@ -32,6 +27,11 @@ export const profileRoutes: Routes = [
     path: 'cookies',
     loadComponent: () =>
       import('./cookies/cookies.page').then((m) => m.CookiesPage),
+  },
+  {
+    path: 'support',
+    loadComponent: () =>
+      import('./support/support.page').then((m) => m.SupportPage),
   },
   {
     path: 'certificate-management',

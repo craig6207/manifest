@@ -1,6 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { CandidateJobs, Page } from 'src/app/interfaces/candidate-jobs';
+import {
+  CandidateJobs,
+  JobActivitySummary,
+  Page,
+} from 'src/app/interfaces/candidate-jobs';
 import { Observable, map } from 'rxjs';
 import { environment } from 'src/app/environment/environment';
 
@@ -37,6 +41,12 @@ export class JobActivityService {
           } as Page<CandidateJobs>;
         })
       );
+  }
+
+  getMySummary(): Observable<JobActivitySummary> {
+    return this.http.get<JobActivitySummary>(
+      `${environment.apiEndpoint}/api/job-history/mine/summary`
+    );
   }
 
   private mapServerToCandidateJobs = (d: any): CandidateJobs => ({

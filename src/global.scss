@@ -204,6 +204,28 @@
   }
 }
 
+.toolbar-profile {
+  --background: var(--we-toolbar-gradient);
+  --color: #0b2b36;
+  --min-height: 320px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --border-color: transparent;
+
+  ion-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    color: inherit;
+    text-align: center;
+  }
+
+  ion-buttons[slot="start"],
+  ion-buttons[slot="end"] {
+    align-items: center;
+  }
+}
+
 @media (max-height: 640px) {
   :is(.login-page, .register-page) .hero {
     padding-top: calc(env(safe-area-inset-top, 0) + 12px);

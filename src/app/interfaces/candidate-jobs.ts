@@ -21,3 +21,9 @@ export interface CandidateJobs {
   appliedAtUtc?: string;
   offeredAtUtc?: string;
 }
+
+export interface JobActivitySummary {
+  booked: number;
+  offered: number;
+  applied: number;
+}

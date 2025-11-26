@@ -1,38 +1,48 @@
-import { Component, inject, signal, computed, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { NavController } from '@ionic/angular';
 import {
   IonHeader,
   IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonButton,
   IonIcon,
   IonContent,
   IonAvatar,
-  IonFooter,
-  IonList,
-  IonItem,
-  IonLabel,
   IonActionSheet,
   IonLoading,
   IonToast,
-  IonRow,
-  IonGrid,
-  IonCol,
   IonBadge,
   IonSkeletonText,
+  IonButtons,
+  IonButton,
+  IonList,
+  IonItem,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { cameraOutline, imageOutline } from 'ionicons/icons';
+import {
+  cameraOutline,
+  imageOutline,
+  settingsOutline,
+  notificationsOutline,
+  star,
+  createOutline,
+  logOutOutline,
+  chevronForwardOutline,
+} from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
-import { RatingBarComponent } from 'src/app/components/rating-bar/rating-bar.component';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import {
   ProfilePicService,
   UploadImageResponse,
 } from 'src/app/services/profile-pic/profile-pic.service';
-import { ChangeDetectionStrategy } from '@angular/core';
 
 const DEFAULT_AVATAR = 'https://ionicframework.com/docs/img/demos/avatar.svg';
 
@@ -42,28 +52,22 @@ const DEFAULT_AVATAR = 'https://ionicframework.com/docs/img/demos/avatar.svg';
   styleUrls: ['./profile.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonBadge,
-    IonCol,
-    IonGrid,
-    IonRow,
+    CommonModule,
     IonHeader,
     IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonButton,
     IonIcon,
     IonContent,
     IonAvatar,
-    IonFooter,
-    IonList,
-    IonItem,
-    IonLabel,
     IonActionSheet,
     IonLoading,
     IonToast,
+    IonBadge,
     IonSkeletonText,
+    IonButtons,
+    IonButton,
+    IonList,
+    IonItem,
     RouterModule,
-    RatingBarComponent,
   ],
 })
 export class ProfilePage implements OnDestroy {
@@ -71,6 +75,7 @@ export class ProfilePage implements OnDestroy {
   private readonly store = inject(ProfileStore);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly nav = inject(NavController);
 
   isAvatarSheetOpen = signal(false);
   isUploading = signal(false);
@@ -79,7 +84,7 @@ export class ProfilePage implements OnDestroy {
   loadingPage = computed(() => !this.store.avatarLoaded());
   avatarSrc = computed(() => this.store.avatarDataUrl() ?? DEFAULT_AVATAR);
 
-  rating = computed(() => this.store.profile()?.rating);
+  rating = computed(() => this.store.profile()?.rating ?? 0);
   displayName = computed(() => {
     const p = this.store.profile();
     const fn = (p?.firstName ?? '').trim();
@@ -88,8 +93,9 @@ export class ProfilePage implements OnDestroy {
     return name || 'Your profile';
   });
 
-  unreadCount = computed(() => this.store.unreadNotificationCount());
-  unreadBadgeText = computed(() => {
+  readonly unreadCount = computed(() => this.store.unreadNotificationCount());
+  readonly hasNotifications = computed(() => this.unreadCount() > 0);
+  readonly unreadBadgeText = computed(() => {
     const n = this.unreadCount();
     return n > 99 ? '99+' : `${n}`;
   });
@@ -97,16 +103,23 @@ export class ProfilePage implements OnDestroy {
   lastUpload = signal<UploadImageResponse | null>(null);
 
   constructor() {
-    addIcons({ cameraOutline, imageOutline });
+    addIcons({
+      cameraOutline,
+      imageOutline,
+      settingsOutline,
+      notificationsOutline,
+      star,
+      createOutline,
+      logOutOutline,
+      chevronForwardOutline,
+    });
   }
 
   async ionViewWillEnter() {
     await this.store.ensureAvatarLoaded();
   }
 
-  ngOnDestroy(): void {
-    // Nothing to revoke now; we’re using data URLs (no object URLs).
-  }
+  ngOnDestroy(): void {}
 
   openAvatarSheet(): void {
     this.isAvatarSheetOpen.set(true);
@@ -133,7 +146,7 @@ export class ProfilePage implements OnDestroy {
       );
       this.lastUpload.set(resp);
       this.toastMsg.set('Profile photo uploaded');
-    } catch (err) {
+    } catch {
       this.toastMsg.set('Could not update photo');
     } finally {
       this.isUploading.set(false);
@@ -145,5 +158,9 @@ export class ProfilePage implements OnDestroy {
     this.authService.logout();
     this.store.clearAvatarCache();
     this.router.navigate(['/']);
+  }
+
+  openNotifications(): void {
+    this.nav.navigateForward('/secure/tabs/notifications');
   }
 }

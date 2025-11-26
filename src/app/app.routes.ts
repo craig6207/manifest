@@ -39,11 +39,6 @@ export const routes: Routes = [
   },
   { path: 'profile', redirectTo: 'secure/tabs/profile', pathMatch: 'full' },
   {
-    path: 'check-in-out',
-    redirectTo: 'secure/tabs/check-in-out',
-    pathMatch: 'full',
-  },
-  {
     path: 'job-history',
     redirectTo: 'secure/tabs/job-history',
     pathMatch: 'full',
@@ -78,6 +73,9 @@ export const routes: Routes = [
   { path: '**', redirectTo: '' },
   {
     path: 'timesheet-log',
-    loadComponent: () => import('./pages/secure/timesheets/timesheet-log/timesheet-log.page').then( m => m.TimesheetLogPage)
+    loadComponent: () =>
+      import('./pages/secure/timesheets/timesheet-log/timesheet-log.page').then(
+        (m) => m.TimesheetLogPage
+      ),
   },
 ];

@@ -1,99 +1,229 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/secure/tabs/profile"></ion-back-button>
-    </ion-buttons>
-
-    <ion-title>Job Preferences</ion-title>
-
-    <ion-buttons slot="end">
-      <ion-button (click)="openEdit()" aria-label="Edit job preferences">
-        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+  <app-toolbar-back
+    [title]="'Job preferences'"
+    [navigation]="'/secure/tabs/profile'"
+  ></app-toolbar-back>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="job-prefs ion-padding">
-  @if (jobPreferences(); as jobPreferences) {
-  <section class="summary-card">
-    <div class="icon-badge">
-      <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
-    </div>
-
-    <div class="summary">
-      <div class="name">Your job preferences</div>
-
-      <div class="meta">
-        <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
-        <span>{{ jobPreferences.locationName }}</span>
+<ion-content [fullscreen]="true" class="profile-details job-prefs-page">
+  @if (loading() || !jobPreferences()) {
+  <div class="details-inner">
+    <section class="summary-card">
+      <div class="icon-badge">
+        <ion-skeleton-text
+          animated
+          style="width: 40px; height: 40px; border-radius: 9999px"
+        ></ion-skeleton-text>
       </div>
-
-      <div class="badge-row">
-        <span class="pill"
-          >Radius: {{ jobPreferences.locationRadiusMeters }} miles</span
-        >
-        <span class="pill">Pay: £{{ jobPreferences.expectedPay }}/h</span>
-      </div>
-    </div>
-  </section>
-  <section class="section-card">
-    <div class="section-header">
-      <h2>Location &amp; Pay</h2>
-      <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>
-    </div>
-
-    <div class="kv">
-      <div class="kv-row">
-        <div class="kv-label">Location</div>
-        <div class="kv-value">{{ jobPreferences.locationName }}</div>
-      </div>
-      <div class="kv-row">
-        <div class="kv-label">Distance radius</div>
-        <div class="kv-value">
-          {{ jobPreferences.locationRadiusMeters }} miles
+      <div class="summary">
+        <div class="name">
+          <ion-skeleton-text
+            animated
+            style="width: 60%; height: 18px"
+          ></ion-skeleton-text>
+        </div>
+        <div class="meta">
+          <ion-skeleton-text
+            animated
+            style="width: 40%; height: 14px"
+          ></ion-skeleton-text>
+        </div>
+        <div class="meta">
+          <ion-skeleton-text
+            animated
+            style="width: 30%; height: 14px"
+          ></ion-skeleton-text>
         </div>
       </div>
-      <div class="kv-row">
-        <div class="kv-label">Pay expectation</div>
-        <div class="kv-value">£{{ jobPreferences.expectedPay }}/h</div>
-      </div>
-    </div>
-  </section>
-  <section class="section-card">
-    <div class="section-header">
-      <h2>Trade</h2>
-      <ion-icon name="build-outline" aria-hidden="true"></ion-icon>
-    </div>
+    </section>
 
-    <div class="kv">
-      <div class="kv-row">
-        <div class="kv-label">Trade category</div>
-        <div class="kv-value">{{ jobPreferences.tradeCategory }}</div>
+    <section class="form-card">
+      <div class="section-header">
+        <h2>
+          <ion-skeleton-text
+            animated
+            style="width: 160px; height: 20px"
+          ></ion-skeleton-text>
+        </h2>
       </div>
-      <div class="kv-row">
-        <div class="kv-label">Trade sub-category</div>
-        <div class="kv-value">{{ jobPreferences.tradeSubcategory }}</div>
-      </div>
-    </div>
-  </section>
 
-  <div class="bottom-spacer" aria-hidden="true"></div>
+      <ion-list lines="none" class="form-list">
+        @for (i of [1,2,3,4,5,6]; track i) {
+        <ion-item class="input-item ion-margin-bottom">
+          <div style="width: 100%; margin-top: 4px">
+            <ion-skeleton-text
+              animated
+              style="width: 100%; height: 40px; border-radius: 12px"
+            ></ion-skeleton-text>
+          </div>
+        </ion-item>
+        }
+      </ion-list>
+    </section>
+
+    <div class="bottom-spacer" aria-hidden="true"></div>
+  </div>
+  } @else {
+  <div class="details-inner">
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+      <section class="form-card ion-padding-bottom">
+        <div class="section-header">
+          <h2 class="ion-padding-bottom">Location &amp; pay</h2>
+        </div>
+
+        <ion-list lines="none" class="form-list">
+          <label class="field-label ion-padding-bottom" for="jp-location-name">
+            Location
+          </label>
+          <ion-item
+            class="input-item ion-margin-bottom"
+            [class.is-invalid]="
+              form.get('locationName')?.invalid &&
+              form.get('locationName')?.touched
+            "
+          >
+            <ion-input
+              id="jp-location-name"
+              formControlName="locationName"
+              placeholder="Enter preferred location"
+              autocapitalize="words"
+            ></ion-input>
+          </ion-item>
+          @if (form.get('locationName')?.invalid &&
+          form.get('locationName')?.touched) {
+          <div class="error">Location is required.</div>
+          }
+
+          <label class="field-label ion-padding-bottom" for="jp-radius-miles">
+            Distance radius (miles)
+          </label>
+          <ion-item
+            class="input-item ion-margin-bottom"
+            [class.is-invalid]="
+              form.get('radiusMiles')?.invalid &&
+              form.get('radiusMiles')?.touched
+            "
+          >
+            <ion-input
+              id="jp-radius-miles"
+              formControlName="radiusMiles"
+              type="number"
+              inputmode="decimal"
+              placeholder="e.g. 15"
+            ></ion-input>
+          </ion-item>
+          @if (form.get('radiusMiles')?.invalid &&
+          form.get('radiusMiles')?.touched) {
+          <div class="error">Please enter a valid radius.</div>
+          }
+
+          <label class="field-label ion-padding-bottom" for="jp-hourly-rate">
+            Hourly rate
+          </label>
+          <ion-item class="range-item ion-no-padding">
+            <ion-range
+              id="jp-hourly-rate"
+              formControlName="hourlyRate"
+              [pin]="true"
+              [pinFormatter]="formatHourly"
+              min="5"
+              max="100"
+              step="1"
+            ></ion-range>
+          </ion-item>
+
+          <label class="field-label ion-padding-bottom" for="jp-day-rate">
+            Day rate
+          </label>
+          <ion-item class="range-item ion-no-padding">
+            <ion-range
+              id="jp-day-rate"
+              formControlName="dayRate"
+              [pin]="true"
+              [pinFormatter]="formatDaily"
+              min="50"
+              max="1000"
+              step="10"
+            ></ion-range>
+          </ion-item>
+        </ion-list>
+      </section>
+
+      <section class="form-card">
+        <div class="section-header">
+          <h2 class="ion-padding-bottom">Role</h2>
+        </div>
+
+        <ion-list lines="none" class="form-list">
+          <label class="field-label ion-padding-bottom"> Trade category </label>
+          <ion-item
+            button
+            detail="true"
+            class="input-item selectish ion-margin-bottom"
+            lines="none"
+            (click)="openModal('trade')"
+          >
+            <ion-label>
+              <div class="placeholder">
+                @if (!selectedTradeName()) { Select your main trade } @else {{{
+                selectedTradeName() }}}
+              </div>
+            </ion-label>
+          </ion-item>
+
+          <label class="field-label ion-padding-bottom">
+            Trade sub-categories
+          </label>
+          <ion-item
+            button
+            detail="true"
+            class="input-item selectish ion-margin-bottom"
+            lines="none"
+            [disabled]="!tradeId()"
+            [attr.aria-disabled]="!tradeId()"
+            (click)="openModal('subcategories')"
+          >
+            <ion-label>
+              <div class="placeholder">Select sub-categories</div>
+            </ion-label>
+          </ion-item>
+
+          @if (selectedSubcatNames().length) {
+          <div class="chip-row">
+            @for (s of subcategories(); track s.id) { @if
+            (subcatIds().includes(s.id)) {
+            <ion-chip class="pill">
+              {{ s.name }}
+              <ion-icon
+                name="close"
+                (click)="removeSubcategory(s.id)"
+              ></ion-icon>
+            </ion-chip>
+            } } @if (!subcategories().length) { @for (name of
+            selectedSubcatNames(); track name) {
+            <ion-chip class="pill"> {{ name }} </ion-chip>
+            } }
+          </div>
+          }
+        </ion-list>
+      </section>
+
+      <div class="bottom-spacer" aria-hidden="true"></div>
+    </form>
+  </div>
   }
 </ion-content>
 
-<ion-modal [isOpen]="isEditOpen()" (didDismiss)="closeEdit()">
-  <ng-template>
-    <app-profile-edit
-      [title]="'Edit job preferences'"
-      [isPersonalDetails]="false"
-      [value]="jobPreferences()"
-      [selectOptions]="{
-        tradeCategory: tradeCategories(),
-        tradeSubcategory: tradeSubcategories()
-      }"
-      (cancel)="closeEdit()"
-      (save)="handleSave($event)"
-    />
-  </ng-template>
-</ion-modal>
+<ion-footer style="background-color: #f4f8fb" class="ion-padding ion-no-border">
+  <ion-toolbar>
+    <ion-button
+      type="submit"
+      expand="block"
+      color="primary"
+      [disabled]="disableSave()"
+      (click)="onSave()"
+    >
+      Save changes
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

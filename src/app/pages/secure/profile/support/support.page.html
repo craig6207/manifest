@@ -1,0 +1,59 @@
+<ion-header>
+  <app-toolbar-back
+    [title]="'Help and Support'"
+    [navigation]="'/secure/tabs/profile'"
+  ></app-toolbar-back>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="support-page">
+  <div class="chat-container">
+    @if (!messages().length) {
+    <p class="empty-state">
+      Ask a question about how to use the app, for example:
+      <strong>"How do I search for a job?"</strong> or
+      <strong>"How do I change my job preferences?"</strong>
+    </p>
+    } @for (m of messages(); track $index) {
+    <div
+      class="bubble-row"
+      [class.from-user]="m.role === 'user'"
+      [class.from-assistant]="m.role === 'assistant'"
+    >
+      <div class="bubble">
+        <p>{{ m.text }}</p>
+      </div>
+    </div>
+    } @if (loading()) {
+    <div class="bubble-row from-assistant">
+      <div class="bubble typing">
+        <ion-spinner name="dots"></ion-spinner>
+        <span>Thinking…</span>
+      </div>
+    </div>
+    }
+  </div>
+</ion-content>
+
+<ion-footer class="support-footer ion-no-border">
+  <ion-toolbar>
+    <div class="input-row">
+      <ion-textarea
+        autoGrow="true"
+        rows="1"
+        placeholder="Ask a question about using the app…"
+        [value]="draft()"
+        (ionInput)="onInput($event)"
+      ></ion-textarea>
+
+      <ion-button
+        fill="solid"
+        shape="round"
+        (click)="send()"
+        [disabled]="loading() || !draft().trim()"
+        aria-label="Send question"
+      >
+        <ion-icon slot="icon-only" name="send-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

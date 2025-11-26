@@ -8,41 +8,42 @@ import {
 } from '@angular/core';
 import {
   IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
   IonButton,
   IonContent,
   IonSkeletonText,
   IonFooter,
-  IonBadge,
   IonIcon,
 } from '@ionic/angular/standalone';
 import { DatePipe } from '@angular/common';
 import { ModalController } from '@ionic/angular';
 import { JobListingsService } from 'src/app/services/job-listings/job-listings.service';
 import { addIcons } from 'ionicons';
-import { closeOutline } from 'ionicons/icons';
+import {
+  closeOutline,
+  cashOutline,
+  businessOutline,
+  briefcaseOutline,
+  calendarOutline,
+  locationOutline,
+} from 'ionicons/icons';
 import { Notification } from 'src/app/interfaces/notification';
 import { JobListingView } from 'src/app/interfaces/job-listing';
 import { JobPipelineService } from 'src/app/services/job-pipeline/job-pipeline.service';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
+import { ToolbarBackComponent } from '../toolbar-back/toolbar-back.component';
 
 @Component({
   selector: 'app-job-invite',
   standalone: true,
   imports: [
-    IonIcon,
     IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
     IonButton,
     IonContent,
     IonSkeletonText,
     IonFooter,
-    IonBadge,
+    IonIcon,
     DatePipe,
+    ToolbarBackComponent,
   ],
   templateUrl: './job-invite.component.html',
   styleUrls: ['./job-invite.component.scss'],
@@ -83,7 +84,14 @@ export class JobInviteComponent {
   });
 
   constructor() {
-    addIcons({ closeOutline });
+    addIcons({
+      closeOutline,
+      cashOutline,
+      businessOutline,
+      briefcaseOutline,
+      calendarOutline,
+      locationOutline,
+    });
   }
 
   ionViewWillEnter() {

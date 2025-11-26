@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent,
@@ -13,14 +13,45 @@ import {
   IonFooter,
   IonButton,
   IonAlert,
+  IonRefresher,
+  IonRefresherContent,
+  IonSkeletonText,
+  IonIcon,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
-import { TimesheetAdjustmentCreateRequest } from 'src/app/interfaces/timesheets';
+import {
+  TimesheetAdjustmentCreateRequest,
+  TimesheetEligibility,
+} from 'src/app/interfaces/timesheets';
 import { TimesheetService } from 'src/app/services/timesheet/timesheet.service';
+import { TimesheetStore } from 'src/app/+state/timesheet-signal.store';
+import { addIcons } from 'ionicons';
+import {
+  pinOutline,
+  timeOutline,
+  logInOutline,
+  logOutOutline,
+  refreshOutline,
+  alertCircleOutline,
+  checkmarkCircleOutline,
+  informationCircleOutline,
+} from 'ionicons/icons';
+
+addIcons({
+  pinOutline,
+  timeOutline,
+  logInOutline,
+  logOutOutline,
+  refreshOutline,
+  alertCircleOutline,
+  checkmarkCircleOutline,
+  informationCircleOutline,
+});
 
 function startOfWeek(d: Date): Date {
   const copy = new Date(d);
@@ -108,13 +139,17 @@ function to24Hour(hhmm: string, period: 'AM' | 'PM'): string | null {
     IonSelect,
     IonSelectOption,
     IonAlert,
+    IonRefresher,
+    IonRefresherContent,
+    IonSkeletonText,
+    IonIcon,
     CommonModule,
     FormsModule,
     ToolbarBackComponent,
   ],
 })
 export class TimesheetLogPage {
-  mode: 'timer' | 'manual' = 'manual';
+  mode: 'timer' | 'manual' = 'timer';
 
   manualStartTime = '';
   manualStartPeriod: 'AM' | 'PM' = 'AM';
@@ -154,20 +189,47 @@ export class TimesheetLogPage {
 
   backUrl = '/secure/tabs/timesheets';
 
-  constructor(
-    private nav: NavController,
-    private route: ActivatedRoute,
-    private svc: TimesheetService
-  ) {
+  private readonly store = inject(TimesheetStore);
+  private readonly timesheetService = inject(TimesheetService);
+  private readonly toast = inject(ToastController);
+
+  readonly loading = this.store.isLoading;
+  readonly error = this.store.errorMessage;
+
+  private readonly rawToday = this.store.today as unknown as () =>
+    | TimesheetEligibility
+    | TimesheetEligibility[]
+    | null;
+
+  readonly active = computed<TimesheetEligibility | null>(() => {
+    const v = this.rawToday?.();
+    if (!v) return null;
+    return Array.isArray(v) ? (v.length ? v[0] : null) : v;
+  });
+
+  readonly hasActionAvailable = computed<boolean>(() => {
+    const a = this.active();
+    return !!a && (a.canCheckIn || a.canCheckOut);
+  });
+
+  readonly hasAnyToday = computed<boolean>(() => !!this.active());
+
+  readonly busy = signal(false);
+  readonly successMsg = signal<string | null>(null);
+
+  constructor(private nav: NavController, private route: ActivatedRoute) {
     const qp = this.route.snapshot.queryParamMap;
     const jl = Number(qp.get('jobListingId'));
     this.jobListingId = Number.isFinite(jl) ? jl : null;
 
+    const workDateParam = qp.get('workDate');
+    this.workDate = isDateOnly(workDateParam) ? workDateParam : null;
+
     if (Number.isFinite(this.jobListingId)) {
-      console.log('Setting backUrl');
       this.backUrl = `/secure/tabs/timesheets-edit?jobListingId=${this.jobListingId}`;
-      console.log('backUrl set to', this.backUrl);
     }
+
+    this.store.loadToday();
   }
 
   onModeChange(ev: CustomEvent) {
@@ -252,10 +314,137 @@ export class TimesheetLogPage {
     const anchorDate = toDateOnlyString(weekStart);
 
     try {
-      await firstValueFrom(this.svc.submitWeekEdits(anchorDate, [adjustment]));
+      await firstValueFrom(
+        this.timesheetService.submitWeekEdits(anchorDate, [adjustment])
+      );
     } finally {
       this.isAlertOpen = false;
       this.nav.navigateBack(this.backUrl);
     }
+  }
+
+  dismissSuccess() {
+    this.successMsg.set(null);
+  }
+
+  toLocalTime(ts?: string | Date | null): string | null {
+    if (!ts) return null;
+    const d = typeof ts === 'string' ? new Date(ts) : ts;
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  toLocalDate(d: string | Date): string {
+    const x = typeof d === 'string' ? new Date(d) : d;
+    return x.toLocaleDateString([], {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  async pullRefresh(ev: CustomEvent) {
+    this.store.refresh();
+    (ev.target as HTMLIonRefresherElement).complete();
+  }
+
+  async onCheckInFancy(row: TimesheetEligibility) {
+    if (!row?.canCheckIn || this.busy()) return;
+    this.busy.set(true);
+
+    this.timesheetService
+      .checkIn({
+        jobCandidateId: row.jobCandidateId,
+        clientTimestampUtc: new Date().toISOString(),
+      })
+      .subscribe({
+        next: async () => {
+          this.busy.set(false);
+          this.store.refresh();
+          this.successMsg.set("Thanks — you're checked in!");
+        },
+        error: async (err) => {
+          this.busy.set(false);
+          await this.toastMsg(err?.error?.detail || 'Check-in failed');
+        },
+      });
+  }
+
+  async onCheckOutFancy(row: TimesheetEligibility) {
+    if (!row?.canCheckOut || this.busy() || !row.sessionId) return;
+    this.busy.set(true);
+
+    this.timesheetService
+      .checkOut({
+        sessionId: row.sessionId,
+        clientTimestampUtc: new Date().toISOString(),
+      })
+      .subscribe({
+        next: async () => {
+          this.busy.set(false);
+          this.store.refresh();
+          this.successMsg.set("All set — you're checked out");
+        },
+        error: async (err) => {
+          this.busy.set(false);
+          await this.toastMsg(err?.error?.detail || 'Check-out failed');
+        },
+      });
+  }
+
+  async onCheckIn(row: TimesheetEligibility) {
+    if (!row?.canCheckIn || this.busy()) return;
+    this.busy.set(true);
+
+    this.timesheetService
+      .checkIn({
+        jobCandidateId: row.jobCandidateId,
+        clientTimestampUtc: new Date().toISOString(),
+      })
+      .subscribe({
+        next: async () => {
+          this.busy.set(false);
+          this.store.refresh();
+          await this.toastMsg('Checked in — have a great shift!');
+        },
+        error: async (err) => {
+          this.busy.set(false);
+          await this.toastMsg(err?.error?.detail || 'Check-in failed');
+        },
+      });
+  }
+
+  async onCheckOut(row: TimesheetEligibility) {
+    if (!row?.canCheckOut || this.busy() || !row.sessionId) return;
+    this.busy.set(true);
+
+    this.timesheetService
+      .checkOut({
+        sessionId: row.sessionId,
+        clientTimestampUtc: new Date().toISOString(),
+      })
+      .subscribe({
+        next: async () => {
+          this.busy.set(false);
+          this.store.refresh();
+          await this.toastMsg('Checked out — nice work today!');
+        },
+        error: async (err) => {
+          this.busy.set(false);
+          await this.toastMsg(err?.error?.detail || 'Check-out failed');
+        },
+      });
+  }
+  goToTimesheets() {
+    this.nav.back();
+  }
+
+  private async toastMsg(message: string) {
+    const t = await this.toast.create({
+      message,
+      duration: 2200,
+      position: 'bottom',
+      color: 'success',
+    });
+    await t.present();
   }
 }

@@ -1,10 +1,8 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Manage Certificates</ion-title>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/secure/tabs/profile"></ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
+  <app-toolbar-back
+    [title]="'Manage Certificates'"
+    [navigation]="'/secure/tabs/profile'"
+  ></app-toolbar-back>
 </ion-header>
 
 <ion-content class="ion-padding">
@@ -13,66 +11,53 @@
   </ion-refresher>
 
   <section class="uploader-card">
-    <div class="uploader-row">
-      <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
-      <div class="uploader-body">
-        <div class="title">Add a certification</div>
-        <div class="subtitle">
-          @if (tradeNameForDisplay()) {
-          <strong>{{ tradeNameForDisplay() }}</strong> } Choose a certificate
-          and upload a clear photo or PDF.
-        </div>
-
-        @if (hasCatalog()) {
-        <ion-item class="compact-item" lines="none">
-          <ion-label>Select certificate</ion-label>
-          <ion-select
-            interface="popover"
-            [value]="selectedId()"
-            (ionChange)="onSelectChange($event.detail.value)"
-            placeholder="Choose"
-          >
-            @for (c of options(); track c.id) {
-            <ion-select-option [value]="c.id">{{ c.name }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-        } @if (!hasCatalog() || selectedId() === -1) {
-        <ion-item class="compact-item" lines="none">
-          <ion-label position="stacked">Other certificate name</ion-label>
-          <ion-input
-            [value]="otherName()"
-            (ionInput)="setOtherName($event.detail.value)"
-            placeholder="e.g. City &amp; Guilds Level 3"
-            maxlength="80"
-            inputmode="text"
-          ></ion-input>
-        </ion-item>
-        } @if (uploadWarn()) {
-        <ion-note color="danger" class="block-note">
-          {{ uploadWarn() }}
-        </ion-note>
-        }
+    <div class="uploader-body">
+      <div class="title">Add a certification</div>
+      <div class="subtitle">
+        @if (tradeNameForDisplay()) {
+        <strong>{{ tradeNameForDisplay() }}</strong> } Choose a certificate and
+        upload a clear photo or PDF.
       </div>
 
-      <div class="uploader-cta">
-        <button
-          class="upload-btn"
-          type="button"
-          [disabled]="uploading() || !canPickFile()"
-          (click)="openPickSheet(nativeFileInput)"
+      @if (hasCatalog()) {
+      <ion-item class="compact-item" lines="none">
+        <ion-label>Select certificate</ion-label>
+        <ion-select
+          interface="popover"
+          [value]="selectedId()"
+          (ionChange)="onSelectChange($event.detail.value)"
+          placeholder="Choose"
         >
-          Upload
-        </button>
-        <input
-          #nativeFileInput
-          type="file"
-          hidden
-          accept="image/*,application/pdf"
-          (change)="onNativeFileChosen($event)"
-        />
-      </div>
+          @for (c of options(); track c.id) {
+          <ion-select-option [value]="c.id">{{ c.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      } @if (!hasCatalog() || selectedId() === -1) {
+      <ion-item class="compact-item" lines="none">
+        <ion-label position="stacked">Other certificate name</ion-label>
+        <ion-input
+          [value]="otherName()"
+          (ionInput)="setOtherName($event.detail.value)"
+          placeholder="e.g. City &amp; Guilds Level 3"
+          maxlength="80"
+          inputmode="text"
+        ></ion-input>
+      </ion-item>
+      } @if (uploadWarn()) {
+      <ion-note color="danger" class="block-note">
+        {{ uploadWarn() }}
+      </ion-note>
+      }
     </div>
+
+    <input
+      #nativeFileInput
+      type="file"
+      hidden
+      accept="image/*,application/pdf"
+      (change)="onNativeFileChosen($event)"
+    />
   </section>
 
   @if (loading()) {
@@ -109,7 +94,7 @@
             <span class="name">{{ it.displayName }}</span>
           </div>
           <div class="meta">
-            <span>Uploaded: {{ it.createdAtUtc | date:'mediumDate' }}</span>
+            <span>Uploaded: {{ it.createdAtUtc | date: 'mediumDate' }}</span>
             @if (it.expiresOn) {
             <span>Expires: {{ it.expiresOn }}</span>
             }
@@ -125,6 +110,7 @@
           <ion-icon name="download-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-item>
+
       <ion-item-options side="end">
         <ion-item-option
           color="danger"
@@ -139,3 +125,16 @@
 
   }
 </ion-content>
+
+<ion-footer class="ion-padding ion-no-border">
+  <ion-toolbar>
+    <ion-button
+      expand="block"
+      color="primary"
+      [disabled]="uploading() || !canPickFile()"
+      (click)="openPickSheet(nativeFileInput)"
+    >
+      Upload
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

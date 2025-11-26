@@ -65,17 +65,38 @@
     <div class="activity-card">
       <div class="activity-item">
         <p class="activity-label">Booked</p>
-        <p class="activity-value">3</p>
+        <p class="activity-value">
+          @if (activityLoading()) {
+          <ion-skeleton-text
+            animated
+            style="width: 24px; height: 18px"
+          ></ion-skeleton-text>
+          } @else { {{ bookedCount() }} }
+        </p>
       </div>
 
       <div class="activity-item">
         <p class="activity-label">Offered</p>
-        <p class="activity-value">12</p>
+        <p class="activity-value">
+          @if (activityLoading()) {
+          <ion-skeleton-text
+            animated
+            style="width: 24px; height: 18px"
+          ></ion-skeleton-text>
+          } @else { {{ offeredCount() }} }
+        </p>
       </div>
 
       <div class="activity-item">
         <p class="activity-label">Applied</p>
-        <p class="activity-value">8</p>
+        <p class="activity-value">
+          @if (activityLoading()) {
+          <ion-skeleton-text
+            animated
+            style="width: 24px; height: 18px"
+          ></ion-skeleton-text>
+          } @else { {{ appliedCount() }} }
+        </p>
       </div>
     </div>
 

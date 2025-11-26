@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CheckInOutPage } from './check-in-out.page';
+import { SupportPage } from './support.page';
 
-describe('CheckInOutPage', () => {
-  let component: CheckInOutPage;
-  let fixture: ComponentFixture<CheckInOutPage>;
+describe('SupportPage', () => {
+  let component: SupportPage;
+  let fixture: ComponentFixture<SupportPage>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CheckInOutPage);
+    fixture = TestBed.createComponent(SupportPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

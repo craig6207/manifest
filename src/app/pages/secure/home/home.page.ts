@@ -21,6 +21,8 @@ import { ToolbarHomeComponent } from 'src/app/components/toolbar-home/toolbar-ho
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { JobListingsService } from 'src/app/services/job-listings/job-listings.service';
 import { JobListing } from 'src/app/interfaces/job-listing';
+import { JobActivityService } from 'src/app/services/job-activity/job-activity.service';
+import { JobActivitySummary } from 'src/app/interfaces/candidate-jobs';
 
 @Component({
   selector: 'app-home',
@@ -41,10 +43,14 @@ import { JobListing } from 'src/app/interfaces/job-listing';
 export class HomePage {
   private profileStore = inject(ProfileStore);
   private jobListingsService = inject(JobListingsService);
+  private jobActivityService = inject(JobActivityService);
   private router = inject(Router);
 
   readonly jobs = signal<JobListing[]>([]);
   readonly jobsLoaded = signal(false);
+
+  readonly activitySummary = signal<JobActivitySummary | null>(null);
+  readonly activityLoading = signal(true);
 
   readonly profileReady = computed(() => !!this.profileStore.profile());
   readonly unreadCount = computed(() =>
@@ -61,6 +67,10 @@ export class HomePage {
     return name.length ? name : 'there';
   });
 
+  readonly bookedCount = computed(() => this.activitySummary()?.booked ?? 0);
+  readonly offeredCount = computed(() => this.activitySummary()?.offered ?? 0);
+  readonly appliedCount = computed(() => this.activitySummary()?.applied ?? 0);
+
   constructor() {
     addIcons({
       heartOutline,
@@ -70,6 +80,11 @@ export class HomePage {
       arrowForwardOutline,
     });
 
+    this.loadJobs();
+    this.loadActivitySummary();
+  }
+
+  private loadJobs(): void {
     const profile = this.profileStore.profile();
     const candidateProfileId =
       (profile as any)?.candidateProfileId ?? (profile as any)?.id;
@@ -95,6 +110,21 @@ export class HomePage {
           this.jobsLoaded.set(true);
         },
       });
+  }
+
+  private loadActivitySummary(): void {
+    this.activityLoading.set(true);
+
+    this.jobActivityService.getMySummary().subscribe({
+      next: (summary) => {
+        this.activitySummary.set(summary);
+        this.activityLoading.set(false);
+      },
+      error: () => {
+        this.activitySummary.set({ booked: 0, offered: 0, applied: 0 });
+        this.activityLoading.set(false);
+      },
+    });
   }
 
   goBrowse(): void {

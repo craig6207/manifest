@@ -1,129 +1,198 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Profile</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" color="light" (click)="logout()"
-        >Logout</ion-button
+<ion-header class="profile-header">
+  <ion-toolbar class="toolbar-profile">
+    <ion-buttons slot="start">
+      <ion-button
+        fill="clear"
+        size="small"
+        class="back-btn"
+        aria-label="Settings"
       >
+        <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button
+        fill="clear"
+        size="small"
+        class="icon-btn notifications-btn"
+        aria-label="Notifications"
+        (click)="openNotifications()"
+      >
+        <ion-icon name="notifications-outline" slot="icon-only"></ion-icon>
+        @if (hasNotifications()) {
+        <ion-badge class="notification-badge">
+          {{ unreadBadgeText() }}
+        </ion-badge>
+        }
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
+
+  <div class="profile-main">
+    <div class="avatar-wrap">
+      <ion-avatar>
+        @if (loadingPage()) {
+        <ion-skeleton-text
+          animated
+          style="width: 104px; height: 104px; border-radius: 9999px"
+        ></ion-skeleton-text>
+        } @else {
+        <img [src]="avatarSrc()" alt="Profile avatar" />
+        }
+      </ion-avatar>
+
+      <button
+        class="avatar-edit-btn"
+        (click)="openAvatarSheet()"
+        aria-label="Edit avatar"
+      >
+        <ion-icon name="camera-outline"></ion-icon>
+      </button>
+    </div>
+
+    @if (loadingPage()) {
+    <div class="name-skeleton">
+      <ion-skeleton-text
+        animated
+        style="width: 160px; height: 20px"
+      ></ion-skeleton-text>
+      <ion-skeleton-text
+        animated
+        style="width: 80px; height: 16px; margin-top: 6px"
+      ></ion-skeleton-text>
+    </div>
+    } @else {
+    <h2 class="profile-name">{{ displayName() }}</h2>
+
+    <div class="rating-row">
+      <ion-icon name="star" class="rating-icon"></ion-icon>
+      <span class="rating-value">{{ rating() | number : '1.1-1' }}</span>
+    </div>
+    }
+  </div>
+
+  <section class="summary-cards">
+    <article class="summary-card">
+      <div class="summary-card-header">
+        <span class="summary-label">My Rate</span>
+        <ion-icon name="create-outline"></ion-icon>
+      </div>
+      <div class="summary-value primary">£20.00</div>
+    </article>
+  </section>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-grid
-    class="ion-padding ion-justify-content-center ion-align-items-center full-height"
-  >
-    <ion-row
-      class="ion-justify-content-center ion-align-items-center full-height"
-    >
-      <ion-col size="12" class="ion-text-center">
-        <section class="profile-header ion-padding-bottom">
-          <div class="avatar-wrap">
-            <ion-avatar>
-              @if (loadingPage()) {
-              <ion-skeleton-text
-                animated
-                style="width: 96px; height: 96px; border-radius: 9999px"
-              ></ion-skeleton-text>
-              } @else {
-              <img [src]="avatarSrc()" alt="Profile avatar" />
-              }
-            </ion-avatar>
+<ion-content
+  [fullscreen]="true"
+  class="profile-content"
+  fixed-slot-placement="before"
+>
+  <div class="profile-body">
+    <section class="profile-section">
+      <h2 class="section-heading">Work Profile</h2>
 
-            <button
-              class="avatar-edit-btn"
-              (click)="openAvatarSheet()"
-              aria-label="Edit avatar"
-            >
-              <ion-icon name="camera-outline"></ion-icon>
-            </button>
+      <ion-list class="profile-list">
+        <ion-item
+          button
+          detail="false"
+          class="profile-item"
+          [routerLink]="['personal-details']"
+          routerDirection="forward"
+        >
+          <div class="profile-item-inner">
+            <div class="profile-item-text">
+              <div class="profile-item-title">Personal Details</div>
+              <div class="profile-item-subtitle">Name, phone number, sex</div>
+            </div>
+            <ion-icon
+              name="chevron-forward-outline"
+              class="profile-item-chevron"
+              aria-hidden="true"
+            ></ion-icon>
           </div>
+        </ion-item>
 
-          @if (loadingPage()) {
-          <h3 class="ion-no-margin" style="margin-top: 12px">
-            <ion-skeleton-text
-              animated
-              style="width: 160px; height: 20px"
-            ></ion-skeleton-text>
-          </h3>
-          <div style="margin-top: 8px">
-            <ion-skeleton-text
-              animated
-              style="width: 120px; height: 14px"
-            ></ion-skeleton-text>
+        <ion-item
+          button
+          detail="false"
+          class="profile-item"
+          [routerLink]="['job-preferences']"
+          routerDirection="forward"
+        >
+          <div class="profile-item-inner">
+            <div class="profile-item-text">
+              <div class="profile-item-title">Job Preferences</div>
+              <div class="profile-item-subtitle">
+                Location, pay rate, trade categories
+              </div>
+            </div>
+            <ion-icon
+              name="chevron-forward-outline"
+              class="profile-item-chevron"
+              aria-hidden="true"
+            ></ion-icon>
           </div>
-          } @else {
-          <h3 class="ion-no-margin">{{ displayName() }}</h3>
-          @if (rating()! > 0) {
-          <app-rating-bar
-            [value]="rating()!"
-            [max]="5"
-            [showText]="true"
-            size="md"
-          >
-          </app-rating-bar>
-          } }
-        </section>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+        </ion-item>
+
+        <ion-item
+          button
+          detail="false"
+          class="profile-item"
+          [routerLink]="['certificate-management']"
+          routerDirection="forward"
+        >
+          <div class="profile-item-inner">
+            <div class="profile-item-text">
+              <div class="profile-item-title">Certificates</div>
+              <div class="profile-item-subtitle">
+                Upload certifcates and qualifications
+              </div>
+            </div>
+            <ion-icon
+              name="chevron-forward-outline"
+              class="profile-item-chevron"
+              aria-hidden="true"
+            ></ion-icon>
+          </div>
+        </ion-item>
+      </ion-list>
+    </section>
+
+    <section class="profile-section">
+      <h2 class="section-heading">Help &amp; Support</h2>
+
+      <ion-list class="profile-list">
+        <ion-item
+          button
+          detail="false"
+          class="profile-item"
+          [routerLink]="['support']"
+          routerDirection="forward"
+        >
+          <div class="profile-item-inner">
+            <div class="profile-item-text">
+              <div class="profile-item-title">Support</div>
+              <div class="profile-item-subtitle">
+                AI support, help to answer any questions
+              </div>
+            </div>
+            <ion-icon
+              name="chevron-forward-outline"
+              class="profile-item-chevron"
+              aria-hidden="true"
+            ></ion-icon>
+          </div>
+        </ion-item>
+      </ion-list>
+    </section>
+
+    <button class="logout-row" type="button" (click)="logout()">
+      <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
+      <span>Logout</span>
+    </button>
+  </div>
 </ion-content>
-
-<ion-footer class="ion-no-border">
-  <ion-list lines="full">
-    <ion-item
-      button
-      detail="true"
-      [routerLink]="['personal-details']"
-      routerDirection="forward"
-    >
-      <ion-label>Your personal details</ion-label>
-    </ion-item>
-    <ion-item
-      button
-      detail="true"
-      [routerLink]="['job-preferences']"
-      routerDirection="forward"
-    >
-      <ion-label>Job preferences</ion-label>
-    </ion-item>
-    <ion-item
-      button
-      detail="true"
-      [routerLink]="['notifications']"
-      routerDirection="forward"
-    >
-      <ion-label>Notifications</ion-label>
-      @if (unreadCount() > 0) {
-      <ion-badge slot="end" color="danger">{{ unreadBadgeText() }}</ion-badge>
-      }
-    </ion-item>
-    <ion-item
-      button
-      detail="true"
-      [routerLink]="['certificate-management']"
-      routerDirection="forward"
-    >
-      <ion-label>Certificate management</ion-label>
-    </ion-item>
-    <ion-item
-      button
-      detail="true"
-      [routerLink]="['about']"
-      routerDirection="forward"
-    >
-      <ion-label>About</ion-label>
-    </ion-item>
-    <ion-item
-      button
-      detail="true"
-      [routerLink]="['cookies']"
-      routerDirection="forward"
-    >
-      <ion-label>Cookies</ion-label>
-    </ion-item>
-  </ion-list>
-</ion-footer>
 
 <ion-action-sheet
   [isOpen]="isAvatarSheetOpen()"

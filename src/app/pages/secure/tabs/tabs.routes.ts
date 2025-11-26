@@ -46,13 +46,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'check-in-out',
-        loadComponent: () =>
-          import('../check-in-out/check-in-out.page').then(
-            (m) => m.CheckInOutPage
-          ),
-      },
-      {
         path: 'job-history',
         loadComponent: () =>
           import('../job-history/job-history.page').then(

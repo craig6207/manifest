@@ -11,12 +11,10 @@ import {
 import {
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonContent,
   IonList,
   IonItem,
   IonLabel,
-  IonButtons,
   IonButton,
   IonSpinner,
   IonNote,
@@ -27,13 +25,12 @@ import {
   IonAvatar,
   IonRefresher,
   IonRefresherContent,
-  IonChip,
   ActionSheetController,
   Platform,
   IonSelect,
   IonSelectOption,
   IonInput,
-  IonBackButton,
+  IonFooter,
 } from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
@@ -70,6 +67,7 @@ import { TradesService } from 'src/app/services/trades/trades.service';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
 import { firstValueFrom } from 'rxjs';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 const OTHER_ID = -1;
 
@@ -80,15 +78,12 @@ const OTHER_ID = -1;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   imports: [
-    IonBackButton,
+    IonFooter,
     IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
-    IonButtons,
     IonButton,
     IonSpinner,
     IonNote,
@@ -102,7 +97,9 @@ const OTHER_ID = -1;
     IonSelect,
     IonSelectOption,
     IonInput,
+    IonToolbar,
     DatePipe,
+    ToolbarBackComponent,
   ],
 })
 export class CertificateManagementPage implements OnInit {

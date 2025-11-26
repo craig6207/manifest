@@ -8,7 +8,7 @@ import {
   IonToolbar,
   IonText,
 } from '@ionic/angular/standalone';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowBack, calendarOutline } from 'ionicons/icons';
 
@@ -33,6 +33,7 @@ export class ToolbarBackComponent {
   confirmCancelText = input<string>('Cancel');
 
   private router = inject(Router);
+  private nav = inject(NavController);
   private alertController = inject(AlertController);
 
   constructor() {
@@ -43,13 +44,8 @@ export class ToolbarBackComponent {
   }
 
   async goBack() {
-    const target = this.navigation();
     if (!this.confirmOnBack()) {
-      if (target) {
-        this.router.navigateByUrl(target);
-      } else {
-        this.router.navigate(['../']);
-      }
+      this.nav.back();
       return;
     }
 
@@ -62,11 +58,7 @@ export class ToolbarBackComponent {
           text: this.confirmOkText(),
           role: 'confirm',
           handler: () => {
-            if (target) {
-              this.router.navigateByUrl(target);
-            } else {
-              this.router.navigate(['../']);
-            }
+            this.nav.back();
           },
         },
       ],

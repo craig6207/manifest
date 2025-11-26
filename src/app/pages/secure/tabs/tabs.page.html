@@ -14,11 +14,11 @@
       <ion-label>Timesheets</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button (click)="openActions()">
+    <ion-tab-button tab="job-history">
       <div class="tab-icon-wrap">
-        <ion-icon name="add-circle-outline"></ion-icon>
+        <ion-icon name="podium-outline"></ion-icon>
       </div>
-      <ion-label>Actions</ion-label>
+      <ion-label>Job History</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="job-search">
@@ -28,14 +28,11 @@
       <ion-label>Job search</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="profile" class="tab-with-badge">
+    <ion-tab-button tab="profile">
       <div class="tab-icon-wrap">
         <ion-icon name="person"></ion-icon>
       </div>
       <ion-label>Profile</ion-label>
-      @if (unreadCount() > 0) {
-      <ion-badge>{{ unreadCount() }}</ion-badge>
-      }
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

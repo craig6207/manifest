@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import {
   IonToolbar,
   IonButton,
@@ -17,10 +17,9 @@ import { searchOutline, notificationsOutline } from 'ionicons/icons';
   imports: [IonToolbar, IonButton, IonIcon, IonImg, IonBadge],
 })
 export class ToolbarHomeComponent {
+  private nav = inject(NavController);
   firstName = input<string>('there');
   notificationsCount = input<number>(0);
-
-  private router = inject(Router);
 
   constructor() {
     addIcons({ searchOutline, notificationsOutline });
@@ -29,6 +28,6 @@ export class ToolbarHomeComponent {
   readonly hasNotifications = computed(() => this.notificationsCount() > 0);
 
   openNotifications(): void {
-    this.router.navigate(['/secure/tabs/notifications']);
+    this.nav.navigateForward('/secure/tabs/notifications');
   }
 }
