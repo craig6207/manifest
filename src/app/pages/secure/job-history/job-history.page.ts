@@ -5,11 +5,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { formatDate } from '@angular/common';
 import {
   IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButton,
   IonContent,
   IonRefresher,
   IonRefresherContent,
@@ -26,6 +24,9 @@ import {
   IonAvatar,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonButton,
+  IonTitle,
+  IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -34,7 +35,6 @@ import {
   timeOutline,
   businessOutline,
 } from 'ionicons/icons';
-import { formatDate } from '@angular/common';
 import {
   CandidateJobs,
   JobStatus,
@@ -43,6 +43,7 @@ import {
 } from 'src/app/interfaces/candidate-jobs';
 import { firstValueFrom } from 'rxjs';
 import { JobActivityService } from 'src/app/services/job-activity/job-activity.service';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 @Component({
   selector: 'app-job-history',
@@ -50,9 +51,6 @@ import { JobActivityService } from 'src/app/services/job-activity/job-activity.s
   styleUrls: ['./job-history.page.scss'],
   imports: [
     IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButton,
     IonContent,
     IonRefresher,
     IonRefresherContent,
@@ -69,6 +67,8 @@ import { JobActivityService } from 'src/app/services/job-activity/job-activity.s
     IonAvatar,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonButton,
+    ToolbarBackComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'job-history-page' },

@@ -6,6 +6,7 @@
         size="small"
         class="back-btn"
         aria-label="Settings"
+        (click)="openSettings()"
       >
         <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
       </ion-button>
@@ -73,12 +74,21 @@
   </div>
 
   <section class="summary-cards">
-    <article class="summary-card">
+    <article
+      class="summary-card"
+      (click)="openRateModal()"
+      role="button"
+      aria-label="Edit my rate"
+    >
       <div class="summary-card-header">
         <span class="summary-label">My Rate</span>
         <ion-icon name="create-outline"></ion-icon>
       </div>
-      <div class="summary-value primary">£20.00</div>
+      <div class="summary-value primary">
+        @if (hourlyRateLabel()) { {{ hourlyRateLabel() }} } @else {
+        <span class="placeholder">Set in Job Preferences</span>
+        }
+      </div>
     </article>
   </section>
 </ion-header>
@@ -187,12 +197,72 @@
       </ion-list>
     </section>
 
-    <button class="logout-row" type="button" (click)="logout()">
-      <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
-      <span>Logout</span>
-    </button>
+    <div class="ion-text-center ion-margin-top ion-margin-bottom">
+      <button class="logout-row" type="button" (click)="logout()">
+        <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
+        <span>Logout</span>
+      </button>
+    </div>
   </div>
 </ion-content>
+
+<ion-modal
+  [isOpen]="rateModalOpen()"
+  (didDismiss)="closeRateModal()"
+  [initialBreakpoint]="0.5"
+  [breakpoints]="[0, 0.5, 0.7]"
+  class="rate-modal"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <div class="modal-title">My Rate</div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form [formGroup]="myRateForm">
+        <div class="rate-modal-body">
+          <label class="field-label" for="rate-hourly">Hourly Rate</label>
+          <ion-item class="range-item ion-no-padding">
+            <ion-range
+              id="rate-hourly"
+              formControlName="hourlyRate"
+              [pin]="true"
+              [pinFormatter]="formatHourly"
+              min="5"
+              max="100"
+              step="1"
+            ></ion-range>
+          </ion-item>
+
+          <label class="field-label" for="rate-day">Day Rate</label>
+          <ion-item class="range-item ion-no-padding">
+            <ion-range
+              id="rate-day"
+              formControlName="dayRate"
+              [pin]="true"
+              [pinFormatter]="formatDaily"
+              min="50"
+              max="1000"
+              step="10"
+            ></ion-range>
+          </ion-item>
+
+          <ion-button
+            expand="block"
+            color="primary"
+            class="rate-confirm-btn"
+            [disabled]="myRateForm.invalid || myRateForm.pristine"
+            (click)="onConfirmRate()"
+          >
+            Confirm
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
 
 <ion-action-sheet
   [isOpen]="isAvatarSheetOpen()"

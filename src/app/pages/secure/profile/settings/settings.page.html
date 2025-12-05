@@ -1,0 +1,33 @@
+<ion-header>
+  <app-toolbar-back title="Settings"></app-toolbar-back>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="settings-content">
+  <ion-list inset="true">
+    <ion-item>
+      <ion-label>
+        <h2>Face ID / Touch ID</h2>
+        <p>Use biometrics to log in faster on this device.</p>
+      </ion-label>
+
+      <ion-toggle
+        slot="end"
+        [checked]="faceIdEnabled()"
+        (ionChange)="onToggleFaceId($event)"
+      ></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <h2>App cookies</h2>
+        <p>Allow us to remember your preferences on this device.</p>
+      </ion-label>
+
+      <ion-toggle
+        slot="end"
+        [checked]="cookiesEnabled()"
+        (ionChange)="onToggleCookies($event)"
+      ></ion-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>

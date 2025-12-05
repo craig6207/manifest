@@ -19,6 +19,8 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonSkeletonText,
+  IonDatetime,
+  IonBackdrop,
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -27,6 +29,7 @@ import {
   arrowBackOutline,
   arrowForwardOutline,
   addOutline,
+  addCircleOutline,
 } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 import { TimesheetService } from 'src/app/services/timesheet/timesheet.service';
@@ -153,6 +156,8 @@ function formatHoursToHHmm(hours: number): string {
     IonIcon,
     IonRefresher,
     IonRefresherContent,
+    IonDatetime,
+    IonBackdrop,
     ToolbarBackComponent,
   ],
   templateUrl: './timesheets-edit.page.html',
@@ -172,10 +177,16 @@ export class TimesheetsEditPage {
   readonly minDateISO = signal<string | null>(null);
   readonly maxDateISO = signal<string | null>(null);
 
+  readonly isWeekPickerOpen = signal(false);
+
   readonly weekStart = computed(() => startOfWeek(this.selectedDate()));
   readonly weekEnd = computed(() => endOfWeek(this.selectedDate()));
   readonly weekStatus = computed<WeekStatus>(
     () => (this.week()?.status ?? 'Open') as WeekStatus
+  );
+
+  readonly selectedDateISO = computed(() =>
+    toDateOnlyString(this.selectedDate())
   );
 
   readonly days = computed(() => {
@@ -238,6 +249,7 @@ export class TimesheetsEditPage {
       arrowBackOutline,
       arrowForwardOutline,
       addOutline,
+      addCircleOutline,
     });
 
     this.route.queryParamMap.subscribe((qp) => {
@@ -414,5 +426,25 @@ export class TimesheetsEditPage {
     this.nav.navigateForward(
       `/secure/tabs/timesheets-log?jobListingId=${jl}&workDate=${workDate}`
     );
+  }
+
+  openWeekPicker(): void {
+    this.isWeekPickerOpen.set(true);
+  }
+
+  closeWeekPicker(): void {
+    this.isWeekPickerOpen.set(false);
+  }
+
+  onPickerDateChange(ev: CustomEvent): void {
+    const value = (ev.detail as any).value as string | string[] | null;
+    const v = Array.isArray(value) ? value[0] : value;
+    if (!v) return;
+
+    const dateStr = v.length >= 10 ? v.substring(0, 10) : v;
+    const d = dateOnlyToLocalDate(dateStr);
+
+    this.selectedDate.set(this.clampToBounds(d));
+    this.isWeekPickerOpen.set(false);
   }
 }

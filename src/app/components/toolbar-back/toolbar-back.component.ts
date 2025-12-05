@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonTitle,
@@ -31,6 +31,8 @@ export class ToolbarBackComponent {
   );
   confirmOkText = input<string>('OK');
   confirmCancelText = input<string>('Cancel');
+
+  @Output() calendarClick = new EventEmitter<void>();
 
   private router = inject(Router);
   private nav = inject(NavController);
@@ -65,5 +67,9 @@ export class ToolbarBackComponent {
     });
 
     await alert.present();
+  }
+
+  onCalendarClick(): void {
+    this.calendarClick.emit();
   }
 }

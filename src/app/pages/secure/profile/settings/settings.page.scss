@@ -1,0 +1,25 @@
+.settings-content {
+  --background: #f3f5fb;
+}
+
+ion-list {
+  margin-top: 12px;
+}
+
+ion-item {
+  --inner-padding-top: 10px;
+  --inner-padding-bottom: 10px;
+}
+
+ion-label h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+ion-label p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}

@@ -20,7 +20,7 @@ import {
 import { ToolbarHomeComponent } from 'src/app/components/toolbar-home/toolbar-home.component';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { JobListingsService } from 'src/app/services/job-listings/job-listings.service';
-import { JobListing } from 'src/app/interfaces/job-listing';
+import { JobFilterOptions, JobListing } from 'src/app/interfaces/job-listing';
 import { JobActivityService } from 'src/app/services/job-activity/job-activity.service';
 import { JobActivitySummary } from 'src/app/interfaces/candidate-jobs';
 
@@ -86,30 +86,30 @@ export class HomePage {
 
   private loadJobs(): void {
     const profile = this.profileStore.profile();
-    const candidateProfileId =
-      (profile as any)?.candidateProfileId ?? (profile as any)?.id;
+    const userId = (profile as any)?.userId;
 
-    if (!candidateProfileId) {
+    if (!userId) {
+      this.jobs.set([]);
       this.jobsLoaded.set(true);
       return;
     }
 
-    this.jobListingsService
-      .getForCandidate(candidateProfileId, {
-        skip: 0,
-        take: 2,
-        includePast: false,
-      })
-      .subscribe({
-        next: (jobs) => {
-          this.jobs.set(jobs ?? []);
-          this.jobsLoaded.set(true);
-        },
-        error: () => {
-          this.jobs.set([]);
-          this.jobsLoaded.set(true);
-        },
-      });
+    const opts: JobFilterOptions = {
+      skip: 0,
+      take: 3,
+      includePast: false,
+    };
+
+    this.jobListingsService.getForCandidate(userId, opts).subscribe({
+      next: (jobs) => {
+        this.jobs.set(jobs ?? []);
+        this.jobsLoaded.set(true);
+      },
+      error: () => {
+        this.jobs.set([]);
+        this.jobsLoaded.set(true);
+      },
+    });
   }
 
   private loadActivitySummary(): void {

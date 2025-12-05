@@ -75,20 +75,26 @@
           <label class="field-label ion-padding-bottom" for="jp-location-name">
             Location
           </label>
+
           <ion-item
             class="input-item ion-margin-bottom"
             [class.is-invalid]="
-              form.get('locationName')?.invalid &&
-              form.get('locationName')?.touched
-            "
+    form.get('locationName')?.invalid &&
+    form.get('locationName')?.touched
+  "
+            button
+            detail="true"
+            (click)="onLocationClick()"
           >
             <ion-input
               id="jp-location-name"
               formControlName="locationName"
-              placeholder="Enter preferred location"
+              placeholder="Select preferred location"
               autocapitalize="words"
+              [readonly]="true"
             ></ion-input>
           </ion-item>
+
           @if (form.get('locationName')?.invalid &&
           form.get('locationName')?.touched) {
           <div class="error">Location is required.</div>
@@ -97,25 +103,19 @@
           <label class="field-label ion-padding-bottom" for="jp-radius-miles">
             Distance radius (miles)
           </label>
+
           <ion-item
             class="input-item ion-margin-bottom"
-            [class.is-invalid]="
-              form.get('radiusMiles')?.invalid &&
-              form.get('radiusMiles')?.touched
-            "
+            button
+            detail="true"
+            (click)="openRadiusSheet()"
           >
-            <ion-input
-              id="jp-radius-miles"
-              formControlName="radiusMiles"
-              type="number"
-              inputmode="decimal"
-              placeholder="e.g. 15"
-            ></ion-input>
+            <ion-label id="jp-radius-miles">
+              <div class="placeholder">
+                {{ form.get('radiusMiles')?.value || 15 }} miles
+              </div>
+            </ion-label>
           </ion-item>
-          @if (form.get('radiusMiles')?.invalid &&
-          form.get('radiusMiles')?.touched) {
-          <div class="error">Please enter a valid radius.</div>
-          }
 
           <label class="field-label ion-padding-bottom" for="jp-hourly-rate">
             Hourly rate
@@ -227,3 +227,39 @@
     </ion-button>
   </ion-toolbar>
 </ion-footer>
+
+<ion-modal
+  [isOpen]="locationModalOpen()"
+  (didDismiss)="closeLocationPicker()"
+  [initialBreakpoint]="'0.95'"
+  class="location-picker-sheet"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <div class="modal-title">Choose location</div>
+        <ion-button
+          slot="end"
+          fill="clear"
+          (click)="closeLocationPicker()"
+          aria-label="Done choosing location"
+        >
+          Done
+        </ion-button>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <app-location-picker
+        [initialPlace]="
+          (form.get('locationName')?.value || jobPreferences()?.locationName) || ''
+        "
+        [initialLat]="jobPreferences()?.locationLat ?? null"
+        [initialLng]="jobPreferences()?.locationLng ?? null"
+        [initialRadiusMiles]="form.get('radiusMiles')?.value || 15"
+        (changed)="onLocationChanged($event)"
+      >
+      </app-location-picker>
+    </ion-content>
+  </ng-template>
+</ion-modal>

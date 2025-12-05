@@ -122,6 +122,7 @@ ion-range {
   --knob-background: transparent;
   --knob-box-shadow: none;
   --knob-size: 28px;
+  padding: 0;
 }
 
 ion-range::part(knob) {

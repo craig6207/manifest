@@ -20,6 +20,11 @@ export const profileRoutes: Routes = [
       ),
   },
   {
+    path: 'settings',
+    loadComponent: () =>
+      import('./settings/settings.page').then((m) => m.SettingsPage),
+  },
+  {
     path: 'about',
     loadComponent: () => import('./about/about.page').then((m) => m.AboutPage),
   },

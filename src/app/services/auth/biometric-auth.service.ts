@@ -18,7 +18,7 @@ export class BiometricAuthService {
     try {
       const result = await BiometricAuth.checkBiometry();
       return result.isAvailable;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -27,19 +27,30 @@ export class BiometricAuthService {
     try {
       const result = await BiometricAuth.checkBiometry();
       return result.biometryTypes ?? [];
-    } catch (error) {
+    } catch {
       return [];
     }
   }
 
-  async enableBiometric(email: string): Promise<boolean> {
-    if (!(await this.isBiometricAvailable())) return false;
+  async setLoginEmail(email: string): Promise<void> {
+    if (!email) return;
 
     try {
       await SecureStoragePlugin.set({
         key: this.USER_EMAIL_KEY,
         value: email,
       });
+    } catch {
+      console.log('error storing biometric email');
+    }
+  }
+
+  async enableBiometric(email: string): Promise<boolean> {
+    if (!(await this.isBiometricAvailable())) return false;
+    if (!email) return false;
+
+    try {
+      await this.setLoginEmail(email);
 
       await SecureStoragePlugin.set({
         key: this.BIOMETRIC_ENABLED_KEY,
@@ -47,7 +58,7 @@ export class BiometricAuthService {
       });
 
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -76,9 +87,16 @@ export class BiometricAuthService {
 
       const email = await this.getStoredEmail();
 
+      if (!email) {
+        return {
+          success: false,
+          error: 'No stored email for biometric login',
+        };
+      }
+
       return {
         success: true,
-        email: email ?? undefined,
+        email,
       };
     } catch (error) {
       return {

@@ -92,6 +92,9 @@ export class AuthService {
                   response.refreshToken
                 );
                 this.startTokenRefreshWatcher();
+
+                await this.biometricAuth.setLoginEmail(email);
+
                 observer.next(response);
                 observer.complete();
               },
@@ -123,6 +126,7 @@ export class AuthService {
       await this.setSecureItem('access_token', response.token);
       await this.setSecureItem('refresh_token', response.refreshToken);
       this.startTokenRefreshWatcher();
+      await this.biometricAuth.setLoginEmail(email);
       await this.checkBiometricSetup(email);
 
       return response.token;
@@ -165,6 +169,7 @@ export class AuthService {
       await this.setSecureItem('access_token', response.token);
       await this.setSecureItem('refresh_token', response.refreshToken);
       this.startTokenRefreshWatcher();
+      await this.biometricAuth.setLoginEmail(biometricResult.email);
 
       return { success: true, token: response.token };
     } catch (err: any) {
@@ -190,13 +195,11 @@ export class AuthService {
     const isAvailable = await this.biometricAuth.isBiometricAvailable();
     const isEnabled = await this.biometricAuth.isBiometricEnabled();
 
-    if (isAvailable && !isEnabled) return;
+    if (!isAvailable || !isEnabled) return;
 
-    if (isEnabled) {
-      const storedEmail = await this.biometricAuth.getStoredEmail();
-      if (storedEmail !== email) {
-        await this.biometricAuth.enableBiometric(email);
-      }
+    const storedEmail = await this.biometricAuth.getStoredEmail();
+    if (storedEmail !== email) {
+      await this.biometricAuth.enableBiometric(email);
     }
   }
 

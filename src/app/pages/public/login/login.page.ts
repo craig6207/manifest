@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Keyboard } from '@capacitor/keyboard';
-import { Capacitor } from '@capacitor/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
+import { Capacitor, PluginListenerHandle } from '@capacitor/core';
 import {
   FormBuilder,
   FormGroup,
@@ -52,7 +52,10 @@ import { BiometricAuthService } from 'src/app/services/auth/biometric-auth.servi
     ReactiveFormsModule,
   ],
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy {
+  private kbSubs: PluginListenerHandle[] = [];
+  private triedAutoBiometric = false;
+
   signin_form!: FormGroup;
   submit_attempt = false;
 
@@ -88,7 +91,10 @@ export class LoginPage implements OnInit {
     });
   }
 
-  async ngOnInit() {
+  ngOnInit(): void {
+    this.checkBiometricAvailability();
+    this.setupKeyboardListeners();
+
     this.signin_form = this.formBuilder.group({
       email: ['', Validators.compose([Validators.email, Validators.required])],
       password: [
@@ -96,8 +102,11 @@ export class LoginPage implements OnInit {
         Validators.compose([Validators.minLength(9), Validators.required]),
       ],
     });
+  }
 
-    await this.checkBiometricAvailability();
+  async ionViewDidEnter(): Promise<void> {
+    if (this.triedAutoBiometric) return;
+    this.triedAutoBiometric = true;
 
     if (
       this.showBiometricButton &&
@@ -107,6 +116,38 @@ export class LoginPage implements OnInit {
         this.loginWithBiometric();
       }, 500);
     }
+  }
+
+  ngOnDestroy(): void {
+    for (const s of this.kbSubs) {
+      try {
+        s.remove();
+      } catch {}
+    }
+    this.kbSubs = [];
+
+    document.documentElement.style.setProperty('--kb', '0px');
+
+    if (Capacitor.getPlatform() === 'ios') {
+      Keyboard.setResizeMode({ mode: KeyboardResize.Body }).catch(() => {});
+    }
+  }
+
+  private setupKeyboardListeners(): void {
+    if (Capacitor.getPlatform() !== 'ios') return;
+
+    Keyboard.setResizeMode({ mode: KeyboardResize.None }).catch(() => {});
+
+    Keyboard.addListener('keyboardWillShow', (info) => {
+      document.documentElement.style.setProperty(
+        '--kb',
+        `${info.keyboardHeight}px`
+      );
+    }).then((sub) => this.kbSubs.push(sub));
+
+    Keyboard.addListener('keyboardWillHide', () => {
+      document.documentElement.style.setProperty('--kb', '0px');
+    }).then((sub) => this.kbSubs.push(sub));
   }
 
   private async checkBiometricAvailability(): Promise<void> {
@@ -134,7 +175,7 @@ export class LoginPage implements OnInit {
     }
 
     if (Capacitor.isNativePlatform()) {
-      await Keyboard.hide();
+      await Keyboard.hide().catch(() => {});
     }
 
     this.isLoading = true;

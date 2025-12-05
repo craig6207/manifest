@@ -305,3 +305,66 @@
 .logout-icon {
   font-size: 20px;
 }
+
+.rate-modal .modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 16px;
+}
+
+.rate-modal .rate-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.rate-modal .field-label {
+  display: block;
+  font-weight: 400;
+  font-size: 16px;
+  color: #1c1c1e;
+}
+
+.rate-modal .range-item {
+  --background: transparent;
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+}
+
+.rate-modal ion-range {
+  --bar-background: #e8edf6;
+  --bar-background-active: #2f55c1;
+  --bar-height: 6px;
+  --bar-border-radius: 6px;
+  --height: 44px;
+  --knob-background: transparent;
+  --knob-box-shadow: none;
+  --knob-size: 28px;
+  padding: 0;
+}
+
+.rate-modal ion-range::part(knob) {
+  background: transparent;
+  border: 0;
+}
+
+.rate-modal ion-range::part(pin) {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  background: #fff;
+  color: #1c1c1e;
+  border: 2px solid #2f55c1;
+  border-radius: 999px;
+  font-weight: 400;
+  padding: 10px;
+  line-height: 1;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.rate-confirm-btn {
+  margin-top: 8px;
+}

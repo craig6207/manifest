@@ -1,18 +1,24 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>My Jobs</ion-title>
-  </ion-toolbar>
+  <app-toolbar-back title="My Jobs" [backButtonShow]="false"></app-toolbar-back>
 
-  <ion-toolbar>
-    <ion-segment
-      [value]="segment()"
-      (ionChange)="onSegmentChange($any($event).detail.value)"
-    >
-      <ion-segment-button value="BOOKED">Booked</ion-segment-button>
-      <ion-segment-button value="OFFERED">Offered</ion-segment-button>
-      <ion-segment-button value="APPLIED">Applied</ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
+  <div class="segment-container">
+    <div class="segment-pill">
+      <ion-segment
+        [value]="segment()"
+        (ionChange)="onSegmentChange($any($event).detail.value)"
+      >
+        <ion-segment-button value="BOOKED">
+          <ion-label>Booked</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="OFFERED">
+          <ion-label>Offered</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="APPLIED">
+          <ion-label>Applied</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
@@ -63,8 +69,8 @@
   <ion-list lines="full">
     @for (j of filtered(); track $index) {
     <ion-item detail="true" (click)="openJob(j)">
-      <ion-avatar slot="start" aria-hidden="true">
-        <img ngSrc="/assets/img/briefcase.png" width="40" height="40" alt="" />
+      <ion-avatar slot="start" aria-hidden="true" class="job-avatar">
+        <ion-icon name="briefcase-outline"></ion-icon>
       </ion-avatar>
 
       <ion-label class="ion-text-wrap">
@@ -103,7 +109,7 @@
 </ion-content>
 
 <ion-footer class="ion-padding-bottom ion-padding-start ion-padding-end">
-  <ion-button expand="block" fill="outline" (click)="goBrowse()"
-    >Browse Jobs</ion-button
-  >
+  <ion-button expand="block" fill="outline" (click)="goBrowse()">
+    Browse Jobs
+  </ion-button>
 </ion-footer>

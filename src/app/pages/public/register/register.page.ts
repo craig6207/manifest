@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -39,6 +39,8 @@ import {
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { RegisterStore } from 'src/app/+state/register-signal.store';
 import { COUNTRY_DIALS } from 'src/app/interfaces/country-code';
+import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
+import { Capacitor, PluginListenerHandle } from '@capacitor/core';
 
 function strongPasswordValidator(control: AbstractControl) {
   const value = control.value || '';
@@ -73,7 +75,9 @@ function strongPasswordValidator(control: AbstractControl) {
     IonIcon,
   ],
 })
-export class RegisterPage implements OnInit {
+export class RegisterPage implements OnInit, OnDestroy {
+  private kbSubs: PluginListenerHandle[] = [];
+
   signup_form!: UntypedFormGroup;
   submit_attempt = false;
   toastOption = { color: '', message: '', show: false };
@@ -101,7 +105,9 @@ export class RegisterPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.setupKeyboardListeners();
+
     this.signup_form = this.formBuilder.group({
       email: ['', [Validators.email, Validators.required]],
       password: ['', [Validators.required, strongPasswordValidator]],
@@ -117,6 +123,23 @@ export class RegisterPage implements OnInit {
       .valueChanges.subscribe((iso2: string) => {
         this.updateSelectedDialCode(iso2);
       });
+  }
+
+  private setupKeyboardListeners(): void {
+    if (Capacitor.getPlatform() !== 'ios') return;
+
+    Keyboard.setResizeMode({ mode: KeyboardResize.None }).catch(() => {});
+
+    Keyboard.addListener('keyboardWillShow', (info) => {
+      document.documentElement.style.setProperty(
+        '--kb',
+        `${info.keyboardHeight}px`
+      );
+    }).then((sub) => this.kbSubs.push(sub));
+
+    Keyboard.addListener('keyboardWillHide', () => {
+      document.documentElement.style.setProperty('--kb', '0px');
+    }).then((sub) => this.kbSubs.push(sub));
   }
 
   private buildE164(iso2: string, local: string): string {
@@ -197,5 +220,20 @@ export class RegisterPage implements OnInit {
     const hit = this.countries.find((c) => c.iso2 === iso2);
     this.selectedDialCode = hit?.dialCode ?? '';
     this.selectedDialText = hit ? `${hit.flag}\u00A0${hit.dialCode}` : '';
+  }
+
+  ngOnDestroy(): void {
+    for (const s of this.kbSubs) {
+      try {
+        s.remove();
+      } catch {}
+    }
+    this.kbSubs = [];
+
+    document.documentElement.style.setProperty('--kb', '0px');
+
+    if (Capacitor.getPlatform() === 'ios') {
+      Keyboard.setResizeMode({ mode: KeyboardResize.Body }).catch(() => {});
+    }
   }
 }

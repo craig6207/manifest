@@ -3,7 +3,9 @@
     title="Timesheet edit"
     [calendarShow]="true"
     navigation="/secure/tabs/timesheets"
+    (calendarClick)="openWeekPicker()"
   ></app-toolbar-back>
+
   <div class="week-container">
     <div class="week-pill">
       <ion-button fill="clear" class="week-arrow-btn" (click)="goPrevWeek()">
@@ -123,3 +125,21 @@
 
   }
 </ion-content>
+
+@if (isWeekPickerOpen()) {
+<ion-backdrop
+  class="week-backdrop"
+  [tappable]="true"
+  (click)="closeWeekPicker()"
+></ion-backdrop>
+
+<div class="week-picker-sheet">
+  <ion-datetime
+    presentation="date"
+    [value]="selectedDateISO()"
+    [min]="minDateISO() ?? undefined"
+    [max]="maxDateISO() ?? undefined"
+    (ionChange)="onPickerDateChange($event)"
+  ></ion-datetime>
+</div>
+}

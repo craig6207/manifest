@@ -6,6 +6,12 @@ import {
   OnDestroy,
   signal,
 } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavController } from '@ionic/angular';
@@ -24,6 +30,8 @@ import {
   IonButton,
   IonList,
   IonItem,
+  IonModal,
+  IonRange,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -67,6 +75,9 @@ const DEFAULT_AVATAR = 'https://ionicframework.com/docs/img/demos/avatar.svg';
     IonButton,
     IonList,
     IonItem,
+    IonModal,
+    IonRange,
+    ReactiveFormsModule,
     RouterModule,
   ],
 })
@@ -76,10 +87,14 @@ export class ProfilePage implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly nav = inject(NavController);
+  private readonly fb = inject(FormBuilder);
 
   isAvatarSheetOpen = signal(false);
   isUploading = signal(false);
   toastMsg = signal('');
+
+  rateModalOpen = signal(false);
+  myRateForm: FormGroup;
 
   loadingPage = computed(() => !this.store.avatarLoaded());
   avatarSrc = computed(() => this.store.avatarDataUrl() ?? DEFAULT_AVATAR);
@@ -92,6 +107,15 @@ export class ProfilePage implements OnDestroy {
     const name = `${fn} ${ln}`.trim();
     return name || 'Your profile';
   });
+  hourlyRate = computed(() => this.store.profile()?.expectedPay ?? null);
+  hourlyRateLabel = computed(() => {
+    const v = this.hourlyRate();
+    if (v == null || Number.isNaN(v)) return null;
+    return `£${v.toFixed(2)}`;
+  });
+
+  formatHourly = (v: number) => `£${Math.round(v)}/h`;
+  formatDaily = (v: number) => `£${Math.round(v)}/d`;
 
   readonly unreadCount = computed(() => this.store.unreadNotificationCount());
   readonly hasNotifications = computed(() => this.unreadCount() > 0);
@@ -113,10 +137,69 @@ export class ProfilePage implements OnDestroy {
       logOutOutline,
       chevronForwardOutline,
     });
+
+    this.myRateForm = this.fb.group({
+      hourlyRate: [
+        30,
+        [Validators.required, Validators.min(5), Validators.max(100)],
+      ],
+      dayRate: [
+        300,
+        [Validators.required, Validators.min(50), Validators.max(1000)],
+      ],
+    });
   }
 
   async ionViewWillEnter() {
     await this.store.ensureAvatarLoaded();
+  }
+
+  openRateModal(): void {
+    const profile = this.store.profile();
+    const hourly = profile?.expectedPay ?? 30;
+    const day = profile?.expectedDayRate ?? 300;
+
+    this.myRateForm.reset(
+      {
+        hourlyRate: hourly,
+        dayRate: day,
+      },
+      { emitEvent: false }
+    );
+    this.myRateForm.markAsPristine();
+    this.rateModalOpen.set(true);
+  }
+
+  closeRateModal(): void {
+    this.rateModalOpen.set(false);
+  }
+
+  onConfirmRate(): void {
+    if (this.myRateForm.invalid) {
+      this.myRateForm.markAllAsTouched();
+      return;
+    }
+
+    const current = this.store.profile();
+    if (!current) {
+      this.closeRateModal();
+      return;
+    }
+
+    const value = this.myRateForm.value as {
+      hourlyRate: number;
+      dayRate: number;
+    };
+
+    const payload = {
+      ...current,
+      expectedPay: value.hourlyRate,
+      expectedDayRate: value.dayRate,
+    };
+
+    this.store.updateProfile(payload);
+
+    this.closeRateModal();
   }
 
   ngOnDestroy(): void {}
@@ -162,5 +245,8 @@ export class ProfilePage implements OnDestroy {
 
   openNotifications(): void {
     this.nav.navigateForward('/secure/tabs/notifications');
+  }
+  openSettings(): void {
+    this.nav.navigateForward('secure/tabs/profile/settings');
   }
 }

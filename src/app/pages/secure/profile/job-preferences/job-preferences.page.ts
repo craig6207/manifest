@@ -26,8 +26,13 @@ import {
   IonChip,
   IonLabel,
   IonRange,
+  IonModal,
 } from '@ionic/angular/standalone';
-import { NavController, ModalController } from '@ionic/angular';
+import {
+  NavController,
+  ModalController,
+  ActionSheetController,
+} from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { briefcaseOutline, locationOutline, close } from 'ionicons/icons';
 import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
@@ -36,6 +41,10 @@ import { CandidateProfile } from 'src/app/interfaces/candidate-profile';
 import { TradesService } from 'src/app/services/trades/trades.service';
 import { Trades, TradeSubcategories } from 'src/app/interfaces/trades';
 import { TradePickerComponent } from 'src/app/components/trade-picker/trade-picker.component';
+import {
+  LocationPickerComponent,
+  LocationSelection,
+} from 'src/app/components/location-picker/location-picker/location-picker.component';
 
 type JobPrefsForm = {
   locationName: string;
@@ -64,8 +73,10 @@ type JobPrefsForm = {
     IonChip,
     IonLabel,
     IonRange,
+    IonModal,
     ReactiveFormsModule,
     ToolbarBackComponent,
+    LocationPickerComponent,
   ],
 })
 export class JobPreferencesPage {
@@ -74,6 +85,7 @@ export class JobPreferencesPage {
   private readonly navCtrl = inject(NavController);
   private readonly tradesService = inject(TradesService);
   private readonly modalCtrl = inject(ModalController);
+  private readonly actionSheetCtrl = inject(ActionSheetController);
 
   jobPreferences = this.store.profile;
   loading = this.store.loading;
@@ -88,6 +100,10 @@ export class JobPreferencesPage {
 
   tradeId = signal<number | null>(null);
   subcatIds = signal<number[]>([]);
+  readonly locationModalOpen = signal(false);
+  private readonly lastLocationSelection = signal<LocationSelection | null>(
+    null
+  );
 
   selectedTradeName = computed(() => {
     const id = this.tradeId();
@@ -164,7 +180,10 @@ export class JobPreferencesPage {
         return;
       }
 
-      const radiusMiles = v.locationRadiusMeters ?? defaultRadius;
+      const radiusMiles = v.locationRadiusMeters
+        ? this.metersToMiles(v.locationRadiusMeters)
+        : defaultRadius;
+
       const hourlyRate = v.expectedPay ?? defaultHourly;
       const dayRate = v.expectedDayRate ?? defaultDay;
 
@@ -199,6 +218,15 @@ export class JobPreferencesPage {
     if (current?.tradeId) {
       this.loadSubcategories(current.tradeId);
     }
+  }
+
+  private milesToMeters(miles: number): number {
+    return Math.round(miles * 1609.344);
+  }
+
+  private metersToMiles(meters: number | null | undefined): number {
+    if (!meters || !Number.isFinite(meters)) return 0;
+    return Math.round(meters / 1609.344);
   }
 
   disableSave(): boolean {
@@ -284,22 +312,32 @@ export class JobPreferencesPage {
     if (!current) return;
 
     const raw = this.form.getRawValue() as JobPrefsForm;
+    const sel = this.lastLocationSelection();
 
     const normalisedTradeId = this.tradeId() ?? undefined;
     const tradeSubcategoryIds = this.subcatIds().length
       ? this.subcatIds()
       : undefined;
 
+    const radiusMeters = sel
+      ? sel.radiusMeters
+      : this.milesToMeters(raw.radiusMiles);
+
     const patch: Partial<CandidateProfile> = {
       locationName: raw.locationName,
-      locationRadiusMeters: raw.radiusMiles,
       expectedPay: raw.hourlyRate,
       expectedDayRate: raw.dayRate,
       tradeId: normalisedTradeId,
       tradeSubcategoryIds,
       tradeCategory: this.selectedTradeName() || undefined,
       tradeSubcategory: this.selectedSubcatNames().join(', ') || undefined,
+      locationRadiusMeters: radiusMeters,
     };
+
+    if (sel) {
+      patch.locationLat = sel.lat;
+      patch.locationLng = sel.lng;
+    }
 
     const payload = { ...current, ...patch } as CandidateProfile;
     this.store.updateProfile(payload);
@@ -389,5 +427,64 @@ export class JobPreferencesPage {
     if (matches.length) {
       this.subcatIds.set(matches);
     }
+  }
+
+  onLocationClick(): void {
+    this.form.get('locationName')?.markAsTouched();
+    this.openLocationPicker();
+  }
+
+  openLocationPicker(): void {
+    this.locationModalOpen.set(true);
+  }
+
+  closeLocationPicker(): void {
+    this.locationModalOpen.set(false);
+  }
+
+  onLocationChanged(sel: LocationSelection): void {
+    this.lastLocationSelection.set(sel);
+
+    const patch: Partial<JobPrefsForm> = {
+      radiusMiles: sel.radiusMiles,
+    };
+
+    const name = sel.placeName?.trim();
+    if (name) {
+      patch.locationName = name;
+    }
+
+    this.form.patchValue(patch, { emitEvent: false });
+    this.form.markAsDirty();
+  }
+
+  async openRadiusSheet(): Promise<void> {
+    const current = Number(this.form.get('radiusMiles')?.value) || 15;
+    const options = Array.from({ length: 10 }, (_, i) => (i + 1) * 5); // 5,10,...50
+
+    const sheet = await this.actionSheetCtrl.create({
+      header: 'Set radius',
+      buttons: [
+        ...options.map((miles) => ({
+          text: miles === current ? `${miles} miles ✓` : `${miles} miles`,
+          handler: () => {
+            this.form.get('radiusMiles')?.setValue(miles);
+            this.form.markAsDirty();
+
+            const sel = this.lastLocationSelection();
+            if (sel) {
+              this.lastLocationSelection.set({
+                ...sel,
+                radiusMiles: miles,
+                radiusMeters: this.milesToMeters(miles),
+              });
+            }
+          },
+        })),
+        { text: 'Cancel', role: 'cancel' },
+      ],
+    });
+
+    await sheet.present();
   }
 }
