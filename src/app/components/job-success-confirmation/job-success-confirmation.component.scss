@@ -2,187 +2,220 @@
   display: block;
 }
 
-ion-content {
-  --background: var(--ion-color-step-50, #f7f8fa);
-}
+.toolbar-success {
+  --background: transparent;
+  --min-height: 120px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --border-color: transparent;
 
-.hero {
-  padding: 20px 16px 10px;
-  display: grid;
-  justify-items: center;
-  text-align: center;
-  gap: 10px;
-
-  .icon {
-    display: grid;
-    place-items: center;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--ion-color-success) 12%, transparent);
-    color: var(--ion-color-success);
-
-    ion-icon {
-      font-size: 32px;
-    }
-  }
-
-  .title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    color: var(--ion-color-dark);
-  }
-
-  .lede {
-    margin: 0;
-    font-size: 0.98rem;
-    color: var(--ion-color-medium);
-  }
-
-  ion-note {
-    margin-top: 2px;
-  }
-}
-
-.card,
-.confirm-card {
-  margin: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  background: var(--ion-color-step-100, #f1f3f5);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 5%), 0 4px 16px rgb(0 0 0 / 4%);
-
-  .card-title {
-    margin: 2px 2px 10px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--ion-color-dark);
-  }
-
-  .mb-2 {
-    display: block;
-    margin: 0 2px 8px;
-  }
-}
-
-.form-list {
-  --ion-item-background: transparent;
-
-  ion-item {
-    --padding-start: 8px;
-    --inner-padding-end: 8px;
-    --highlight-height: 2px;
-    --highlight-color-focused: var(--ion-color-primary);
-
-    ion-label {
-      font-size: 0.85rem;
-      color: var(--ion-color-medium);
-    }
-
-    ion-input {
-      margin-top: 6px;
-      --padding-start: 10px;
-      --padding-end: 10px;
-      --border-radius: 10px;
-      --background: #fff;
-      --color: var(--ion-color-dark);
-      --highlight-color-valid: var(--ion-color-primary);
-    }
-
-    ion-input.is-invalid {
-      --highlight-color-focused: var(--ion-color-danger);
-      --highlight-color-invalid: var(--ion-color-danger);
-      --border-color: var(--ion-color-danger);
-    }
-  }
-}
-
-.hint {
-  display: block;
-  margin: 6px 8px 0 8px;
-  font-size: 0.8rem;
-}
-
-.confirm-card {
-  ion-item {
-    --padding-start: 8px;
-    --inner-padding-end: 8px;
-    --background: transparent;
+  ion-buttons[slot="start"],
+  ion-buttons[slot="end"] {
     align-items: center;
-
-    ion-label {
-      font-size: 0.95rem;
-      color: var(--ion-color-dark);
-    }
-
-    ion-checkbox,
-    ion-input[type="checkbox"] {
-      margin-left: auto;
-    }
   }
 }
 
-.skeleton {
-  padding: 16px;
-  display: grid;
+.job-success-page {
+  --background: linear-gradient(
+      170deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0) 300%
+    ),
+    linear-gradient(135deg, #c2f5ff 0%, #5481e3 100%);
+}
+
+.page-inner {
+  min-height: 100%;
+  padding: calc(env(safe-area-inset-top, 0) + 12px) 16px
+    calc(env(safe-area-inset-bottom, 0) + 24px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: -120px;
+}
+
+.top-block {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.headline {
+  margin: 0;
+  text-align: center;
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  color: #0b2b36;
+}
+
+.success-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px 18px 18px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  color: #0b2b36;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.error {
-  margin: 16px;
-  padding: 12px;
-  color: var(--ion-color-danger);
-  background: color-mix(in srgb, var(--ion-color-danger) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ion-color-danger) 20%, transparent);
-  border-radius: 10px;
+.brand-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 20px;
+  background: #f3f6ff;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
 }
 
-.btns {
-  display: grid;
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+}
+
+.header-text {
+  flex: 1 1 auto;
+}
+
+.title-row {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: #0b2b36;
+}
+
+.subtitle-row {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1c1c1e;
+}
+
+.divider {
+  margin: 16px -18px 12px;
+  height: 1px;
+  background: #e2e6f0;
+}
+
+.job-details {
+  padding-top: 4px;
+}
+
+.role-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0b2b36;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #1c1c1e;
+  margin-bottom: 10px;
+}
+
+.job-details .meta-row:last-child {
+  margin-bottom: 0;
+}
+
+.meta-row ion-icon {
+  font-size: 18px;
+  flex: 0 0 auto;
+  color: #65758b;
+}
+
+.calendar-btn {
+  margin-top: 24px;
+  --background: #ffffff;
+  --color: #1d3dac;
+  --border-radius: 18px;
+  --box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.bottom-spacer {
+  height: 8px;
+}
+
+.close-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0) + 8px);
+  right: 4px;
+  z-index: 10;
+  --background: rgba(255, 255, 255, 0.95);
+  --border-radius: 999px;
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.close-btn::part(native) {
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 999px;
+}
+
+.close-btn ion-icon {
+  font-size: 18px;
+  color: #1b2741;
+}
+
+.skeleton-card {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.role-title-skel {
+  margin-bottom: 10px;
+}
+
+.skeleton-card .meta-row {
+  align-items: center;
   gap: 10px;
 }
 
-ion-footer {
-  --background: var(--ion-color-step-50, #f7f8fa);
-  box-shadow: 0 -6px 20px rgb(0 0 0 / 6%);
+.error-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (max-width: 380px) {
-  .card,
-  .confirm-card {
-    margin: 10px 8px;
-    padding: 10px;
-  }
-
-  .hero {
-    padding-left: 12px;
-    padding-right: 12px;
-
-    .title {
-      font-size: 1.15rem;
-    }
-  }
+.error {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--ion-color-danger) 4%, #ffffff);
+  color: var(--ion-color-danger);
+  font-size: 14px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
-@media (prefers-color-scheme: dark) {
-  ion-content {
-    --background: var(--ion-color-step-50, #0f1114);
+@media (max-height: 700px) {
+  .headline {
+    font-size: 24px;
   }
 
-  .card,
-  .confirm-card {
-    background: var(--ion-color-step-150, #161a20);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 6px 24px rgb(0 0 0 / 25%);
-  }
-
-  .form-list ion-item ion-input {
-    --background: var(--ion-color-step-200, #111418);
-  }
-
-  .error {
-    background: color-mix(in srgb, var(--ion-color-danger) 15%, transparent);
-    border-color: color-mix(in srgb, var(--ion-color-danger) 35%, transparent);
+  .success-card {
+    padding: 16px 14px;
   }
 }

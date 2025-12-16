@@ -1,104 +1,137 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>{{ title() }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="dismiss()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+  <app-toolbar-back [title]="title()"></app-toolbar-back>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="job-extra-page">
   @if (loading()) {
-  <div class="skeleton">
-    <ion-skeleton-text
-      animated
-      style="width: 60%; height: 20px"
-    ></ion-skeleton-text>
-    <ion-skeleton-text
-      animated
-      style="width: 90%; height: 16px"
-    ></ion-skeleton-text>
-    <ion-skeleton-text
-      animated
-      style="width: 80%; height: 16px"
-    ></ion-skeleton-text>
+  <div class="details-inner">
+    @for (i of [1, 2, 3]; track i) {
+    <section class="summary-card skeleton-card">
+      <div class="icon-badge">
+        <ion-skeleton-text
+          animated
+          style="width: 24px; height: 24px; border-radius: 9999px"
+        ></ion-skeleton-text>
+      </div>
+      <div class="summary">
+        <div class="name">
+          <ion-skeleton-text
+            animated
+            style="width: 50%; height: 16px"
+          ></ion-skeleton-text>
+        </div>
+        <div class="meta">
+          <ion-skeleton-text
+            animated
+            style="width: 80%; height: 14px"
+          ></ion-skeleton-text>
+        </div>
+        <div class="meta">
+          <ion-skeleton-text
+            animated
+            style="width: 60%; height: 14px"
+          ></ion-skeleton-text>
+        </div>
+      </div>
+    </section>
+    }
+    <div class="bottom-spacer" aria-hidden="true"></div>
   </div>
   } @if (!loading() && error()) {
-  <div class="error">{{ error() }}</div>
+  <div class="details-inner">
+    <div class="error">{{ error() }}</div>
+  </div>
   } @if (!loading() && !error() && details()) {
-  <section class="hero">
-    <h2 class="role">Site details</h2>
-    @if (addressLine()) {
-    <div class="client">{{ addressLine() }}</div>
-    }
-  </section>
-
-  <ion-list inset="true" class="info-list">
-    @if (details()?.siteContact) {
-    <ion-item lines="full">
-      <ion-label>
-        <div class="title">Main contact</div>
-        <div class="value">
-          {{ details()?.siteContact?.name }}
-          @if (details()?.siteContact?.phone) {
-          <ng-container> · {{ details()?.siteContact?.phone }}</ng-container>
-          }
+  <div class="details-inner">
+    <section class="summary-card">
+      <div class="icon-badge">
+        <ion-icon name="location-outline"></ion-icon>
+      </div>
+      <div class="summary">
+        <div class="name">Site details</div>
+        @if (addressLine()) {
+        <div class="meta">
+          {{ addressLine() }}
         </div>
-        @if (details()?.siteContact?.email) {
-        <ion-note>{{ details()?.siteContact?.email }}</ion-note>
+        } @if (hoursText()) {
+        <div class="meta">Working hours · {{ hoursText() }}</div>
         }
-      </ion-label>
-    </ion-item>
-    } @if (hoursText()) {
-    <ion-item lines="full">
-      <ion-label>
-        <div class="title">Working hours</div>
-        <div class="value">{{ hoursText() }}</div>
-      </ion-label>
-    </ion-item>
-    } @if (ppeChips().length) {
-    <ion-item lines="none">
-      <ion-label>
-        <div class="title">PPE</div>
-        <div class="chips">
-          @for (p of ppeChips(); track p) {
-          <span class="pill neutral">{{ p }}</span>
+      </div>
+    </section>
+
+    <section class="summary-card">
+      <div class="icon-badge">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div class="summary">
+        <div class="name">Key information</div>
+
+        @if (details()?.siteContact) {
+        <div class="field-block">
+          <div class="field-label">Main contact</div>
+          <div class="value">
+            {{ details()?.siteContact?.name }}
+            @if (details()?.siteContact?.phone) {
+            <ng-container> · {{ details()?.siteContact?.phone }} </ng-container>
+            }
+          </div>
+          @if (details()?.siteContact?.email) {
+          <ion-note>{{ details()?.siteContact?.email }}</ion-note>
           }
         </div>
-      </ion-label>
-    </ion-item>
-    }
-  </ion-list>
+        } @if (ppeChips().length) {
+        <div class="field-block">
+          <div class="field-label">PPE</div>
+          <div class="chip-row">
+            @for (p of ppeChips(); track p) {
+            <span class="pill">{{ p }}</span>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </section>
 
-  @if (details()?.siteAddress?.notes) {
-  <section class="card">
-    <h3>Site notes</h3>
-    <p class="project">{{ details()?.siteAddress?.notes }}</p>
-  </section>
-  } }
+    @if (details()?.siteAddress?.notes) {
+    <section class="summary-card">
+      <div class="icon-badge">
+        <ion-icon name="document-text-outline"></ion-icon>
+      </div>
+      <div class="summary">
+        <div class="name">Site notes</div>
+        <p class="project-notes">
+          {{ details()?.siteAddress?.notes }}
+        </p>
+      </div>
+    </section>
+    }
+
+    <div class="bottom-spacer" aria-hidden="true"></div>
+  </div>
+  }
 </ion-content>
 
-<ion-footer class="ion-padding">
-  <div class="btns">
-    <ion-button
-      expand="block"
-      color="success"
-      [disabled]="actioning()"
-      (click)="confirm()"
-    >
-      Confirm
-    </ion-button>
+<ion-footer style="background-color: #f4f8fb" class="ion-padding ion-no-border">
+  <ion-toolbar>
+    <div class="btns">
+      <ion-button
+        expand="block"
+        color="primary"
+        [disabled]="actioning()"
+        (click)="confirm()"
+      >
+        Confirm
+      </ion-button>
 
-    <ion-button
-      expand="block"
-      color="danger"
-      fill="outline"
-      [disabled]="actioning()"
-      (click)="decline()"
-    >
-      Decline
-    </ion-button>
-  </div>
+      <ion-button
+        expand="block"
+        color="danger"
+        fill="outline"
+        [disabled]="actioning()"
+        (click)="decline()"
+      >
+        Decline
+      </ion-button>
+    </div>
+  </ion-toolbar>
 </ion-footer>

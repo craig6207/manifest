@@ -105,23 +105,15 @@
       <button
         class="action-circle"
         [class.busy]="busy()"
-        [disabled]="
-          busy() ||
-          loading() ||
-          (!active()!.canCheckIn && !active()!.canCheckOut)
-        "
-        (click)="
-          active()!.canCheckIn
-            ? onCheckInFancy(active()!)
-            : onCheckOutFancy(active()!)
-        "
+        [disabled]="actionDisabled()"
+        (click)="onActionClick()"
       >
         <div class="ring"></div>
         <div class="label">
-          @if (active()!.canCheckIn) {
+          @if (actionMode() === 'checkin') {
           <ion-icon name="log-in-outline" aria-hidden="true"></ion-icon>
           <span>Check in</span>
-          } @else if (active()!.canCheckOut) {
+          } @else if (actionMode() === 'checkout') {
           <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
           <span>Check out</span>
           } @else {

@@ -27,6 +27,8 @@ import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-ba
 import {
   TimesheetAdjustmentCreateRequest,
   TimesheetEligibility,
+  TimesheetWeek,
+  TimesheetDay,
 } from 'src/app/interfaces/timesheets';
 import { TimesheetService } from 'src/app/services/timesheet/timesheet.service';
 import { TimesheetStore } from 'src/app/+state/timesheet-signal.store';
@@ -119,6 +121,22 @@ function to24Hour(hhmm: string, period: 'AM' | 'PM'): string | null {
   const hStr = hours.toString().padStart(2, '0');
   const mStr = minutes.toString().padStart(2, '0');
   return `${hStr}:${mStr}`;
+}
+
+function dateToTimeAndPeriod(ts: string | Date): {
+  time: string;
+  period: 'AM' | 'PM';
+} {
+  const d = typeof ts === 'string' ? new Date(ts) : ts;
+  const hours24 = d.getHours();
+  const minutes = d.getMinutes();
+
+  const period: 'AM' | 'PM' = hours24 >= 12 ? 'PM' : 'AM';
+  let hours12 = hours24 % 12;
+  if (hours12 === 0) hours12 = 12;
+
+  const time = `${hours12}:${minutes.toString().padStart(2, '0')}`;
+  return { time, period };
 }
 
 @Component({
@@ -214,6 +232,29 @@ export class TimesheetLogPage {
 
   readonly hasAnyToday = computed<boolean>(() => !!this.active());
 
+  readonly actionMode = computed<'checkin' | 'checkout' | 'done'>(() => {
+    const a = this.active();
+    if (!a) return 'done';
+
+    if (a.checkInUtc && a.checkOutUtc) {
+      return 'done';
+    }
+
+    if (a.canCheckIn) return 'checkin';
+    if (a.canCheckOut) return 'checkout';
+
+    return 'done';
+  });
+
+  readonly actionDisabled = computed<boolean>(() => {
+    const a = this.active();
+    const mode = this.actionMode();
+
+    if (!a || mode === 'done') return true;
+
+    return this.busy() || this.loading() || (!a.canCheckIn && !a.canCheckOut);
+  });
+
   readonly busy = signal(false);
   readonly successMsg = signal<string | null>(null);
 
@@ -230,6 +271,10 @@ export class TimesheetLogPage {
     }
 
     this.store.loadToday();
+
+    if (this.jobListingId != null && this.workDate) {
+      void this.prefillManualFromExisting();
+    }
   }
 
   onModeChange(ev: CustomEvent) {
@@ -264,6 +309,21 @@ export class TimesheetLogPage {
 
   openReasonAlert() {
     this.isAlertOpen = true;
+  }
+
+  onActionClick() {
+    const a = this.active();
+    const mode = this.actionMode();
+
+    if (!a || mode === 'done' || this.busy() || this.loading()) {
+      return;
+    }
+
+    if (mode === 'checkin') {
+      void this.onCheckInFancy(a);
+    } else if (mode === 'checkout') {
+      void this.onCheckOutFancy(a);
+    }
   }
 
   private buildAdjustment(
@@ -320,6 +380,39 @@ export class TimesheetLogPage {
     } finally {
       this.isAlertOpen = false;
       this.nav.navigateBack(this.backUrl);
+    }
+  }
+
+  private async prefillManualFromExisting() {
+    if (!Number.isFinite(this.jobListingId) || !this.workDate) return;
+
+    try {
+      const workDateObj = dateOnlyToLocalDate(this.workDate);
+      const weekStart = startOfWeek(workDateObj);
+      const anchorDate = toDateOnlyString(weekStart);
+
+      const dto: TimesheetWeek = await firstValueFrom(
+        this.timesheetService.getWeek(anchorDate, this.jobListingId as number)
+      );
+
+      const day: TimesheetDay | undefined = dto.days.find(
+        (d) => d.workDate === this.workDate
+      );
+
+      if (!day) return;
+      if (day.checkInUtc) {
+        const { time, period } = dateToTimeAndPeriod(day.checkInUtc);
+        this.manualStartTime = time;
+        this.manualStartPeriod = period;
+      }
+
+      if (day.checkOutUtc) {
+        const { time, period } = dateToTimeAndPeriod(day.checkOutUtc);
+        this.manualEndTime = time;
+        this.manualEndPeriod = period;
+      }
+    } catch {
+      // Swallow errors quietly – manual form just stays empty if we can't prefill
     }
   }
 

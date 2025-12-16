@@ -1,111 +1,69 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/secure/tabs/job-search"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Job detail</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="job-detail ion-padding">
+<ion-header translucent="true">
+  <app-toolbar-back [title]="'Job Details'"></app-toolbar-back>
   @if (jobListing()) {
 
-  <section class="hero">
-    <div class="icon-badge">
-      <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
-    </div>
+  <div class="ion-padding-horizontal job-detail-shell">
+    <div class="job-card">
+      <div class="job-card-header ion-padding-bottom">
+        <h1 class="job-title">{{ title() }}</h1>
 
-    <div class="titles">
-      <div class="title">{{ title() }}</div>
-
-      @if (subcat()) {
-      <div class="subtitle">{{ subcat() }}</div>
-      } @if (loc()) {
-      <div class="meta">
-        <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
-        <span>{{ loc() }}</span>
+        @if (subcat()) {
+        <p class="job-subtitle">{{ subcat() }}</p>
+        }
       </div>
-      }
-    </div>
-  </section>
 
-  <div class="hero-rate">
-    <ion-icon name="cash-outline" aria-hidden="true"></ion-icon>
-    <span>£{{ pay() }}/hour</span>
+      <div class="meta-list">
+        <div class="meta-row">
+          <ion-icon name="cash-outline" aria-hidden="true"></ion-icon>
+          <span>£{{ pay() }}/h</span>
+        </div>
+
+        @if (hours().length) {
+        <div class="meta-row">
+          <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+          <span>{{ hours().join(', ') }}</span>
+        </div>
+        }
+
+        <div class="meta-row">
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+          <span>
+            @if (start()) { {{ start() | date:'d MMM, y' }} } @else { TBC } –
+            @if (end()) { {{ end() | date:'d MMM, y' }} } @else { TBC }
+          </span>
+        </div>
+
+        @if (loc()) {
+        <div class="meta-row ion-padding-bottom">
+          <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+          <span>{{ loc() }}</span>
+        </div>
+        }
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Job Description</h2>
+        <p class="section-body">{{ desc() || 'No description provided.' }}</p>
+      </div>
+    </div>
   </div>
-  <section class="section-card">
-    <div class="section-header">
-      <h2>Job Description</h2>
-    </div>
-    <p class="body">{{ desc() || 'No description provided.' }}</p>
-  </section>
-  <section class="section-card">
-    <div class="section-header">
-      <h2>Certificate requirements</h2>
-      <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
-    </div>
-
-    @if (certs().length) {
-    <div class="chip-row">
-      @for (cert of certs(); track cert) {
-      <ion-chip class="pill">{{ cert }}</ion-chip>
-      }
-    </div>
-    } @else {
-    <p class="muted">None specified.</p>
-    }
-  </section>
-  <section class="section-card">
-    <div class="section-header">
-      <h2>Hours</h2>
-      <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
-    </div>
-
-    @if (hours().length) {
-    <div class="chip-row">
-      @for (hour of hours(); track hour) {
-      <ion-chip class="pill">{{ hour }}</ion-chip>
-      }
-    </div>
-    } @else {
-    <p class="muted">Not provided.</p>
-    }
-  </section>
-  <section class="section-card">
-    <div class="section-header">
-      <h2>Location</h2>
-    </div>
-    <p class="body">{{ loc() || 'TBC' }}</p>
-  </section>
-  <section class="section-card">
-    <div class="section-header">
-      <h2>Dates</h2>
-    </div>
-    <div class="meta">
-      <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
-      <span>
-        @if (start()) { {{ start() | date:'EEE, d MMM' }} } @else { TBC } – @if
-        (end()) { {{ end() | date:'EEE, d MMM' }} } @else { TBC }
-      </span>
-    </div>
-  </section>
-  <div class="bottom-spacer" aria-hidden="true"></div>
 
   } @else {
-  <p>Job not found.</p>
+  <div class="job-detail-shell">
+    <p class="section-muted">Job not found.</p>
+  </div>
   }
-</ion-content>
+</ion-header>
 
-<ion-footer>
-  <ion-toolbar class="cta-toolbar">
+<ion-footer class="ion-no-border ion-padding">
+  <ion-toolbar>
     <ion-button
       expand="block"
       size="large"
-      class="apply-btn"
       [disabled]="!jobListing() || applying()"
       (click)="applyNow()"
     >
-      Apply now
+      Apply
     </ion-button>
   </ion-toolbar>
 </ion-footer>

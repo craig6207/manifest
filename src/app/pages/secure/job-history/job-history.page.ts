@@ -25,8 +25,6 @@ import {
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   IonButton,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {

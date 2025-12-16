@@ -8,47 +8,37 @@ import {
 import { Router } from '@angular/router';
 import {
   IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonBackButton,
-  IonTitle,
-  IonContent,
   IonIcon,
-  IonChip,
   IonButton,
   IonFooter,
+  IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  informationCircleOutline,
-  briefcaseOutline,
   locationOutline,
   cashOutline,
   calendarOutline,
   timeOutline,
-  shieldCheckmarkOutline,
+  heartOutline,
 } from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
 import { JobListing } from 'src/app/interfaces/job-listing';
 import { JobPipelineService } from 'src/app/services/job-pipeline/job-pipeline.service';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { firstValueFrom } from 'rxjs';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 @Component({
   selector: 'app-job-detail',
   standalone: true,
   imports: [
     IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonBackButton,
-    IonTitle,
-    IonContent,
     IonIcon,
-    IonChip,
     IonButton,
     IonFooter,
+    IonToolbar,
     DatePipe,
+    ToolbarBackComponent,
   ],
   templateUrl: './job-detail.page.html',
   styleUrls: ['./job-detail.page.scss'],
@@ -62,30 +52,6 @@ export class JobDetailPage {
   readonly applying = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
-
-  constructor() {
-    addIcons({
-      informationCircleOutline,
-      briefcaseOutline,
-      locationOutline,
-      cashOutline,
-      calendarOutline,
-      timeOutline,
-      shieldCheckmarkOutline,
-    });
-
-    const stateJob =
-      (this.router.getCurrentNavigation()?.extras?.state as any)?.job ??
-      (history.state?.job as JobListing | undefined);
-
-    if (stateJob) {
-      this.jobListing.set(stateJob);
-    } else {
-      // TODO (optional): fallback load-by-id if you route with :id
-      // const id = Number(this.route.snapshot.paramMap.get('id'));
-      // this.loadById(id);
-    }
-  }
 
   readonly jobListing = signal<JobListing | null>(null);
   readonly title = computed(() => this.jobListing()?.trade ?? '');
@@ -101,6 +67,24 @@ export class JobDetailPage {
     this.jobListing()?.endDate ? new Date(this.jobListing()!.endDate) : null
   );
   readonly desc = computed(() => this.jobListing()?.projectInfo ?? '');
+
+  constructor() {
+    addIcons({
+      locationOutline,
+      cashOutline,
+      calendarOutline,
+      timeOutline,
+      heartOutline,
+    });
+
+    const stateJob =
+      (this.router.getCurrentNavigation()?.extras?.state as any)?.job ??
+      (history.state?.job as JobListing | undefined);
+
+    if (stateJob) {
+      this.jobListing.set(stateJob);
+    }
+  }
 
   private get candidateId(): number | null {
     const p = this.profileStore.profile();

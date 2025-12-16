@@ -18,13 +18,7 @@
         (ionChange)="onFilterChanged($event)"
       >
         <ion-segment-button value="unread">
-          <span class="segment-label">
-            Unread @if (unreadCount() > 0) {
-            <ion-badge class="seg-badge" color="danger">
-              {{ unreadCount() }}
-            </ion-badge>
-            }
-          </span>
+          <span class="segment-label"> Unread </span>
         </ion-segment-button>
 
         <ion-segment-button value="all">

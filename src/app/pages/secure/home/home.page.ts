@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { NavController } from '@ionic/angular';
 import {
   IonContent,
   IonCard,
@@ -23,6 +24,7 @@ import { JobListingsService } from 'src/app/services/job-listings/job-listings.s
 import { JobFilterOptions, JobListing } from 'src/app/interfaces/job-listing';
 import { JobActivityService } from 'src/app/services/job-activity/job-activity.service';
 import { JobActivitySummary } from 'src/app/interfaces/candidate-jobs';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -36,6 +38,7 @@ import { JobActivitySummary } from 'src/app/interfaces/candidate-jobs';
     IonSkeletonText,
     IonIcon,
     ToolbarHomeComponent,
+    DatePipe,
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
@@ -45,6 +48,7 @@ export class HomePage {
   private jobListingsService = inject(JobListingsService);
   private jobActivityService = inject(JobActivityService);
   private router = inject(Router);
+  private nav = inject(NavController);
 
   readonly jobs = signal<JobListing[]>([]);
   readonly jobsLoaded = signal(false);
@@ -131,7 +135,9 @@ export class HomePage {
     this.router.navigate(['/secure/tabs/job-search']);
   }
 
-  goToJob(jobId: number): void {
-    this.router.navigate(['/secure/tabs/job-search', jobId]);
+  goToJob(job: JobListing): void {
+    this.nav.navigateForward(['secure/tabs/job-detail', job.id], {
+      state: { job },
+    });
   }
 }

@@ -67,7 +67,8 @@ ion-segment {
 
 ion-segment-button {
   --background: transparent;
-  --indicator-color: var(--ion-color-primary);
+  --background-checked: var(--ion-color-primary);
+  --indicator-color: transparent;
   --color: #1c1c1e;
   --color-checked: #ffffff;
   --border-radius: 12px;

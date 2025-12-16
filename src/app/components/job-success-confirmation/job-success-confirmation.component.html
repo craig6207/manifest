@@ -1,134 +1,135 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>You're in!</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="dismiss()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-toolbar class="toolbar-success">
+  <ion-buttons slot="start">
+    <ion-button
+      fill="clear"
+      size="small"
+      class="back-btn"
+      (click)="goBack()"
+      aria-label="Back page"
+    >
+      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+<ion-content [fullscreen]="true" class="job-success-page">
+  <div class="page-inner">
+    @if (loading()) {
+    <div class="top-block">
+      <h1 class="headline">Congratulations!</h1>
 
-<ion-content [fullscreen]="true">
-  @if (loading()) {
-  <div class="skeleton">
-    <ion-skeleton-text
-      animated
-      style="width: 60%; height: 20px"
-    ></ion-skeleton-text>
-    <ion-skeleton-text
-      animated
-      style="width: 85%; height: 16px"
-    ></ion-skeleton-text>
-    <ion-skeleton-text
-      animated
-      style="width: 70%; height: 16px"
-    ></ion-skeleton-text>
-  </div>
-  } @else if (error()) {
-  <div class="error">{{ error() }}</div>
-  } @else {
-  <section class="hero">
-    <div class="icon">
-      <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+      <section class="success-card skeleton-card">
+        <div class="card-header">
+          <div class="brand-badge">
+            <ion-skeleton-text
+              animated
+              style="width: 32px; height: 32px; border-radius: 12px"
+            ></ion-skeleton-text>
+          </div>
+          <div class="header-text">
+            <div class="title-row">
+              <ion-skeleton-text
+                animated
+                style="width: 150px; height: 18px; border-radius: 6px"
+              ></ion-skeleton-text>
+            </div>
+            <div class="subtitle-row">
+              <ion-skeleton-text
+                animated
+                style="width: 220px; height: 14px; border-radius: 6px"
+              ></ion-skeleton-text>
+            </div>
+            <div class="subtitle-row">
+              <ion-skeleton-text
+                animated
+                style="width: 190px; height: 14px; border-radius: 6px"
+              ></ion-skeleton-text>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="job-details ion-margin-top">
+          <div class="role-title-skel">
+            <ion-skeleton-text
+              animated
+              style="width: 120px; height: 16px; border-radius: 6px"
+            ></ion-skeleton-text>
+          </div>
+
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="meta-row">
+            <ion-skeleton-text
+              animated
+              style="width: 18px; height: 18px; border-radius: 999px"
+            ></ion-skeleton-text>
+            <ion-skeleton-text
+              animated
+              style="width: 60%; height: 14px; border-radius: 6px"
+            ></ion-skeleton-text>
+          </div>
+          }
+        </div>
+      </section>
     </div>
-    <h2 class="title">Success, {{ candidateName() }}!</h2>
+    } @else if (error()) {
+    <div class="error-wrap">
+      <div class="error">{{ error() }}</div>
+    </div>
+    } @else {
+    <div class="top-block">
+      <h1 class="headline">Congratulations!</h1>
 
-    <p class="lede">
-      You've been <strong>confirmed</strong> for this job. @if (startDateText())
-      {
-      <ng-container>
-        You'll start on
-        <strong>{{ startDateText() | date : "fullDate" }}</strong
-        >.
-      </ng-container>
-      }
-    </p>
+      <section class="success-card">
+        <div class="card-header">
+          <div class="brand-badge">
+            <ion-img
+              class="brand-logo"
+              src="assets/img/offer_logo.svg"
+              alt="Offer logo"
+            ></ion-img>
+          </div>
+          <div class="header-text">
+            <div class="title-row">You've got the job!</div>
+            <p class="subtitle-row">
+              We're excited to see you take this next big step in your career!
+            </p>
+          </div>
+        </div>
 
-    <ion-note color="medium">
-      {{ headlineNote() }}
-    </ion-note>
-  </section>
+        <div class="divider"></div>
 
-  <form [formGroup]="form" novalidate>
-    <section class="card">
-      <h3 class="card-title">Payment details</h3>
-      <ion-note color="medium" class="mb-2">{{ paymentCardLead() }}</ion-note>
+        <div class="job-details ion-margin-top">
+          <div class="role-title ion-margin-bottom">
+            {{ roleTitle() || "Your new role" }}
+          </div>
 
-      <ion-list inset="true" class="form-list">
-        <ion-item lines="full">
-          <ion-label position="stacked">Sort code</ion-label>
-          <ion-input
-            placeholder="12-34-56"
-            inputmode="numeric"
-            formControlName="bankSortCode"
-            fill="outline"
-            [class.is-invalid]="
-              f.bankSortCode.invalid && f.bankSortCode.touched
-            "
-          >
-          </ion-input>
-        </ion-item>
-        @if (f.bankSortCode.invalid && f.bankSortCode.touched) {
-        <ion-note color="danger" class="hint"
-          >Enter a valid UK sort code (e.g. 12-34-56).</ion-note
-        >
-        }
-
-        <ion-item lines="full">
-          <ion-label position="stacked">Account number</ion-label>
-          <ion-input
-            placeholder="8 digits"
-            inputmode="numeric"
-            maxlength="8"
-            formControlName="bankAccountNumber"
-            fill="outline"
-            [class.is-invalid]="
-              f.bankAccountNumber.invalid && f.bankAccountNumber.touched
-            "
-          >
-          </ion-input>
-        </ion-item>
-        @if (f.bankAccountNumber.invalid && f.bankAccountNumber.touched) {
-        <ion-note color="danger" class="hint"
-          >Enter an 8-digit account number.</ion-note
-        >
-        }
-      </ion-list>
-    </section>
-
-    <section class="card">
-      <h3 class="card-title">National Insurance</h3>
-      <ion-note color="medium" class="mb-2">{{ niCardLead() }}</ion-note>
-
-      <ion-list inset="true" class="form-list">
-        <ion-item lines="full">
-          <ion-label position="stacked">NI number</ion-label>
-          <ion-input
-            placeholder="QQ123456C"
-            formControlName="niNumber"
-            maxlength="9"
-            fill="outline"
-            [class.is-invalid]="f.niNumber.invalid && f.niNumber.touched"
-          >
-          </ion-input>
-        </ion-item>
-        @if (f.niNumber.invalid && f.niNumber.touched) {
-        <ion-note color="danger" class="hint"
-          >Enter a valid NI number (e.g. QQ123456C).</ion-note
-        >
-        }
-      </ion-list>
-    </section>
-  </form>
-  }
-  <ion-button
-    class="ion-padding"
-    expand="block"
-    color="success"
-    [disabled]="!canSubmit()"
-    (click)="confirm()"
-  >
-    Confirm & continue
-  </ion-button>
+          @if (jobLocation()) {
+          <div class="meta-row">
+            <ion-icon name="location-outline"></ion-icon>
+            <span>{{ jobLocation() }}</span>
+          </div>
+          } @if (payText()) {
+          <div class="meta-row">
+            <ion-icon name="cash-outline"></ion-icon>
+            <span>{{ payText() }}</span>
+          </div>
+          } @if (clientName()) {
+          <div class="meta-row">
+            <ion-icon name="business-outline"></ion-icon>
+            <span>{{ clientName() }}</span>
+          </div>
+          } @if (startDateText()) {
+          <div class="meta-row">
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            <span>
+              {{ startDateText() | date : "d MMMM, y" }}
+            </span>
+          </div>
+          }
+        </div>
+      </section>
+    </div>
+    }
+  </div>
 </ion-content>

@@ -8,45 +8,42 @@ import {
 } from '@angular/core';
 import {
   IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonButton,
   IonContent,
   IonFooter,
   IonIcon,
-  IonList,
-  IonItem,
-  IonLabel,
   IonNote,
   IonSkeletonText,
+  IonButton,
+  IonToolbar,
 } from '@ionic/angular/standalone';
 import { ModalController, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { closeOutline } from 'ionicons/icons';
+import {
+  closeOutline,
+  locationOutline,
+  personOutline,
+  documentTextOutline,
+} from 'ionicons/icons';
 import { Notification } from 'src/app/interfaces/notification';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
 import { JobPlacementDetailsService } from 'src/app/services/job-placement/job-placement.service';
 import { JobPlacementDetails } from 'src/app/interfaces/job-details';
 import { JobPipelineService } from 'src/app/services/job-pipeline/job-pipeline.service';
+import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-back.component';
 
 @Component({
   selector: 'app-job-extra-details',
   standalone: true,
   imports: [
-    IonIcon,
     IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonButton,
     IonContent,
     IonFooter,
-    IonList,
-    IonItem,
-    IonLabel,
+    IonIcon,
     IonNote,
     IonSkeletonText,
+    IonButton,
+    IonToolbar,
+    ToolbarBackComponent,
   ],
   templateUrl: './job-extra-details.component.html',
   styleUrls: ['./job-extra-details.component.scss'],
@@ -103,7 +100,12 @@ export class JobExtraDetailsComponent {
   });
 
   constructor() {
-    addIcons({ closeOutline });
+    addIcons({
+      closeOutline,
+      locationOutline,
+      personOutline,
+      documentTextOutline,
+    });
   }
 
   ionViewWillEnter() {
@@ -130,7 +132,7 @@ export class JobExtraDetailsComponent {
           this.details.set(d);
           this.loading.set(false);
         },
-        error: (e) => {
+        error: () => {
           this.error.set('Could not load site details.');
           this.loading.set(false);
         },
@@ -184,7 +186,7 @@ export class JobExtraDetailsComponent {
       .respondToPlacement({ jobListingId: jobId, candidateId, action })
       .subscribe({
         next: () => this.modalCtrl.dismiss({ action, refresh: true }),
-        error: (e) => {
+        error: () => {
           this.actioning.set(false);
           this.error.set('Failed to submit your decision. Please try again.');
         },

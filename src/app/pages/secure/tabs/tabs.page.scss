@@ -75,3 +75,19 @@ ion-tab-button.tab-selected ion-label {
   align-items: center;
   justify-content: center;
 }
+
+:host-context(.md) .main-tab-bar {
+  justify-content: space-between;
+}
+
+:host-context(.md) ion-tab-button {
+  max-width: none;
+  min-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+:host-context(.md) .tab-icon-wrap {
+  width: 48px;
+  height: 32px;
+}

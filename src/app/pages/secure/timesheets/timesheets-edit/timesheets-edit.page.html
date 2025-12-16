@@ -94,14 +94,19 @@
 
       <div
         class="day-card"
-        [class.day-card-empty]="d.entries.length === 0 && weekStatus() === 'Open'"
-        [class.day-card-disabled]="d.entries.length === 0 && weekStatus() !== 'Open'"
+        [class.day-card-empty]="d.entries.length === 0 && canEditWeek() && !isFutureDate(d.dateISO)"
+        [class.day-card-disabled]="d.entries.length === 0 &&(!canEditWeek() || isFutureDate(d.dateISO))"
         (click)="onDayCardClick(d)"
       >
-        @if (d.entries.length === 0) { @if (weekStatus() === 'Open') {
+        @if (d.entries.length === 0) { @if (canEditWeek() &&
+        !isFutureDate(d.dateISO)) {
         <div class="day-card-main">
           <ion-icon name="add-circle-outline" class="day-card-icon"></ion-icon>
           <span class="day-card-text-primary">Log your time</span>
+        </div>
+        } @else if (isFutureDate(d.dateISO)) {
+        <div class="day-card-main">
+          <span class="day-card-text-muted">Upcoming</span>
         </div>
         } @else {
         <div class="day-card-main">
@@ -117,6 +122,8 @@
 
         @if (d.totalHoursLabel) {
         <div class="day-card-total">{{ d.totalHoursLabel }} logged</div>
+        } @if (d.hasOpenSession && canEditWeek() && !isFutureDate(d.dateISO)) {
+        <div class="day-card-total">Tap to check out</div>
         } }
       </div>
     </ion-item>

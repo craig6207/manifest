@@ -185,6 +185,8 @@ export class TimesheetsEditPage {
     () => (this.week()?.status ?? 'Open') as WeekStatus
   );
 
+  readonly canEditWeek = computed(() => this.weekStatus() !== 'Approved');
+
   readonly selectedDateISO = computed(() =>
     toDateOnlyString(this.selectedDate())
   );
@@ -192,6 +194,7 @@ export class TimesheetsEditPage {
   readonly days = computed(() => {
     const w = this.week();
     if (!w) return [];
+
     return w.days.map((d) => {
       const date = new Date(d.dateISO);
       const { weekdayShort, displayDate } = formatDayLabel(date);
@@ -212,6 +215,7 @@ export class TimesheetsEditPage {
             : null,
           checkIn: e.checkIn,
           checkOut: e.checkOut,
+          // keep raw values if needed later
         };
       });
 
@@ -224,12 +228,15 @@ export class TimesheetsEditPage {
       const total = applyLunchDeduction(rawTotal);
       const totalHoursLabel = total > 0 ? formatHoursToHHmm(total) : '';
 
+      const hasOpenSession = entries.some((e) => e.checkOut === null);
+
       return {
         dateISO: d.dateISO,
         weekdayShort,
         displayDate,
         entries,
         totalHoursLabel,
+        hasOpenSession,
       };
     });
   });
@@ -359,6 +366,16 @@ export class TimesheetsEditPage {
     return localMidnight;
   }
 
+  isFutureDate(dateISO: string): boolean {
+    const d = new Date(dateISO);
+    d.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return d.getTime() > today.getTime();
+  }
+
   private async loadWeek(weekStartISO: string, jobListingId: number | null) {
     this.loading.set(true);
     try {
@@ -413,10 +430,12 @@ export class TimesheetsEditPage {
     dateISO: string;
     entries: TimesheetEntry[];
     totalHoursLabel?: string;
+    hasOpenSession?: boolean;
   }) {
-    if (d.entries.length === 0 && this.weekStatus() === 'Open') {
-      this.logTimeForDay(d.dateISO);
+    if (!this.canEditWeek() || this.isFutureDate(d.dateISO)) {
+      return;
     }
+    this.logTimeForDay(d.dateISO);
   }
 
   private logTimeForDay(dateISO: string) {

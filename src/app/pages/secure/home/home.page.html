@@ -114,7 +114,6 @@
       <div class="job-card-top">
         <div class="job-card-heading">
           <h3 class="job-title">{{ job.trade }} {{ job.tradeSubCategory }}</h3>
-          <p class="job-company">ABC Company Ltd</p>
         </div>
 
         <button type="button" class="job-favourite-btn" aria-label="Save job">
@@ -141,7 +140,10 @@
 
         <div class="job-meta">
           <ion-icon name="time-outline" class="job-meta-icon"></ion-icon>
-          <span>{{ job.startDate }}</span>
+          <span>
+            {{ job.startDate | date: 'EEE, d MMM' }} - {{ job.endDate |
+            date:'EEE, d MMM' }}
+          </span>
         </div>
       </div>
 
@@ -150,7 +152,7 @@
       <div class="job-card-footer">
         <p class="job-salary">£{{ job.payRate }}/h</p>
 
-        <button type="button" class="job-link" (click)="goToJob(job.id)">
+        <button type="button" class="job-link" (click)="goToJob(job)">
           <span>View Details</span>
           <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
         </button>

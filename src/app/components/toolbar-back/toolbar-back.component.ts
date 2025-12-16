@@ -8,7 +8,11 @@ import {
   IonToolbar,
   IonText,
 } from '@ionic/angular/standalone';
-import { AlertController, NavController } from '@ionic/angular';
+import {
+  AlertController,
+  NavController,
+  ModalController,
+} from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowBack, calendarOutline } from 'ionicons/icons';
 
@@ -17,6 +21,7 @@ import { arrowBack, calendarOutline } from 'ionicons/icons';
   templateUrl: './toolbar-back.component.html',
   styleUrls: ['./toolbar-back.component.scss'],
   imports: [IonText, IonTitle, IonIcon, IonButton, IonButtons, IonToolbar],
+  providers: [ModalController],
 })
 export class ToolbarBackComponent {
   title = input('');
@@ -34,9 +39,9 @@ export class ToolbarBackComponent {
 
   @Output() calendarClick = new EventEmitter<void>();
 
-  private router = inject(Router);
   private nav = inject(NavController);
   private alertController = inject(AlertController);
+  private modalController = inject(ModalController);
 
   constructor() {
     addIcons({
@@ -47,7 +52,7 @@ export class ToolbarBackComponent {
 
   async goBack() {
     if (!this.confirmOnBack()) {
-      this.nav.back();
+      await this.performBack();
       return;
     }
 
@@ -60,13 +65,22 @@ export class ToolbarBackComponent {
           text: this.confirmOkText(),
           role: 'confirm',
           handler: () => {
-            this.nav.back();
+            this.performBack();
           },
         },
       ],
     });
 
     await alert.present();
+  }
+
+  private async performBack() {
+    const top = await this.modalController.getTop();
+    if (top) {
+      await top.dismiss();
+    } else {
+      this.nav.back();
+    }
   }
 
   onCalendarClick(): void {
