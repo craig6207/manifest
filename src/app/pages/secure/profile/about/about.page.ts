@@ -32,8 +32,4 @@ import {
     FormsModule,
   ],
 })
-export class AboutPage implements OnInit {
-  constructor() {}
-
-  ngOnInit() {}
-}
+export class AboutPage {}

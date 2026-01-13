@@ -44,8 +44,4 @@ import {
     FormsModule,
   ],
 })
-export class CookiesPage implements OnInit {
-  constructor() {}
-
-  ngOnInit() {}
-}
+export class CookiesPage {}

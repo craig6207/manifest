@@ -167,6 +167,9 @@ function dateToTimeAndPeriod(ts: string | Date): {
   ],
 })
 export class TimesheetLogPage {
+  private nav = inject(NavController);
+  private route = inject(ActivatedRoute);
+
   mode: 'timer' | 'manual' = 'timer';
 
   manualStartTime = '';
@@ -258,7 +261,7 @@ export class TimesheetLogPage {
   readonly busy = signal(false);
   readonly successMsg = signal<string | null>(null);
 
-  constructor(private nav: NavController, private route: ActivatedRoute) {
+  constructor() {
     const qp = this.route.snapshot.queryParamMap;
     const jl = Number(qp.get('jobListingId'));
     this.jobListingId = Number.isFinite(jl) ? jl : null;
