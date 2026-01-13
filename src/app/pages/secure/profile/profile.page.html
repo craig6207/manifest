@@ -202,7 +202,33 @@
         <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
         <span>Logout</span>
       </button>
+
+      <ion-button
+        class="delete-account-btn"
+        expand="block"
+        color="danger"
+        fill="solid"
+        type="button"
+        [disabled]="isDeletingAccount()"
+        (click)="openDeleteAccountConfirm()"
+        aria-label="Delete account"
+      >
+        <ion-icon slot="start" name="trash-outline"></ion-icon>
+        Delete account
+      </ion-button>
+
+      <ion-text class="delete-hint">
+        <p>This permanently deletes your account and associated data.</p>
+      </ion-text>
     </div>
+
+    <ion-alert
+      [isOpen]="deleteConfirmOpen()"
+      header="Delete account?"
+      message="This will permanently delete your account and data. This action cannot be undone."
+      [buttons]="deleteAlertButtons"
+      (didDismiss)="deleteConfirmOpen.set(false)"
+    ></ion-alert>
   </div>
 </ion-content>
 
@@ -284,5 +310,4 @@
   [message]="toastMsg()"
   duration="1800"
   (didDismiss)="toastMsg.set('')"
->
-</ion-toast>
+></ion-toast>

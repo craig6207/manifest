@@ -368,3 +368,28 @@
 .rate-confirm-btn {
   margin-top: 8px;
 }
+
+.delete-row {
+  margin: 10px auto 0;
+  padding: 8px 0 0;
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #b91c1c;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.delete-icon {
+  font-size: 20px;
+}
+
+.delete-hint {
+  margin: 10px auto 0;
+  max-width: 320px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}

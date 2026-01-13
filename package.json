@@ -7,6 +7,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build && node scripts/replace-google-key.js",
+    "serve": "ng build && node scripts/replace-google-key.js && ng serve --port 8100",
     "build:prod": "ng build --configuration production && node scripts/replace-google-key.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

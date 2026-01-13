@@ -294,9 +294,12 @@ export class AuthService {
     return !!token;
   }
 
-  logout(): void {
-    this.removeSecureItem('access_token');
-    this.removeSecureItem('refresh_token');
+  async logout(): Promise<void> {
+    await Promise.all([
+      this.removeSecureItem('access_token').catch(() => {}),
+      this.removeSecureItem('refresh_token').catch(() => {}),
+    ]);
+
     this.stopTokenRefreshWatcher();
   }
 

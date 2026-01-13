@@ -20,10 +20,22 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>We use the camera to let you take a profile photo.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>This app uses Face ID to log you in securely.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to suggest local jobs near you.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to suggest local jobs near you.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We may save your profile photos to your library when you ask us to.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photos to pick a profile picture.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -34,28 +46,11 @@
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to suggest local jobs near you.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to suggest local jobs near you.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>We use the camera to let you take a profile photo.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your photos to pick a profile picture.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>We may save your profile photos to your library when you ask us to.</string>
 </dict>
 </plist>

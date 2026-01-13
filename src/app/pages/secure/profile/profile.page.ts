@@ -32,6 +32,8 @@ import {
   IonItem,
   IonModal,
   IonRange,
+  IonAlert,
+  IonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -43,6 +45,7 @@ import {
   createOutline,
   logOutOutline,
   chevronForwardOutline,
+  trashOutline,
 } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 import { ProfileStore } from 'src/app/+state/profile-signal.store';
@@ -51,6 +54,7 @@ import {
   ProfilePicService,
   UploadImageResponse,
 } from 'src/app/services/profile-pic/profile-pic.service';
+import { AccountService } from 'src/app/services/account/account.service';
 
 const DEFAULT_AVATAR = 'https://ionicframework.com/docs/img/demos/avatar.svg';
 
@@ -60,6 +64,8 @@ const DEFAULT_AVATAR = 'https://ionicframework.com/docs/img/demos/avatar.svg';
   styleUrls: ['./profile.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    IonText,
+    IonAlert,
     CommonModule,
     IonHeader,
     IonToolbar,
@@ -88,12 +94,27 @@ export class ProfilePage implements OnDestroy {
   private readonly router = inject(Router);
   private readonly nav = inject(NavController);
   private readonly fb = inject(FormBuilder);
+  private readonly accountService = inject(AccountService);
 
   isAvatarSheetOpen = signal(false);
   isUploading = signal(false);
   toastMsg = signal('');
 
   rateModalOpen = signal(false);
+  deleteConfirmOpen = signal(false);
+  isDeletingAccount = signal(false);
+
+  readonly deleteAlertButtons = [
+    {
+      text: 'Cancel',
+      role: 'cancel',
+    },
+    {
+      text: 'Delete',
+      role: 'destructive',
+      handler: () => this.deleteAccount(),
+    },
+  ];
   myRateForm: FormGroup;
 
   loadingPage = computed(() => !this.store.avatarLoaded());
@@ -136,6 +157,7 @@ export class ProfilePage implements OnDestroy {
       createOutline,
       logOutOutline,
       chevronForwardOutline,
+      trashOutline,
     });
 
     this.myRateForm = this.fb.group({
@@ -202,8 +224,6 @@ export class ProfilePage implements OnDestroy {
     this.closeRateModal();
   }
 
-  ngOnDestroy(): void {}
-
   openAvatarSheet(): void {
     this.isAvatarSheetOpen.set(true);
   }
@@ -237,10 +257,10 @@ export class ProfilePage implements OnDestroy {
     }
   }
 
-  logout() {
-    this.authService.logout();
+  async logout() {
+    await this.authService.logout();
     this.store.clearAvatarCache();
-    this.router.navigate(['/']);
+    await this.nav.navigateRoot('/');
   }
 
   openNotifications(): void {
@@ -248,5 +268,37 @@ export class ProfilePage implements OnDestroy {
   }
   openSettings(): void {
     this.nav.navigateForward('secure/tabs/profile/settings');
+  }
+
+  openDeleteAccountConfirm(): void {
+    this.deleteConfirmOpen.set(true);
+  }
+
+  private async deleteAccount(): Promise<void> {
+    this.deleteConfirmOpen.set(false);
+    if (this.isDeletingAccount()) return;
+    this.isDeletingAccount.set(true);
+    this.toastMsg.set('Deleting account...');
+    try {
+      await firstValueFrom(this.accountService.deleteMe());
+
+      await this.authService.logout();
+      this.store.clearAvatarCache();
+
+      this.toastMsg.set('Account deleted');
+      setTimeout(() => {
+        this.nav.navigateRoot('/');
+      }, 600);
+    } catch {
+      this.toastMsg.set('Could not delete account. Please try again.');
+    } finally {
+      this.isDeletingAccount.set(false);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.toastMsg.set('');
+    this.isDeletingAccount.set(false);
+    this.deleteConfirmOpen.set(false);
   }
 }
