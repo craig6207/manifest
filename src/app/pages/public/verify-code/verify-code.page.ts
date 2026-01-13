@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -26,14 +26,13 @@ type VerifyMode = 'register' | 'reset';
   imports: [
     IonFooter,
     IonHeader,
-    CommonModule,
     FormsModule,
     IonContent,
     IonButton,
     IonInputOtp,
     IonToast,
-    ToolbarBackComponent,
-  ],
+    ToolbarBackComponent
+],
   templateUrl: './verify-code.page.html',
   styleUrls: ['./verify-code.page.scss'],
 })

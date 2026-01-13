@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   AbstractControl,
   FormBuilder,
@@ -56,7 +56,6 @@ function passwordsMatchValidator(
   imports: [
     IonHeader,
     IonFooter,
-    CommonModule,
     ReactiveFormsModule,
     IonContent,
     IonList,
@@ -65,8 +64,8 @@ function passwordsMatchValidator(
     IonInput,
     IonToast,
     IonIcon,
-    ToolbarBackComponent,
-  ],
+    ToolbarBackComponent
+],
 })
 export class NewPasswordPage implements OnInit {
   form!: UntypedFormGroup;

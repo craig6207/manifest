@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -35,7 +35,6 @@ import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-ba
     IonButton,
     IonIcon,
     IonHeader,
-    CommonModule,
     ReactiveFormsModule,
     IonContent,
     IonItem,
@@ -44,8 +43,8 @@ import { ToolbarBackComponent } from 'src/app/components/toolbar-back/toolbar-ba
     IonLoading,
     IonList,
     ToolbarBackComponent,
-    IonFooter,
-  ],
+    IonFooter
+],
 })
 export class ForgottenPasswordPage implements OnInit {
   form!: UntypedFormGroup;

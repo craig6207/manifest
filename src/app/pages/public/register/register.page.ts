@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   AbstractControl,
   FormBuilder,
@@ -62,7 +62,6 @@ function strongPasswordValidator(control: AbstractControl) {
     IonGrid,
     IonCol,
     IonImg,
-    CommonModule,
     ReactiveFormsModule,
     IonContent,
     IonList,
@@ -72,8 +71,8 @@ function strongPasswordValidator(control: AbstractControl) {
     IonToast,
     IonSelect,
     IonSelectOption,
-    IonIcon,
-  ],
+    IonIcon
+],
 })
 export class RegisterPage implements OnInit, OnDestroy {
   private kbSubs: PluginListenerHandle[] = [];

@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   IonContent,
   IonHeader,
@@ -161,10 +161,9 @@ function dateToTimeAndPeriod(ts: string | Date): {
     IonRefresherContent,
     IonSkeletonText,
     IonIcon,
-    CommonModule,
     FormsModule,
-    ToolbarBackComponent,
-  ],
+    ToolbarBackComponent
+],
 })
 export class TimesheetLogPage {
   private nav = inject(NavController);
