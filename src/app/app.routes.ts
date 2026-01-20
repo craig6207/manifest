@@ -69,8 +69,6 @@ export const routes: Routes = [
         (m) => m.NewPasswordPage
       ),
   },
-
-  { path: '**', redirectTo: '' },
   {
     path: 'timesheet-log',
     loadComponent: () =>
@@ -78,4 +76,12 @@ export const routes: Routes = [
         (m) => m.TimesheetLogPage
       ),
   },
+  {
+    path: 'guest-job-search',
+    loadComponent: () =>
+      import('./pages/public/guest-job-search/guest-job-search.page').then(
+        (m) => m.GuestJobSearchPage
+      ),
+  },
+  { path: '**', redirectTo: '' },
 ];

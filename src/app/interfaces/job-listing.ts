@@ -27,3 +27,9 @@ export interface JobListingView extends JobListing {
   clientId?: number;
   clientName?: string;
 }
+
+export interface PublicJobListing {
+  trade: string;
+  tradeSubCategory: string;
+  location: string;
+}

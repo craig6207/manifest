@@ -1,0 +1,84 @@
+<ion-header class="jobs-header">
+  <app-toolbar-back
+    title="Jobs List"
+    [backButtonShow]="true"
+  ></app-toolbar-back>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="guest-job-content">
+  <div class="page">
+    <ion-item lines="none" class="trade-select-item">
+      <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+
+      <ion-select
+        interface="popover"
+        placeholder="Select a trade"
+        (ionChange)="onTradeChange($any($event).detail.value)"
+      >
+        @for (t of trades(); track t.id) {
+        <ion-select-option [value]="t.name">{{ t.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <div class="results">
+      @if (loadingJobs()) {
+      <div class="loading-block">
+        <ion-skeleton-text
+          animated
+          style="width: 70%; height: 22px"
+        ></ion-skeleton-text>
+        <ion-skeleton-text
+          animated
+          style="width: 95%; height: 18px; margin-top: 8px"
+        ></ion-skeleton-text>
+        <ion-skeleton-text
+          animated
+          style="width: 85%; height: 18px; margin-top: 8px"
+        ></ion-skeleton-text>
+      </div>
+      } @else if (error()) {
+      <ion-note color="danger">{{ error() }}</ion-note>
+      } @else if (jobs().length === 0) {
+      <div class="empty-state empty-state--full">
+        <div class="empty-icon">
+          <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <h3 class="empty-title">No jobs found</h3>
+        @if (selectedTradeName()) {
+        <p class="empty-text">
+          Try selecting a different trade from the dropdown.
+        </p>
+        }
+      </div>
+      } @else {
+      <ion-list class="job-list" lines="none">
+        @for (job of jobs(); track $index) {
+        <div class="job-card">
+          <div class="job-card-top">
+            <div class="job-card-heading">
+              <h3 class="job-title">{{ job.trade }}</h3>
+            </div>
+          </div>
+
+          <div class="job-card-footer">
+            <button
+              type="button"
+              class="job-link"
+              (click)="openJobRequiresLogin()"
+              aria-label="View job details"
+            >
+              <span>Register or login to view jobs</span>
+              <ion-icon
+                name="arrow-forward-outline"
+                aria-hidden="true"
+              ></ion-icon>
+            </button>
+          </div>
+        </div>
+        }
+      </ion-list>
+      }
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,145 @@
+/* Page background/padding */
+.guest-job-content {
+  --background: #f4f8fb;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+/* Make the content fill available height and let results area grow */
+.page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top dropdown */
+.trade-select-item {
+  --background: #ffffff;
+  --border-radius: 16px;
+  --min-height: 52px;
+  --padding-start: 12px;
+  --inner-padding-end: 10px;
+  border: 1px solid #e2e6f2;
+  border-radius: 16px;
+}
+
+/* This is the key: results section fills the remaining height */
+.results {
+  flex: 1 1 auto;
+  min-height: 0; /* important for iOS flex + scroll containers */
+  padding-top: 16px;
+}
+
+/* Loading skeleton spacing */
+.loading-block ion-skeleton-text + ion-skeleton-text {
+  margin-top: 8px;
+}
+
+/* List / cards (copied only what you actually use) */
+.job-list {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.job-card {
+  margin-top: 16px;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e2e6f2;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  padding: 20px 18px 16px;
+}
+
+.job-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.job-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.job-company {
+  margin: 0;
+  font-size: 14px;
+  color: #4b5a78;
+}
+
+.job-card-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e6f2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.job-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #275fcb;
+}
+
+.job-link ion-icon {
+  font-size: 18px;
+}
+
+/* Empty state: make it truly full screen (minus dropdown) */
+.empty-state--full {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  /* override the old "push it down" styling that causes clipping */
+  margin-top: 0;
+  padding: 0 16px;
+}
+
+.empty-icon {
+  width: 104px;
+  height: 104px;
+  border-radius: 9999px;
+  background: #ffffff;
+  margin: 0 auto 24px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.empty-icon ion-icon {
+  font-size: 40px;
+  color: var(--ion-color-primary);
+}
+
+.empty-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.empty-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4b5563;
+}

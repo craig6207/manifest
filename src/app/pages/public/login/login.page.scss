@@ -26,6 +26,7 @@
   background-color: #e4e7f2;
   margin: 0 10px;
 }
+
 .login-page .input-item {
   --background: #f4f8fb;
   --border-radius: 16px;
@@ -52,6 +53,7 @@
   opacity: 0.95;
   margin-inline-end: 8px;
 }
+
 .login-page .input-item ion-input {
   --padding-start: 10px;
   font-size: 15px;
@@ -89,12 +91,14 @@
   font-size: 13px;
   gap: 4px;
 }
+
 .login-page .signup-text {
   color: #1c1c1e;
   font-size: 16px;
   font-weight: 400;
   margin: 0;
 }
+
 .login-page .signup-link {
   border: none;
   background: transparent;
@@ -102,6 +106,28 @@
   font-size: 16px;
   color: var(--ion-color-primary);
   font-weight: 400;
+}
+
+.login-page .guest-hook {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.login-page .guest-link {
+  border: none;
+  background: transparent;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #5b6476;
+  text-align: center;
+}
+
+.login-page .guest-link__em {
+  color: var(--ion-color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 @media (max-height: 640px) {

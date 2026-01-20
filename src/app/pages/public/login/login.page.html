@@ -7,6 +7,7 @@
         alt="WeRecruit logo"
       ></ion-img>
     </section>
+
     <img
       class="cityline cityline--crane-left"
       src="/assets/img/crane2.svg"
@@ -35,6 +36,7 @@
       aria-hidden="true"
       role="presentation"
     />
+
     <section class="form-card">
       <h2 class="card-title">Sign In</h2>
 
@@ -115,6 +117,19 @@
           Sign In
         </ion-button>
       </form>
+
+      <div class="guest-hook">
+        <button
+          type="button"
+          class="guest-link"
+          (click)="openGuestJobSearch()"
+          aria-label="Browse jobs without signing in"
+        >
+          Just browsing?
+          <span class="guest-link__em">Search jobs</span>
+          without an account
+        </button>
+      </div>
 
       <div class="signup-row">
         <p class="signup-text">Don't have an account?</p>

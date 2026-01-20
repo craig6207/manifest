@@ -213,14 +213,10 @@ export class LoginPage implements OnInit, OnDestroy {
         this.showBiometricButton = false;
 
         this.alertHeader = 'For your security, please sign in again';
-        this.alertMessage = `<div class="ion-text-left">
-          <p>It's been <strong>over 30 days</strong> since you last used the app, so your session has expired.</p>
-          <p>To keep your account safe, we need you to sign in with your email and password.</p>
-          <ul>
-            <li>Tap <em>Use email & password</em> to continue.</li>
-            <li>Forgot it? Choose <em>Reset password</em>.</li>
-          </ul>
-        </div>`;
+        this.alertMessage = `It's been over 30 days since you last used the app, so your session has expired.
+          To keep your account safe, we need you to sign in with your email and password.
+          Tap Use email & password to continue.
+            Forgot it? Choose Reset password.`;
 
         this.alertButtons = [
           {
@@ -326,5 +322,9 @@ export class LoginPage implements OnInit, OnDestroy {
 
   goToForgottenPassword() {
     this.router.navigate(['/forgotten-password']);
+  }
+
+  openGuestJobSearch(): void {
+    this.router.navigate(['guest-job-search']);
   }
 }

@@ -6,6 +6,7 @@ import {
   JobFilterOptions,
   JobListing,
   JobListingView,
+  PublicJobListing,
 } from 'src/app/interfaces/job-listing';
 
 @Injectable({
@@ -13,6 +14,26 @@ import {
 })
 export class JobListingsService {
   private http = inject(HttpClient);
+
+  getPublic(options?: {
+    trade?: string | null;
+    skip?: number;
+    take?: number;
+  }): Observable<PublicJobListing[]> {
+    let params = new HttpParams()
+      .set('skip', String(options?.skip ?? 0))
+      .set('take', String(options?.take ?? 50));
+
+    const trade = options?.trade?.trim();
+    if (trade) {
+      params = params.set('trade', trade);
+    }
+
+    return this.http.get<PublicJobListing[]>(
+      `${environment.apiEndpoint}/api/joblistings/public`,
+      { params }
+    );
+  }
 
   getForCandidate(
     candidateProfileId: number,
